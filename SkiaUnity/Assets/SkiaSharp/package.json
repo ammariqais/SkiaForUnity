@@ -19,10 +19,6 @@
   ],
   "category": "Unity",
   "files": [
-    "/package.json",
-    "/package.json.meta",
-    "/Library",
-    "/Library.meta",
     "/Scripts",
     "/Scripts.meta"
   ]
