@@ -20,6 +20,10 @@
   "category": "Unity",
   "files": [
     "/Scripts",
-    "/Scripts.meta"
+    "/Scripts.meta",
+    "Library",
+    "/Library.meta",
+    "/package.json",
+    "/package.json.meta"
   ]
 }
