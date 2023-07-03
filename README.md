@@ -30,7 +30,7 @@ To get started with SkiaSharp for Unity, follow these steps:
 
 4. Scroll down to the Other Settings section and locate the Scripting Define Symbols field.
 
-5. Add UNIFIED and IOS to the Scripting Define Symbols. This is necessary to enable the SkiaSharp functionality specifically for iOS.
+5. Add __UNIFIED__ and __IOS__ to the Scripting Define Symbols. This is necessary to enable the SkiaSharp functionality specifically for iOS.
 
 6. Create a new script or modify an existing script to leverage the SkiaSharp API for drawing graphics and the Skottie API for playing Lottie       animations.
 
