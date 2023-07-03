@@ -26,9 +26,15 @@ To get started with SkiaSharp for Unity, follow these steps:
 
 2. Import the SkiaSharp package into your Unity project.
 
-3. Create a new script or modify an existing script to leverage the SkiaSharp API for drawing graphics and the Skottie API for playing Lottie animations.
+3. In Unity, go to Edit > Project Settings > Player and select the iOS platform.
 
-4. Build and run your Unity project to see the Skia graphics and Lottie animations in action.
+4. Scroll down to the Other Settings section and locate the Scripting Define Symbols field.
+
+5. Add UNIFIED and IOS to the Scripting Define Symbols. This is necessary to enable the SkiaSharp functionality specifically for iOS.
+
+6. Create a new script or modify an existing script to leverage the SkiaSharp API for drawing graphics and the Skottie API for playing Lottie       animations.
+
+7. Build and run your Unity project on an iOS device to see the Skia graphics and Lottie animations in action.
 
 ## Contributing
 
