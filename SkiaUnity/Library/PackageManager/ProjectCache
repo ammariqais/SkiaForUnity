@@ -5,7 +5,7 @@ m_ProjectFiles:
     m_ContentTrackingEnabled: 1
     m_ModificationDate:
       serializedVersion: 2
-      ticks: 638239487910000000
+      ticks: 638239517400000000
     m_Hash: 2597298123
   m_LockFileStatus:
     m_FilePath: /Users/qaisammari/Desktop/SkiaUnityWS/SkiaForUnity/SkiaUnity/Packages/packages-lock.json
@@ -13,7 +13,7 @@ m_ProjectFiles:
     m_ContentTrackingEnabled: 1
     m_ModificationDate:
       serializedVersion: 2
-      ticks: 638239487950000000
+      ticks: 638239517400000000
     m_Hash: 2099878622
 m_EmbeddedPackageManifests:
   m_ManifestsStatus: {}

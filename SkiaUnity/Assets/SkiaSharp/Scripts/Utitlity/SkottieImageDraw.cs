@@ -1,10 +1,15 @@
 //SkiaSharp For Unity
 //version 0.0.1 alpha
 
+using System.Text;
+using HarfBuzzSharp;
 using UnityEngine;
 using UnityEngine.UI;
 using SkiaSharp;
+using SkiaSharp.HarfBuzz;
+
 using Animation = SkiaSharp.Skottie.Animation;
+using Font = HarfBuzzSharp.Font;
 
 public class SkottieImageDraw : MonoBehaviour {
   [SerializeField]
@@ -32,8 +37,9 @@ public class SkottieImageDraw : MonoBehaviour {
       surface = SKSurface.Create(info);
       rect = SKRect.Create(resWidth, resHeight);
       canvas = surface.Canvas;
+      currentAnimation.SeekFrameTime(0);
+      Debug.LogError(currentAnimation.OutPoint);
       currentAnimation.Render(canvas,rect);
-      
       TextureFormat format = (info.ColorType == SKColorType.Rgba8888) ? TextureFormat.RGBA32 : TextureFormat.BGRA32;
       texture = new Texture2D(info.Width, info.Height, format, false);
       texture.wrapMode = TextureWrapMode.Repeat;
@@ -41,10 +47,12 @@ public class SkottieImageDraw : MonoBehaviour {
       texture.LoadRawTextureData(pixmap.GetPixels(), pixmap.RowBytes * pixmap.Height);
       texture.Apply();
       rawImage.texture = texture;
+      
     }
   
 
     private void Update() {
+      return;
       if (currentAnimation != null) {
         if (timer > currentAnimation.Duration) {
           timer = 0;
