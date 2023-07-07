@@ -18,6 +18,15 @@ SkiaSharp is a .NET binding to the Skia library, which is used by popular platfo
 
 - **Integration with Unity:** SkiaSharp for Unity integrates seamlessly with the Unity Editor, providing a familiar development environment for working with Skia graphics and Lottie animations in your Unity projects.
 
+## Watch the SkiaForUnity v1.0.0.Pre-2 Release Videos:
+## Editor Mode
+https://github.com/ammariqais/SkiaForUnity/assets/62248657/ccf71cd1-17ae-4442-b42f-4d3d067849f1
+
+## Playing Animations
+
+https://github.com/ammariqais/SkiaForUnity/assets/62248657/cc7a5d56-48e7-4e28-8e18-b8e8ec776eab
+
+
 ## Getting Started
 
 To get started with SkiaSharp for Unity, follow these steps:
