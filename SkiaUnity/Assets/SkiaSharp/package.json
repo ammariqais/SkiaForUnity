@@ -1,7 +1,7 @@
 {
   "name": "com.ammariqais.skiaforunity",
   "displayName": "Skia For Unity",
-  "version": "1.0.0-pre.2",
+  "version": "1.0.0-pre.3",
   "unity": "2019.3",
   "description": "Skia For Unity With Skottie Animations",
   "author": {
@@ -19,11 +19,15 @@
   ],
   "category": "Unity",
   "files": [
-    "/Scripts",
-    "/Scripts.meta",
+    "/Editor",
+    "/Editor.meta",
     "Library",
     "/Library.meta",
     "/package.json",
-    "/package.json.meta"
+    "/package.json.meta",
+    "Runtime",
+    "Runtime.meta",
+    "SkiaSharp-Bindings",
+    "SkiaSharp-Bindings.meta"
   ]
 }
