@@ -3,9 +3,10 @@ using System.Reflection;
 using SkiaSharp.Unity;
 using UnityEditor;
 using UnityEngine;
+namespace SkiaSharp.UnityEditor {
 
-[CustomEditor(typeof(SkottiePlayer))]
-public class SlottiePlayerEditor : Editor
+  [CustomEditor(typeof(SkottiePlayer))]
+  public class SlottiePlayerEditor : Editor
 {
   private System.Reflection.MethodInfo UpdateAnimation;
   private System.Reflection.MethodInfo PlayAnimation;
@@ -102,5 +103,6 @@ public class SlottiePlayerEditor : Editor
     EditorApplication.update -= UpdateEditor;
     CallUpdateAnimation();
   }
+}
 }
 #endif

@@ -51,6 +51,9 @@ using System.Runtime.CompilerServices;
 	"dafa277b22de47d6ffea449674a4f9fccf84d15069089380284dbdd35f46cdff12a1bd78e4ef00" +
 	"65d016df")]
 
+[assembly: InternalsVisibleTo("SkiaSharp.Unity")]
+
+
 [assembly: AssemblyMetadata("IsTrimmable", "True")]
 
 #if __TVOS__ || __WATCHOS__ || __MACOS__
