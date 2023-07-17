@@ -38,11 +38,17 @@ namespace SkiaSharp.Unity {
     if (lottieFile == null) {
       return;
     }
+
     playAniamtion = playAniamtion || autoPlay;
     LoadAnimation(lottieFile.text);
   }
 
   void LoadTexture() {
+    if (texture != null) {
+      DestroyImmediate(texture);
+      texture = null;
+    }
+    
     states = JsonConvert.DeserializeObject<SkottieMarkers>(lottieFile.text);
       
     if (stateName.Length > 0 && states != null && states.markers.Count > 0) {
@@ -55,7 +61,7 @@ namespace SkiaSharp.Unity {
     canvas = surface.Canvas;
     currentAnimation.SeekFrame(currentState?.tm ?? 0);
     currentAnimation.Render(canvas,rect);
-      
+
     TextureFormat format = (info.ColorType == SKColorType.Rgba8888) ? TextureFormat.RGBA32 : TextureFormat.BGRA32;
     texture = new Texture2D(info.Width, info.Height, format, false);
     texture.wrapMode = TextureWrapMode.Repeat;
@@ -120,33 +126,50 @@ namespace SkiaSharp.Unity {
   
 
     private void Update() {
-      if (playAniamtion == false || currentAnimation == null) {
-        return;
-      }
-      
-      if (currentState != null && timer >= (currentState.tm+currentState.dr)/currentAnimation.Fps) {
-        timer = resetAfterFinished || loop ? currentState.tm/currentAnimation.Fps : (currentState.tm + currentState.dr)/currentAnimation.Fps;
-        playAniamtion = loop;
-        OnAnimationFinished?.Invoke(currentState?.cm);
-      } else if(timer >= currentAnimation.Duration) {
-        timer = resetAfterFinished || loop ? 0 : timer;
-        playAniamtion = loop;
-        OnAnimationFinished?.Invoke(currentState?.cm);
-      }
+        if (playAniamtion == false || currentAnimation == null || canvas == null) {
+          return;
+        }
 
-      timer += Time.deltaTime;
-      canvas.Clear();
-      currentAnimation.SeekFrameTime(timer);
-      currentAnimation.Render(canvas,rect);
-      var pixmap = surface.PeekPixels();
-      texture.LoadRawTextureData(pixmap.GetPixels(), pixmap.RowBytes * pixmap.Height);
-      texture.Apply();
-      rawImage.texture = texture;
+        if (currentState != null && timer >= (currentState.tm + currentState.dr) / currentAnimation.Fps) {
+          timer = resetAfterFinished || loop
+            ? currentState.tm / currentAnimation.Fps
+            : (currentState.tm + currentState.dr) / currentAnimation.Fps;
+          playAniamtion = loop;
+          OnAnimationFinished?.Invoke(currentState?.cm);
+        }
+        else if (timer >= currentAnimation.Duration) {
+          timer = resetAfterFinished || loop ? 0 : timer;
+          playAniamtion = loop;
+          OnAnimationFinished?.Invoke(currentState?.cm);
+        }
+
+        timer += Time.deltaTime;
+        canvas.Clear();
+        currentAnimation.SeekFrameTime(timer);
+        currentAnimation.Render(canvas, rect);
+        var pixmap = surface.PeekPixels();
+        texture.LoadRawTextureData(pixmap.GetPixels(), pixmap.RowBytes * pixmap.Height);
+        texture.Apply();
+        rawImage.texture = texture;
+
     }
 
-    private void OnDisable() {
-      canvas?.Dispose();
-      currentAnimation?.Dispose();
+    private void OnDestroy() {
+      if (texture != null) {
+        DestroyImmediate(texture);
+        texture = null;
+      }
+
+      if (currentAnimation != null) {
+        currentAnimation.Dispose();
+        currentAnimation = null;
+      }
+
+      if (canvas != null) {
+        canvas.Dispose();
+        canvas = null;
+      }
+
     }
   }
 }
