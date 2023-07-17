@@ -41,7 +41,7 @@ PluginImporter:
     second:
       enabled: 1
       settings:
-        CPU: AnyCPU
+        CPU: x86
         DefaultValueInitialized: true
         OS: AnyOS
   - first:
@@ -98,6 +98,7 @@ PluginImporter:
       enabled: 0
       settings:
         AddToEmbeddedBinaries: false
+        CPU: AnyCPU
         CompileFlags: 
         FrameworkDependencies: 
   userData: 
