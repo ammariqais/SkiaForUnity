@@ -35,10 +35,11 @@ namespace SkiaSharp.Unity {
   private SkottieMarkers.state currentState;
   
   private void Start() {
-    playAniamtion = autoPlay;
     if (lottieFile == null) {
       return;
     }
+
+    playAniamtion = playAniamtion || autoPlay;
     LoadAnimation(lottieFile.text);
   }
 
