@@ -100,6 +100,20 @@ namespace SkiaSharp.Unity {
       return "";
     }
 
+    public double GetFps() {
+      if (currentAnimation == null) {
+        return -1;
+      }
+      return currentAnimation.Fps;
+    }
+    
+    public double GetDurations() {
+      if (currentAnimation == null) {
+        return -1;
+      }
+      return currentAnimation.Duration;
+    }
+
     public void PlayAnimation(bool? reset = null) {
       playAniamtion = true;
       resetAfterFinished = reset == null ? resetAfterFinished : reset.Value;
