@@ -25,7 +25,7 @@ namespace SkiaSharp.Unity {
   private Animation currentAnimation;
   private SKCanvas canvas;
   private SKRect rect;
-  private double timer = 0;
+  private double timer = 0, animationFps, animationDuration, animationStateDuration;
   private SKImageInfo info;
   private SKSurface surface;
   private RawImage rawImage;
@@ -50,9 +50,14 @@ namespace SkiaSharp.Unity {
     }
     
     states = JsonConvert.DeserializeObject<SkottieMarkers>(lottieFile.text);
+    animationFps = currentAnimation.Fps;
+    animationDuration = currentAnimation.Duration;
       
     if (stateName.Length > 0 && states != null && states.markers.Count > 0) {
       currentState = states.GetStateByName(stateName);
+      if (currentState != null) {
+        animationStateDuration = (currentState.tm + currentState.dr) / animationFps;
+      }
     }
     rawImage = GetComponent<RawImage>();
     info = new SKImageInfo(resWidth, resWidth);
@@ -81,10 +86,11 @@ namespace SkiaSharp.Unity {
 
   public void SetState(string name) {
       if (states != null && currentAnimation != null) {
+        animationStateDuration = (currentState.tm + currentState.dr) / animationFps;
         playAniamtion = false;
         currentState = states.GetStateByName(name);
         if (currentState != null) {
-          timer = currentState.tm/currentAnimation.Fps; 
+          timer = currentState.tm/animationFps; 
           canvas.Clear(); 
           currentAnimation.SeekFrameTime(timer); 
           currentAnimation.Render(canvas,rect); 
@@ -96,7 +102,7 @@ namespace SkiaSharp.Unity {
           Debug.LogError($"[SkottiePlayer] - SetState({name}), state not found!");
         }
       }
-    }
+  }
 
     public string GetStateName() {
       if (currentState != null) {
@@ -106,17 +112,11 @@ namespace SkiaSharp.Unity {
     }
 
     public double GetFps() {
-      if (currentAnimation == null) {
-        return -1;
-      }
-      return currentAnimation.Fps;
+      return animationFps;
     }
     
     public double GetDurations() {
-      if (currentAnimation == null) {
-        return -1;
-      }
-      return currentAnimation.Duration;
+      return animationDuration;
     }
 
     public void PlayAnimation(bool? reset = null) {
@@ -130,14 +130,14 @@ namespace SkiaSharp.Unity {
           return;
         }
 
-        if (currentState != null && timer >= (currentState.tm + currentState.dr) / currentAnimation.Fps) {
+        if (currentState != null && timer >= animationStateDuration) {
           timer = resetAfterFinished || loop
-            ? currentState.tm / currentAnimation.Fps
-            : (currentState.tm + currentState.dr) / currentAnimation.Fps;
+            ? currentState.tm / animationFps
+            : animationStateDuration;
           playAniamtion = loop;
           OnAnimationFinished?.Invoke(currentState?.cm);
         }
-        else if (timer >= currentAnimation.Duration) {
+        else if (timer >= animationDuration) {
           timer = resetAfterFinished || loop ? 0 : timer;
           playAniamtion = loop;
           OnAnimationFinished?.Invoke(currentState?.cm);
