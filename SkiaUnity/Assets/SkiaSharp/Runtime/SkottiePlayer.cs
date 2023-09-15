@@ -86,12 +86,12 @@ namespace SkiaSharp.Unity {
 
   public void SetState(string name) {
       if (states != null && currentAnimation != null) {
-        animationStateDuration = (currentState.tm + currentState.dr) / animationFps;
         playAniamtion = false;
         currentState = states.GetStateByName(name);
         if (currentState != null) {
+          animationStateDuration = (currentState.tm + currentState.dr) / animationFps;
           timer = currentState.tm/animationFps; 
-          canvas.Clear(); 
+          canvas.Clear();
           currentAnimation.SeekFrameTime(timer); 
           currentAnimation.Render(canvas,rect); 
           var pixmap = surface.PeekPixels(); 
@@ -129,21 +129,20 @@ namespace SkiaSharp.Unity {
         if (playAniamtion == false || currentAnimation == null || canvas == null) {
           return;
         }
-
+        
+        timer += Time.deltaTime;
         if (currentState != null && timer >= animationStateDuration) {
           timer = resetAfterFinished || loop
             ? currentState.tm / animationFps
             : animationStateDuration;
           playAniamtion = loop;
           OnAnimationFinished?.Invoke(currentState?.cm);
-        }
-        else if (timer >= animationDuration) {
+        } else if (timer >= animationDuration) {
           timer = resetAfterFinished || loop ? 0 : timer;
           playAniamtion = loop;
           OnAnimationFinished?.Invoke(currentState?.cm);
         }
 
-        timer += Time.deltaTime;
         canvas.Clear();
         currentAnimation.SeekFrameTime(timer);
         currentAnimation.Render(canvas, rect);
