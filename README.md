@@ -31,19 +31,27 @@ https://github.com/ammariqais/SkiaForUnity/assets/62248657/cc7a5d56-48e7-4e28-8e
 
 To get started with SkiaSharp for Unity, follow these steps:
 
-1. Clone or download the SkiaSharp for Unity repository from [GitHub](git@github.com:ammariqais/SkiaForUnity.git).
+1. Clone or download the SkiaSharp for Unity repository from [GitHub](git@github.com:ammariqais/SkiaForUnity.git). or you can use
 
-2. Import the SkiaSharp package into your Unity project.
+**Package Manager** 
+1. Open your Unity project and navigate to `Windows`> `Package Manager`.
+2. Click the `+` button in the top-left corner and select Add package from git URL
+3. Enter the following URL and click `Add`
 
-3. In Unity, go to Edit > Project Settings > Player and select the iOS platform.
+`https://github.com/ammariqais/SkiaForUnity.git?path=SkiaUnity/Assets/SkiaSharp`
 
-4. Scroll down to the Other Settings section and locate the Scripting Define Symbols field.
 
-5. Add __ UNIFIED _ _ and _ _IOS_ _ to the Scripting Define Symbols. This is necessary to enable the SkiaSharp functionality specifically for iOS.
+3. Import the SkiaSharp package into your Unity project.
+   
+4. In Unity, go to Edit > Project Settings > Player and select the iOS platform.
 
-6. Create a new script or modify an existing script to leverage the SkiaSharp API for drawing graphics and the Skottie API for playing Lottie       animations.
+5. Scroll down to the Other Settings section and locate the Scripting Define Symbols field.
 
-7. Build and run your Unity project on an iOS device to see the Skia graphics and Lottie animations in action.
+6. Add __ UNIFIED _ _ and _ _IOS_ _ to the Scripting Define Symbols. This is necessary to enable the SkiaSharp functionality specifically for iOS.
+
+7. Create a new script or modify an existing script to leverage the SkiaSharp API for drawing graphics and the Skottie API for playing Lottie       animations.
+
+8. Build and run your Unity project on an iOS device to see the Skia graphics and Lottie animations in action.
 
 ## Contributing
 
