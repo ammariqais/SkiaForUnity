@@ -3,14 +3,14 @@ using System.Reflection;
 using SkiaSharp.Unity;
 using UnityEditor;
 using UnityEngine;
-namespace SkiaSharp.UnityEditor {
+using UnityEditor.SceneManagement;
+using UnityEngine.SceneManagement;
 
+namespace SkiaSharp.UnityEditor {
   [CustomEditor(typeof(SkottiePlayer))]
-  public class SlottiePlayerEditor : Editor
-{
-  private System.Reflection.MethodInfo UpdateAnimation;
-  private System.Reflection.MethodInfo PlayAnimation;
-  private System.Reflection.LocalVariableInfo xx;
+  public class SlottiePlayerEditor : Editor {
+  private MethodInfo UpdateAnimation;
+  private MethodInfo PlayAnimation;
   private static bool isEditorUpdateActive = false;
   private FieldInfo timerField;
   private FieldInfo playAniamtionField;
@@ -36,12 +36,12 @@ namespace SkiaSharp.UnityEditor {
       EditorApplication.update -= UpdateEditor;
       CallUpdateAnimation();
     }
-    if (!isEditorUpdateActive)
-      return;
-    
 
+    if (!isEditorUpdateActive) {
+      return;
+    }
+      
     CallPlayAnimation();
-    
   }
 
   public override void OnInspectorGUI() {
@@ -104,5 +104,46 @@ namespace SkiaSharp.UnityEditor {
     CallUpdateAnimation();
   }
 }
+}
+
+[InitializeOnLoad]
+public class EditorOpenCallback {
+  private static MethodInfo UpdateAnimation;
+  static EditorOpenCallback() {
+    EditorApplication.playModeStateChanged += OnPlayModeStateChanged;
+    EditorSceneManager.sceneOpened += OnSceneOpened;
+
+    if (!EditorApplication.isPlayingOrWillChangePlaymode) {
+      RenderTextures();
+    }
+     
+  }
+
+  private static void OnSceneOpened(Scene scene, OpenSceneMode mode) {
+    RenderTextures();
+  }
+
+  private static void OnPlayModeStateChanged(PlayModeStateChange state) {
+     if (state == PlayModeStateChange.EnteredEditMode) {
+       RenderTextures();
+     }
+  }
+
+   private static void RenderTextures() {
+     Object[] objects = Resources.FindObjectsOfTypeAll(typeof(GameObject));
+     foreach (Object obj in objects) {
+       GameObject gameObj = obj as GameObject;
+       if (gameObj != null){
+         SkottiePlayer myComponent = gameObj.GetComponent<SkottiePlayer>();
+         if (myComponent != null)
+         {
+           UpdateAnimation = myComponent.GetType().GetMethod("Start", System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic);
+           UpdateAnimation?.Invoke(myComponent, null);
+
+         }
+       }
+     }
+   }
+
 }
 #endif
