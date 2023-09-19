@@ -29,6 +29,7 @@ namespace SkiaSharp.Unity {
   private SKImageInfo info;
   private SKSurface surface;
   private RawImage rawImage;
+  private SpriteRenderer spriteRenderer;
   private Texture2D texture;
   private bool playAniamtion = false;
   private SkottieMarkers states;
@@ -60,6 +61,9 @@ namespace SkiaSharp.Unity {
       }
     }
     rawImage = GetComponent<RawImage>();
+    if (rawImage == null) {
+      spriteRenderer = GetComponent<SpriteRenderer>();
+    }
     info = new SKImageInfo(resWidth, resWidth);
     surface = SKSurface.Create(info);
     rect = SKRect.Create(resWidth, resHeight);
@@ -73,7 +77,11 @@ namespace SkiaSharp.Unity {
     var pixmap = surface.PeekPixels();
     texture.LoadRawTextureData(pixmap.GetPixels(), pixmap.RowBytes * pixmap.Height);
     texture.Apply();
-    rawImage.texture = texture;
+    if (rawImage) {
+      rawImage.texture = texture;
+    } else {
+      spriteRenderer.sprite = Sprite.Create(texture,new Rect(0,0,texture.width,texture.height),Vector2.one*0.5f,100f,0);
+    }
   }
 
   public void LoadAnimation(string json) {
@@ -97,7 +105,6 @@ namespace SkiaSharp.Unity {
           var pixmap = surface.PeekPixels(); 
           texture.LoadRawTextureData(pixmap.GetPixels(), pixmap.RowBytes * pixmap.Height); 
           texture.Apply(); 
-          rawImage.texture = texture; 
         } else {
           Debug.LogError($"[SkottiePlayer] - SetState({name}), state not found!");
         }
@@ -149,8 +156,6 @@ namespace SkiaSharp.Unity {
         var pixmap = surface.PeekPixels();
         texture.LoadRawTextureData(pixmap.GetPixels(), pixmap.RowBytes * pixmap.Height);
         texture.Apply();
-        rawImage.texture = texture;
-
     }
 
     private void OnDestroy() {
