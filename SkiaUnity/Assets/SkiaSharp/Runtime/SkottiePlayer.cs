@@ -6,7 +6,26 @@ using UnityEngine.UI;
 using Animation = SkiaSharp.Skottie.Animation;
 
 namespace SkiaSharp.Unity {
-  public sealed class SkottiePlayer : MonoBehaviour {
+  /// <summary>
+  /// Provides functionality to play and control Lottie animations in Unity.
+  /// </summary>
+  ///
+  /// <example>
+  /// <code>
+  /// // Example usage within the Start method:
+  /// [SerializeField]
+  /// SkottiePlayer skottiePlayer;
+  /// 
+  /// void Start() {
+  ///     // Set the desired animation state
+  ///     skottiePlayer.SetState("YourStateName");
+  ///     
+  ///     // Start playing the animation
+  ///     skottiePlayer.PlayAnimation();
+  /// }
+  /// </code>
+  /// </example>
+  public class SkottiePlayer : MonoBehaviour {
   [SerializeField]
   private TextAsset lottieFile;
   [SerializeField]
@@ -84,6 +103,10 @@ namespace SkiaSharp.Unity {
     }
   }
 
+  /// <summary>
+  /// Loads an animation from a JSON string and prepares it for playback.
+  /// </summary>
+  /// <param name="json">The JSON string containing the animation data.</param>
   public void LoadAnimation(string json) {
     if (!Animation.TryParse(json, out currentAnimation)) {
       Debug.LogError("[SkottiePlayer] - wrong json file");
@@ -92,6 +115,10 @@ namespace SkiaSharp.Unity {
     LoadTexture();
   }
 
+  /// <summary>
+  /// Sets the current state of the Lottie animation.
+  /// </summary>
+  /// <param name="name">The name of the state to set.</param>
   public void SetState(string name) {
       if (states != null && currentAnimation != null) {
         playAniamtion = false;
@@ -111,6 +138,10 @@ namespace SkiaSharp.Unity {
       }
   }
 
+  /// <summary>
+  /// Gets the name of the current animation state.
+  /// </summary>
+  /// <returns>The name of the current state if available; otherwise, an empty string.</returns>
     public string GetStateName() {
       if (currentState != null) {
         return currentState.cm;
@@ -118,14 +149,26 @@ namespace SkiaSharp.Unity {
       return "";
     }
 
+  /// <summary>
+  /// Gets the frames per second (FPS) of the loaded animation.
+  /// </summary>
+  /// <returns>The FPS of the loaded animation.</returns>
     public double GetFps() {
       return animationFps;
     }
-    
+  
+  /// <summary>
+  /// Gets the total duration of the loaded animation in seconds.
+  /// </summary>
+  /// <returns>The total duration of the loaded animation in seconds.</returns>
     public double GetDurations() {
       return animationDuration;
     }
 
+  /// <summary>
+  /// Initiates playback of the loaded animation.
+  /// </summary>
+  /// <param name="reset">Whether to reset the animation to the beginning when finished.</param>
     public void PlayAnimation(bool? reset = null) {
       playAniamtion = true;
       resetAfterFinished = reset == null ? resetAfterFinished : reset.Value;
