@@ -1,0 +1,100 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="subsytem1" kind="page">
+    <compoundname>subsytem1</compoundname>
+    <title>Skottie Tutorials</title>
+    <tableofcontents>
+      <tocsect>
+        <name>Play Animation With State</name>
+        <reference>subsytem1_1play-animation-with-state</reference>
+    </tocsect>
+      <tocsect>
+        <name>Using CallBack OnAnimationFinishedHandler</name>
+        <reference>subsytem1_1using-callback-onanimationfinishedhandler</reference>
+    <tableofcontents>
+      <tocsect>
+        <name>Example</name>
+        <reference>subsytem1_1example</reference>
+    </tocsect>
+    </tableofcontents>
+    </tocsect>
+    </tableofcontents>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+<sect1 id="subsytem1_1play-animation-with-state">
+<title>Play Animation With State</title>
+<para>To use the <computeroutput>SkottiePlayer</computeroutput> component, follow these steps:</para>
+<para><orderedlist>
+<listitem><para><bold>Create a RawImage:</bold></para>
+<para>In your Unity scene, create a <computeroutput>RawImage</computeroutput> object to display the Skottie animation. You can do this by right-clicking in the Hierarchy panel, selecting &quot;UI,&quot; and choosing &quot;Raw Image.&quot;</para>
+</listitem><listitem><para><bold>Attach SkottiePlayer Component:</bold></para>
+<para>Select the <computeroutput>RawImage</computeroutput> you created. In the Inspector panel, click the &quot;Add Component&quot; button and search for &quot;Skottie Player&quot; to add the <computeroutput>SkottiePlayer</computeroutput> component to the <computeroutput>RawImage</computeroutput> object.</para>
+</listitem><listitem><para><bold>Assign Animation JSON Data:</bold></para>
+<para>In the Inspector panel, you&apos;ll find the <computeroutput>SkottiePlayer</computeroutput> component you just added. Inside the <computeroutput>SkottiePlayer</computeroutput> component, you&apos;ll see a field named &quot;lottieFile&quot; This is where you can assign a TextAsset containing your animation JSON data. To do this, drag and drop your JSON file into the &quot;Animation Json File&quot; field.</para>
+</listitem><listitem><para><bold>Implement Start Method:</bold></para>
+<para>In your script, you can implement the <computeroutput>Start</computeroutput> method to load the animation, set the desired animation state, and start playback. Here&apos;s an example:</para>
+</listitem></orderedlist>
+</para>
+<para><programlisting filename=".java"><codeline><highlight class="comment">//<sp/>Example<sp/>usage<sp/>within<sp/>the<sp/>Start<sp/>method:</highlight><highlight class="normal"></highlight></codeline>
+<codeline><highlight class="normal">[SerializeField]</highlight></codeline>
+<codeline><highlight class="normal">SkottiePlayer<sp/>skottiePlayer;</highlight></codeline>
+<codeline><highlight class="normal"></highlight></codeline>
+<codeline><highlight class="normal"></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/>Start()<sp/>{</highlight></codeline>
+<codeline><highlight class="normal"></highlight><highlight class="comment">//<sp/>Set<sp/>the<sp/>desired<sp/>animation<sp/>state</highlight><highlight class="normal"></highlight></codeline>
+<codeline><highlight class="normal">skottiePlayer.SetState(</highlight><highlight class="stringliteral">&quot;YourStateName&quot;</highlight><highlight class="normal">);</highlight></codeline>
+<codeline><highlight class="normal"></highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>Start<sp/>playing<sp/>the<sp/>animation</highlight><highlight class="normal"></highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>skottiePlayer.PlayAnimation();</highlight></codeline>
+<codeline><highlight class="normal">}</highlight></codeline>
+</programlisting></para>
+</sect1>
+<sect1 id="subsytem1_1using-callback-onanimationfinishedhandler">
+<title>Using CallBack OnAnimationFinishedHandler</title>
+<para><orderedlist>
+<listitem><para>Attach the <computeroutput>AnimationController</computeroutput> script to a RawImage/SpriteRender object in your Unity scene.</para>
+</listitem><listitem><para>Assign a reference to the SkottiePlayer component to the <computeroutput>skottiePlayer</computeroutput> field in the Unity Inspector.</para>
+</listitem><listitem><para>Customize the <computeroutput>OnAnimationFinishedHandler</computeroutput> method to define actions to take when an animation finishes.</para>
+</listitem><listitem><para>Run your Unity project, and the <computeroutput>AnimationController</computeroutput> will control animations using the SkottiePlayer component.</para>
+</listitem></orderedlist>
+</para>
+<sect2 id="subsytem1_1example">
+<title>Example</title>
+<para><programlisting filename=".java"><codeline><highlight class="comment">//<sp/>Attach<sp/>the<sp/>AnimationController<sp/>script<sp/>to<sp/>a<sp/>GameObject<sp/>and<sp/>assign<sp/>the<sp/>SkottiePlayer<sp/>reference<sp/>in<sp/>the<sp/>Inspector.</highlight><highlight class="normal"></highlight></codeline>
+<codeline><highlight class="normal"></highlight></codeline>
+<codeline><highlight class="normal"></highlight><highlight class="keyword">using<sp/></highlight><highlight class="normal">UnityEngine;</highlight></codeline>
+<codeline><highlight class="normal"></highlight><highlight class="keyword">using<sp/></highlight><highlight class="normal"><ref refid="namespace_skia_sharp_1_1_unity" kindref="compound">SkiaSharp.Unity</ref>;</highlight></codeline>
+<codeline><highlight class="normal"></highlight><highlight class="keyword">public</highlight><highlight class="normal"><sp/></highlight><highlight class="keyword">class<sp/></highlight><highlight class="normal">AnimationController<sp/>:<sp/>MonoBehaviour<sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>[SerializeField]</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">private</highlight><highlight class="normal"><sp/><ref refid="class_skia_sharp_1_1_unity_1_1_skottie_player" kindref="compound">SkottiePlayer</ref><sp/>skottiePlayer;<sp/></highlight><highlight class="comment">//<sp/>Reference<sp/>to<sp/>the<sp/>SkottiePlayer<sp/>component</highlight><highlight class="normal"></highlight></codeline>
+<codeline><highlight class="normal"></highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">private</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/>Start()<sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>Subscribe<sp/>to<sp/>the<sp/>OnAnimationFinished<sp/>event</highlight><highlight class="normal"></highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>skottiePlayer.OnAnimationFinished<sp/>+=<sp/>OnAnimationFinishedHandler;</highlight></codeline>
+<codeline><highlight class="normal"></highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>Play<sp/>the<sp/>animation<sp/>(you<sp/>can<sp/>call<sp/>this<sp/>method<sp/>when<sp/>needed)</highlight><highlight class="normal"></highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>skottiePlayer.<ref refid="class_skia_sharp_1_1_unity_1_1_skottie_player_1a0f03a1e138c0cf97485702ce8079f772" kindref="member">PlayAnimation</ref>();</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline><highlight class="normal"></highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">private</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/>OnAnimationFinishedHandler(</highlight><highlight class="keywordtype">string</highlight><highlight class="normal"><sp/>animationStateName)<sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>This<sp/>method<sp/>will<sp/>be<sp/>called<sp/>when<sp/>the<sp/>animation<sp/>finishes<sp/>playing</highlight><highlight class="normal"></highlight></codeline>
+<codeline><highlight class="normal"></highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>You<sp/>can<sp/>check<sp/>the<sp/>animationStateName<sp/>if<sp/>needed</highlight><highlight class="normal"></highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>Debug.Log(</highlight><highlight class="stringliteral">&quot;Animation<sp/>Finished:<sp/>&quot;</highlight><highlight class="normal"><sp/>+<sp/>animationStateName);</highlight></codeline>
+<codeline><highlight class="normal"></highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>Do<sp/>something<sp/>when<sp/>the<sp/>animation<sp/>finishes,<sp/>e.g.,<sp/>play<sp/>another<sp/>animation<sp/>or<sp/>trigger<sp/>an<sp/>event.</highlight><highlight class="normal"></highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline><highlight class="normal"></highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">private</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/>OnDestroy()<sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>Unsubscribe<sp/>from<sp/>the<sp/>event<sp/>when<sp/>this<sp/>GameObject<sp/>is<sp/>destroyed</highlight><highlight class="normal"></highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>skottiePlayer.OnAnimationFinished<sp/>-=<sp/>OnAnimationFinishedHandler;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline><highlight class="normal">}</highlight></codeline>
+</programlisting></para>
+<para>Read more about <ulink url="class_skia_sharp_1_1_unity_1_1_skottie_player.html">SkottePlayer.cs</ulink> </para>
+</sect2>
+</sect1>
+    </detaileddescription>
+    <location file="docs/Tutorials.md"/>
+  </compounddef>
+</doxygen>

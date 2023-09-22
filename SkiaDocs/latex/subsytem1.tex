@@ -1,0 +1,81 @@
+\chapter{Skottie Tutorials}
+\hypertarget{subsytem1}{}\label{subsytem1}\index{Skottie Tutorials@{Skottie Tutorials}}
+\hypertarget{subsytem1_play-animation-with-state}{}\doxysection{\texorpdfstring{Play Animation With State}{Play Animation With State}}\label{subsytem1_play-animation-with-state}
+To use the {\ttfamily Skottie\+Player} component, follow these steps\+:
+
+
+\begin{DoxyEnumerate}
+\item {\bfseries{Create a Raw\+Image\+:}}
+
+In your Unity scene, create a {\ttfamily Raw\+Image} object to display the Skottie animation. You can do this by right-\/clicking in the Hierarchy panel, selecting "{}\+UI,"{} and choosing "{}\+Raw Image."{}
+\item {\bfseries{Attach Skottie\+Player Component\+:}}
+
+Select the {\ttfamily Raw\+Image} you created. In the Inspector panel, click the "{}\+Add Component"{} button and search for "{}\+Skottie Player"{} to add the {\ttfamily Skottie\+Player} component to the {\ttfamily Raw\+Image} object.
+\item {\bfseries{Assign Animation JSON Data\+:}}
+
+In the Inspector panel, you\textquotesingle{}ll find the {\ttfamily Skottie\+Player} component you just added. Inside the {\ttfamily Skottie\+Player} component, you\textquotesingle{}ll see a field named "{}lottie\+File"{} This is where you can assign a Text\+Asset containing your animation JSON data. To do this, drag and drop your JSON file into the "{}\+Animation Json File"{} field.
+\item {\bfseries{Implement Start Method\+:}}
+
+In your script, you can implement the {\ttfamily Start} method to load the animation, set the desired animation state, and start playback. Here\textquotesingle{}s an example\+:
+\end{DoxyEnumerate}
+
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{\textcolor{comment}{//\ Example\ usage\ within\ the\ Start\ method:}}
+\DoxyCodeLine{[SerializeField]}
+\DoxyCodeLine{SkottiePlayer\ skottiePlayer;}
+\DoxyCodeLine{}
+\DoxyCodeLine{\textcolor{keywordtype}{void}\ Start()\ \{}
+\DoxyCodeLine{\textcolor{comment}{//\ Set\ the\ desired\ animation\ state}}
+\DoxyCodeLine{skottiePlayer.SetState(\textcolor{stringliteral}{"{}YourStateName"{}});}
+\DoxyCodeLine{}
+\DoxyCodeLine{\ \ \ \ \textcolor{comment}{//\ Start\ playing\ the\ animation}}
+\DoxyCodeLine{\ \ \ \ skottiePlayer.PlayAnimation();}
+\DoxyCodeLine{\}}
+
+\end{DoxyCode}
+\hypertarget{subsytem1_using-callback-onanimationfinishedhandler}{}\doxysection{\texorpdfstring{Using Call\+Back On\+Animation\+Finished\+Handler}{Using CallBack OnAnimationFinishedHandler}}\label{subsytem1_using-callback-onanimationfinishedhandler}
+
+\begin{DoxyEnumerate}
+\item Attach the {\ttfamily Animation\+Controller} script to a Raw\+Image/\+Sprite\+Render object in your Unity scene.
+\item Assign a reference to the Skottie\+Player component to the {\ttfamily skottie\+Player} field in the Unity Inspector.
+\item Customize the {\ttfamily On\+Animation\+Finished\+Handler} method to define actions to take when an animation finishes.
+\item Run your Unity project, and the {\ttfamily Animation\+Controller} will control animations using the Skottie\+Player component.
+\end{DoxyEnumerate}\hypertarget{subsytem1_example}{}\doxysubsection{\texorpdfstring{Example}{Example}}\label{subsytem1_example}
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{\textcolor{comment}{//\ Attach\ the\ AnimationController\ script\ to\ a\ GameObject\ and\ assign\ the\ SkottiePlayer\ reference\ in\ the\ Inspector.}}
+\DoxyCodeLine{}
+\DoxyCodeLine{\textcolor{keyword}{using\ }UnityEngine;}
+\DoxyCodeLine{\textcolor{keyword}{using\ }\mbox{\hyperlink{namespace_skia_sharp_1_1_unity}{SkiaSharp.Unity}};}
+\DoxyCodeLine{\textcolor{keyword}{public}\ \textcolor{keyword}{class\ }AnimationController\ :\ MonoBehaviour\ \{}
+\DoxyCodeLine{\ \ \ \ [SerializeField]}
+\DoxyCodeLine{\ \ \ \ \textcolor{keyword}{private}\ \mbox{\hyperlink{class_skia_sharp_1_1_unity_1_1_skottie_player}{SkottiePlayer}}\ skottiePlayer;\ \textcolor{comment}{//\ Reference\ to\ the\ SkottiePlayer\ component}}
+\DoxyCodeLine{}
+\DoxyCodeLine{\ \ \ \ \textcolor{keyword}{private}\ \textcolor{keywordtype}{void}\ Start()\ \{}
+\DoxyCodeLine{\ \ \ \ \ \ \ \ \textcolor{comment}{//\ Subscribe\ to\ the\ OnAnimationFinished\ event}}
+\DoxyCodeLine{\ \ \ \ \ \ \ \ skottiePlayer.OnAnimationFinished\ +=\ OnAnimationFinishedHandler;}
+\DoxyCodeLine{}
+\DoxyCodeLine{\ \ \ \ \ \ \ \ \textcolor{comment}{//\ Play\ the\ animation\ (you\ can\ call\ this\ method\ when\ needed)}}
+\DoxyCodeLine{\ \ \ \ \ \ \ \ skottiePlayer.\mbox{\hyperlink{class_skia_sharp_1_1_unity_1_1_skottie_player_a0f03a1e138c0cf97485702ce8079f772}{PlayAnimation}}();}
+\DoxyCodeLine{\ \ \ \ \}}
+\DoxyCodeLine{}
+\DoxyCodeLine{\ \ \ \ \textcolor{keyword}{private}\ \textcolor{keywordtype}{void}\ OnAnimationFinishedHandler(\textcolor{keywordtype}{string}\ animationStateName)\ \{}
+\DoxyCodeLine{\ \ \ \ \ \ \ \ \textcolor{comment}{//\ This\ method\ will\ be\ called\ when\ the\ animation\ finishes\ playing}}
+\DoxyCodeLine{}
+\DoxyCodeLine{\ \ \ \ \ \ \ \ \textcolor{comment}{//\ You\ can\ check\ the\ animationStateName\ if\ needed}}
+\DoxyCodeLine{\ \ \ \ \ \ \ \ Debug.Log(\textcolor{stringliteral}{"{}Animation\ Finished:\ "{}}\ +\ animationStateName);}
+\DoxyCodeLine{}
+\DoxyCodeLine{\ \ \ \ \ \ \ \ \textcolor{comment}{//\ Do\ something\ when\ the\ animation\ finishes,\ e.g.,\ play\ another\ animation\ or\ trigger\ an\ event.}}
+\DoxyCodeLine{\ \ \ \ \}}
+\DoxyCodeLine{}
+\DoxyCodeLine{\ \ \ \ \textcolor{keyword}{private}\ \textcolor{keywordtype}{void}\ OnDestroy()\ \{}
+\DoxyCodeLine{\ \ \ \ \ \ \ \ \textcolor{comment}{//\ Unsubscribe\ from\ the\ event\ when\ this\ GameObject\ is\ destroyed}}
+\DoxyCodeLine{\ \ \ \ \ \ \ \ skottiePlayer.OnAnimationFinished\ -\/=\ OnAnimationFinishedHandler;}
+\DoxyCodeLine{\ \ \ \ \}}
+\DoxyCodeLine{\}}
+
+\end{DoxyCode}
+
+
+Read more about \href{class_skia_sharp_1_1_unity_1_1_skottie_player.html}{\texttt{ Skotte\+Player.\+cs}} 
