@@ -1,0 +1,92 @@
+.TH "subsytem1" 3 "SkiaForUnity" \" -*- nroff -*-
+.ad l
+.nh
+.SH NAME
+subsytem1 \- Skottie Tutorials 
+.PP
+
+.SH "Play Animation With State"
+.PP
+To use the \fCSkottiePlayer\fP component, follow these steps:
+.PP
+.IP "1." 4
+\fBCreate a RawImage:\fP
+.PP
+In your Unity scene, create a \fCRawImage\fP object to display the Skottie animation\&. You can do this by right-clicking in the Hierarchy panel, selecting 'UI,' and choosing 'Raw Image\&.'
+.IP "2." 4
+\fBAttach SkottiePlayer Component:\fP
+.PP
+Select the \fCRawImage\fP you created\&. In the Inspector panel, click the 'Add Component' button and search for 'Skottie Player' to add the \fCSkottiePlayer\fP component to the \fCRawImage\fP object\&.
+.IP "3." 4
+\fBAssign Animation JSON Data:\fP
+.PP
+In the Inspector panel, you'll find the \fCSkottiePlayer\fP component you just added\&. Inside the \fCSkottiePlayer\fP component, you'll see a field named 'lottieFile' This is where you can assign a TextAsset containing your animation JSON data\&. To do this, drag and drop your JSON file into the 'Animation Json File' field\&.
+.IP "4." 4
+\fBImplement Start Method:\fP
+.PP
+In your script, you can implement the \fCStart\fP method to load the animation, set the desired animation state, and start playback\&. Here's an example:
+.PP
+.PP
+.PP
+.nf
+// Example usage within the Start method:
+[SerializeField]
+SkottiePlayer skottiePlayer;
+
+void Start() {
+// Set the desired animation state
+skottiePlayer\&.SetState("YourStateName");
+
+    // Start playing the animation
+    skottiePlayer\&.PlayAnimation();
+}
+.fi
+.PP
+.SH "Using CallBack OnAnimationFinishedHandler"
+.PP
+.IP "1." 4
+Attach the \fCAnimationController\fP script to a RawImage/SpriteRender object in your Unity scene\&.
+.IP "2." 4
+Assign a reference to the SkottiePlayer component to the \fCskottiePlayer\fP field in the Unity Inspector\&.
+.IP "3." 4
+Customize the \fCOnAnimationFinishedHandler\fP method to define actions to take when an animation finishes\&.
+.IP "4." 4
+Run your Unity project, and the \fCAnimationController\fP will control animations using the SkottiePlayer component\&.
+.PP
+.SS "Example"
+.PP
+.nf
+// Attach the AnimationController script to a GameObject and assign the SkottiePlayer reference in the Inspector\&.
+
+using UnityEngine;
+using SkiaSharp\&.Unity;
+public class AnimationController : MonoBehaviour {
+    [SerializeField]
+    private SkottiePlayer skottiePlayer; // Reference to the SkottiePlayer component
+
+    private void Start() {
+        // Subscribe to the OnAnimationFinished event
+        skottiePlayer\&.OnAnimationFinished += OnAnimationFinishedHandler;
+
+        // Play the animation (you can call this method when needed)
+        skottiePlayer\&.PlayAnimation();
+    }
+
+    private void OnAnimationFinishedHandler(string animationStateName) {
+        // This method will be called when the animation finishes playing
+
+        // You can check the animationStateName if needed
+        Debug\&.Log("Animation Finished: " + animationStateName);
+
+        // Do something when the animation finishes, e\&.g\&., play another animation or trigger an event\&.
+    }
+
+    private void OnDestroy() {
+        // Unsubscribe from the event when this GameObject is destroyed
+        skottiePlayer\&.OnAnimationFinished \-= OnAnimationFinishedHandler;
+    }
+}
+.fi
+.PP
+.PP
+Read more about \fCSkottePlayer\&.cs\fP 

@@ -1,0 +1,13 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="namespace_skia_sharp_1_1_unity" kind="namespace" language="C#">
+    <compoundname>SkiaSharp::Unity</compoundname>
+    <innerclass refid="class_skia_sharp_1_1_unity_1_1_skottie_markers" prot="public">SkiaSharp::Unity::SkottieMarkers</innerclass>
+    <innerclass refid="class_skia_sharp_1_1_unity_1_1_skottie_player" prot="public">SkiaSharp::Unity::SkottiePlayer</innerclass>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="models/markers.cs" line="3" column="1"/>
+  </compounddef>
+</doxygen>

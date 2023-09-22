@@ -1,0 +1,53 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="class_skia_sharp_1_1_unity_1_1_skottie_markers" kind="class" language="C#" prot="public">
+    <compoundname>SkiaSharp::Unity::SkottieMarkers</compoundname>
+    <innerclass refid="class_skia_sharp_1_1_unity_1_1_skottie_markers_1_1state" prot="public">SkiaSharp::Unity::SkottieMarkers::state</innerclass>
+    <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="class_skia_sharp_1_1_unity_1_1_skottie_markers_1ad4116ee99e1bd99910bd623cab55d9f5" prot="public" static="no" mutable="no">
+        <type>List&lt; <ref refid="class_skia_sharp_1_1_unity_1_1_skottie_markers_1_1state" kindref="compound">state</ref> &gt;</type>
+        <definition>List&lt;state&gt; SkiaSharp.Unity.SkottieMarkers.markers</definition>
+        <argsstring></argsstring>
+        <name>markers</name>
+        <qualifiedname>SkiaSharp.Unity.SkottieMarkers.markers</qualifiedname>
+        <initializer>= new List&lt;<ref refid="class_skia_sharp_1_1_unity_1_1_skottie_markers_1_1state" kindref="compound">state</ref>&gt;()</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="models/markers.cs" line="5" column="21" bodyfile="models/markers.cs" bodystart="5" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="class_skia_sharp_1_1_unity_1_1_skottie_markers_1a96179574a4a468f32fa9bbbd1e515941" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type><ref refid="class_skia_sharp_1_1_unity_1_1_skottie_markers_1_1state" kindref="compound">state</ref></type>
+        <definition>state SkiaSharp.Unity.SkottieMarkers.GetStateByName</definition>
+        <argsstring>(string name)</argsstring>
+        <name>GetStateByName</name>
+        <qualifiedname>SkiaSharp.Unity.SkottieMarkers.GetStateByName</qualifiedname>
+        <param>
+          <type>string</type>
+          <declname>name</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="models/markers.cs" line="12" column="22" bodyfile="models/markers.cs" bodystart="12" bodyend="24"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="models/markers.cs" line="4" column="11" bodyfile="models/markers.cs" bodystart="4" bodyend="25"/>
+    <listofallmembers>
+      <member refid="class_skia_sharp_1_1_unity_1_1_skottie_markers_1a96179574a4a468f32fa9bbbd1e515941" prot="public" virt="non-virtual"><scope>SkiaSharp::Unity::SkottieMarkers</scope><name>GetStateByName</name></member>
+      <member refid="class_skia_sharp_1_1_unity_1_1_skottie_markers_1ad4116ee99e1bd99910bd623cab55d9f5" prot="public" virt="non-virtual"><scope>SkiaSharp::Unity::SkottieMarkers</scope><name>markers</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

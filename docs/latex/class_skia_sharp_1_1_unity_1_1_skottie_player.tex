@@ -1,0 +1,175 @@
+\doxysection{Skia\+Sharp.\+Unity.\+Skottie\+Player Class Reference}
+\hypertarget{class_skia_sharp_1_1_unity_1_1_skottie_player}{}\label{class_skia_sharp_1_1_unity_1_1_skottie_player}\index{SkiaSharp.Unity.SkottiePlayer@{SkiaSharp.Unity.SkottiePlayer}}
+
+
+Provides functionality to play and control Lottie animations in Unity.  
+
+
+\doxysubsubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+void \mbox{\hyperlink{class_skia_sharp_1_1_unity_1_1_skottie_player_ac02264a2a99ca0eb29f2226ea55f55d7}{Load\+Animation}} (string json)
+\begin{DoxyCompactList}\small\item\em Loads an animation from a JSON string and prepares it for playback. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{class_skia_sharp_1_1_unity_1_1_skottie_player_ad7cf89fef4a76cc9a6df868357e48408}{Set\+State}} (string name)
+\begin{DoxyCompactList}\small\item\em Sets the current state of the Lottie animation. \end{DoxyCompactList}\item 
+string \mbox{\hyperlink{class_skia_sharp_1_1_unity_1_1_skottie_player_a4ff3ffb5dd20d038da6525157948e7c9}{Get\+State\+Name}} ()
+\begin{DoxyCompactList}\small\item\em Gets the name of the current animation state. \end{DoxyCompactList}\item 
+double \mbox{\hyperlink{class_skia_sharp_1_1_unity_1_1_skottie_player_adde181cbe8d1c3b73fb01c5ba643cd50}{Get\+Fps}} ()
+\begin{DoxyCompactList}\small\item\em Gets the frames per second (FPS) of the loaded animation. \end{DoxyCompactList}\item 
+double \mbox{\hyperlink{class_skia_sharp_1_1_unity_1_1_skottie_player_a3a7ad3f379c5a50ca555b25b7a6afd25}{Get\+Durations}} ()
+\begin{DoxyCompactList}\small\item\em Gets the total duration of the loaded animation in seconds. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{class_skia_sharp_1_1_unity_1_1_skottie_player_a0f03a1e138c0cf97485702ce8079f772}{Play\+Animation}} (bool? reset=null)
+\begin{DoxyCompactList}\small\item\em Initiates playback of the loaded animation. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\doxysubsubsection*{Public Attributes}
+\begin{DoxyCompactItemize}
+\item 
+Unity\+Action$<$ string $>$ \mbox{\hyperlink{class_skia_sharp_1_1_unity_1_1_skottie_player_a7be37410ba8ea9f9ba7d19aea56ccef5}{On\+Animation\+Finished}}
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Detailed Description}
+Provides functionality to play and control Lottie animations in Unity. 
+
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{\textcolor{comment}{//\ Example\ usage\ within\ the\ Start\ method:}}
+\DoxyCodeLine{[SerializeField]}
+\DoxyCodeLine{SkottiePlayer\ skottiePlayer;}
+\DoxyCodeLine{}
+\DoxyCodeLine{\textcolor{keywordtype}{void}\ Start()\ \{}
+\DoxyCodeLine{\ \ \ \ \textcolor{comment}{//\ Set\ the\ desired\ animation\ state}}
+\DoxyCodeLine{\ \ \ \ skottiePlayer.SetState(\textcolor{stringliteral}{"{}YourStateName"{}});}
+\DoxyCodeLine{}
+\DoxyCodeLine{\ \ \ \ \textcolor{comment}{//\ Start\ playing\ the\ animation}}
+\DoxyCodeLine{\ \ \ \ skottiePlayer.PlayAnimation();}
+\DoxyCodeLine{\}}
+
+\end{DoxyCode}
+ 
+
+Definition at line \mbox{\hyperlink{_skottie_player_8cs_source_l00028}{28}} of file \mbox{\hyperlink{_skottie_player_8cs_source}{Skottie\+Player.\+cs}}.
+
+
+
+\doxysubsection{Member Function Documentation}
+\Hypertarget{class_skia_sharp_1_1_unity_1_1_skottie_player_a3a7ad3f379c5a50ca555b25b7a6afd25}\label{class_skia_sharp_1_1_unity_1_1_skottie_player_a3a7ad3f379c5a50ca555b25b7a6afd25} 
+\index{SkiaSharp.Unity.SkottiePlayer@{SkiaSharp.Unity.SkottiePlayer}!GetDurations@{GetDurations}}
+\index{GetDurations@{GetDurations}!SkiaSharp.Unity.SkottiePlayer@{SkiaSharp.Unity.SkottiePlayer}}
+\doxysubsubsection{\texorpdfstring{GetDurations()}{GetDurations()}}
+{\footnotesize\ttfamily double Skia\+Sharp.\+Unity.\+Skottie\+Player.\+Get\+Durations (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+
+
+Gets the total duration of the loaded animation in seconds. 
+
+\begin{DoxyReturn}{Returns}
+The total duration of the loaded animation in seconds.
+\end{DoxyReturn}
+
+
+Definition at line \mbox{\hyperlink{_skottie_player_8cs_source_l00164}{164}} of file \mbox{\hyperlink{_skottie_player_8cs_source}{Skottie\+Player.\+cs}}.
+
+\Hypertarget{class_skia_sharp_1_1_unity_1_1_skottie_player_adde181cbe8d1c3b73fb01c5ba643cd50}\label{class_skia_sharp_1_1_unity_1_1_skottie_player_adde181cbe8d1c3b73fb01c5ba643cd50} 
+\index{SkiaSharp.Unity.SkottiePlayer@{SkiaSharp.Unity.SkottiePlayer}!GetFps@{GetFps}}
+\index{GetFps@{GetFps}!SkiaSharp.Unity.SkottiePlayer@{SkiaSharp.Unity.SkottiePlayer}}
+\doxysubsubsection{\texorpdfstring{GetFps()}{GetFps()}}
+{\footnotesize\ttfamily double Skia\+Sharp.\+Unity.\+Skottie\+Player.\+Get\+Fps (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+
+
+Gets the frames per second (FPS) of the loaded animation. 
+
+\begin{DoxyReturn}{Returns}
+The FPS of the loaded animation.
+\end{DoxyReturn}
+
+
+Definition at line \mbox{\hyperlink{_skottie_player_8cs_source_l00156}{156}} of file \mbox{\hyperlink{_skottie_player_8cs_source}{Skottie\+Player.\+cs}}.
+
+\Hypertarget{class_skia_sharp_1_1_unity_1_1_skottie_player_a4ff3ffb5dd20d038da6525157948e7c9}\label{class_skia_sharp_1_1_unity_1_1_skottie_player_a4ff3ffb5dd20d038da6525157948e7c9} 
+\index{SkiaSharp.Unity.SkottiePlayer@{SkiaSharp.Unity.SkottiePlayer}!GetStateName@{GetStateName}}
+\index{GetStateName@{GetStateName}!SkiaSharp.Unity.SkottiePlayer@{SkiaSharp.Unity.SkottiePlayer}}
+\doxysubsubsection{\texorpdfstring{GetStateName()}{GetStateName()}}
+{\footnotesize\ttfamily string Skia\+Sharp.\+Unity.\+Skottie\+Player.\+Get\+State\+Name (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+
+
+Gets the name of the current animation state. 
+
+\begin{DoxyReturn}{Returns}
+The name of the current state if available; otherwise, an empty string.
+\end{DoxyReturn}
+
+
+Definition at line \mbox{\hyperlink{_skottie_player_8cs_source_l00145}{145}} of file \mbox{\hyperlink{_skottie_player_8cs_source}{Skottie\+Player.\+cs}}.
+
+\Hypertarget{class_skia_sharp_1_1_unity_1_1_skottie_player_ac02264a2a99ca0eb29f2226ea55f55d7}\label{class_skia_sharp_1_1_unity_1_1_skottie_player_ac02264a2a99ca0eb29f2226ea55f55d7} 
+\index{SkiaSharp.Unity.SkottiePlayer@{SkiaSharp.Unity.SkottiePlayer}!LoadAnimation@{LoadAnimation}}
+\index{LoadAnimation@{LoadAnimation}!SkiaSharp.Unity.SkottiePlayer@{SkiaSharp.Unity.SkottiePlayer}}
+\doxysubsubsection{\texorpdfstring{LoadAnimation()}{LoadAnimation()}}
+{\footnotesize\ttfamily void Skia\+Sharp.\+Unity.\+Skottie\+Player.\+Load\+Animation (\begin{DoxyParamCaption}\item[{string}]{json }\end{DoxyParamCaption})}
+
+
+
+Loads an animation from a JSON string and prepares it for playback. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em json} & The JSON string containing the animation data.\\
+\hline
+\end{DoxyParams}
+
+
+Definition at line \mbox{\hyperlink{_skottie_player_8cs_source_l00110}{110}} of file \mbox{\hyperlink{_skottie_player_8cs_source}{Skottie\+Player.\+cs}}.
+
+\Hypertarget{class_skia_sharp_1_1_unity_1_1_skottie_player_a0f03a1e138c0cf97485702ce8079f772}\label{class_skia_sharp_1_1_unity_1_1_skottie_player_a0f03a1e138c0cf97485702ce8079f772} 
+\index{SkiaSharp.Unity.SkottiePlayer@{SkiaSharp.Unity.SkottiePlayer}!PlayAnimation@{PlayAnimation}}
+\index{PlayAnimation@{PlayAnimation}!SkiaSharp.Unity.SkottiePlayer@{SkiaSharp.Unity.SkottiePlayer}}
+\doxysubsubsection{\texorpdfstring{PlayAnimation()}{PlayAnimation()}}
+{\footnotesize\ttfamily void Skia\+Sharp.\+Unity.\+Skottie\+Player.\+Play\+Animation (\begin{DoxyParamCaption}\item[{bool?}]{reset = {\ttfamily null} }\end{DoxyParamCaption})}
+
+
+
+Initiates playback of the loaded animation. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em reset} & Whether to reset the animation to the beginning when finished.\\
+\hline
+\end{DoxyParams}
+
+
+Definition at line \mbox{\hyperlink{_skottie_player_8cs_source_l00172}{172}} of file \mbox{\hyperlink{_skottie_player_8cs_source}{Skottie\+Player.\+cs}}.
+
+\Hypertarget{class_skia_sharp_1_1_unity_1_1_skottie_player_ad7cf89fef4a76cc9a6df868357e48408}\label{class_skia_sharp_1_1_unity_1_1_skottie_player_ad7cf89fef4a76cc9a6df868357e48408} 
+\index{SkiaSharp.Unity.SkottiePlayer@{SkiaSharp.Unity.SkottiePlayer}!SetState@{SetState}}
+\index{SetState@{SetState}!SkiaSharp.Unity.SkottiePlayer@{SkiaSharp.Unity.SkottiePlayer}}
+\doxysubsubsection{\texorpdfstring{SetState()}{SetState()}}
+{\footnotesize\ttfamily void Skia\+Sharp.\+Unity.\+Skottie\+Player.\+Set\+State (\begin{DoxyParamCaption}\item[{string}]{name }\end{DoxyParamCaption})}
+
+
+
+Sets the current state of the Lottie animation. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em name} & The name of the state to set.\\
+\hline
+\end{DoxyParams}
+
+
+Definition at line \mbox{\hyperlink{_skottie_player_8cs_source_l00122}{122}} of file \mbox{\hyperlink{_skottie_player_8cs_source}{Skottie\+Player.\+cs}}.
+
+
+
+\doxysubsection{Member Data Documentation}
+\Hypertarget{class_skia_sharp_1_1_unity_1_1_skottie_player_a7be37410ba8ea9f9ba7d19aea56ccef5}\label{class_skia_sharp_1_1_unity_1_1_skottie_player_a7be37410ba8ea9f9ba7d19aea56ccef5} 
+\index{SkiaSharp.Unity.SkottiePlayer@{SkiaSharp.Unity.SkottiePlayer}!OnAnimationFinished@{OnAnimationFinished}}
+\index{OnAnimationFinished@{OnAnimationFinished}!SkiaSharp.Unity.SkottiePlayer@{SkiaSharp.Unity.SkottiePlayer}}
+\doxysubsubsection{\texorpdfstring{OnAnimationFinished}{OnAnimationFinished}}
+{\footnotesize\ttfamily Unity\+Action$<$string$>$ Skia\+Sharp.\+Unity.\+Skottie\+Player.\+On\+Animation\+Finished}
+
+
+
+Definition at line \mbox{\hyperlink{_skottie_player_8cs_source_l00042}{42}} of file \mbox{\hyperlink{_skottie_player_8cs_source}{Skottie\+Player.\+cs}}.
+

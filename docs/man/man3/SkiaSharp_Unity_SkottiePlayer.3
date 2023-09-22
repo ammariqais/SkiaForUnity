@@ -1,0 +1,158 @@
+.TH "SkiaSharp.Unity.SkottiePlayer" 3 "SkiaForUnity" \" -*- nroff -*-
+.ad l
+.nh
+.SH NAME
+SkiaSharp.Unity.SkottiePlayer \- Provides functionality to play and control Lottie animations in Unity\&.  
+
+.SH SYNOPSIS
+.br
+.PP
+.SS "Public Member Functions"
+
+.in +1c
+.ti -1c
+.RI "void \fBLoadAnimation\fP (string json)"
+.br
+.RI "Loads an animation from a JSON string and prepares it for playback\&. "
+.ti -1c
+.RI "void \fBSetState\fP (string name)"
+.br
+.RI "Sets the current state of the Lottie animation\&. "
+.ti -1c
+.RI "string \fBGetStateName\fP ()"
+.br
+.RI "Gets the name of the current animation state\&. "
+.ti -1c
+.RI "double \fBGetFps\fP ()"
+.br
+.RI "Gets the frames per second (FPS) of the loaded animation\&. "
+.ti -1c
+.RI "double \fBGetDurations\fP ()"
+.br
+.RI "Gets the total duration of the loaded animation in seconds\&. "
+.ti -1c
+.RI "void \fBPlayAnimation\fP (bool? reset=null)"
+.br
+.RI "Initiates playback of the loaded animation\&. "
+.in -1c
+.SS "Public Attributes"
+
+.in +1c
+.ti -1c
+.RI "UnityAction< string > \fBOnAnimationFinished\fP"
+.br
+.in -1c
+.SH "Detailed Description"
+.PP 
+Provides functionality to play and control Lottie animations in Unity\&. 
+
+
+.PP
+.nf
+// Example usage within the Start method:
+[SerializeField]
+SkottiePlayer skottiePlayer;
+
+void Start() {
+    // Set the desired animation state
+    skottiePlayer\&.SetState("YourStateName");
+
+    // Start playing the animation
+    skottiePlayer\&.PlayAnimation();
+}
+
+.fi
+.PP
+ 
+.PP
+Definition at line \fB28\fP of file \fBSkottiePlayer\&.cs\fP\&.
+.SH "Member Function Documentation"
+.PP 
+.SS "double SkiaSharp\&.Unity\&.SkottiePlayer\&.GetDurations ()"
+
+.PP
+Gets the total duration of the loaded animation in seconds\&. 
+.PP
+\fBReturns\fP
+.RS 4
+The total duration of the loaded animation in seconds\&.
+.RE
+.PP
+
+.PP
+Definition at line \fB164\fP of file \fBSkottiePlayer\&.cs\fP\&.
+.SS "double SkiaSharp\&.Unity\&.SkottiePlayer\&.GetFps ()"
+
+.PP
+Gets the frames per second (FPS) of the loaded animation\&. 
+.PP
+\fBReturns\fP
+.RS 4
+The FPS of the loaded animation\&.
+.RE
+.PP
+
+.PP
+Definition at line \fB156\fP of file \fBSkottiePlayer\&.cs\fP\&.
+.SS "string SkiaSharp\&.Unity\&.SkottiePlayer\&.GetStateName ()"
+
+.PP
+Gets the name of the current animation state\&. 
+.PP
+\fBReturns\fP
+.RS 4
+The name of the current state if available; otherwise, an empty string\&.
+.RE
+.PP
+
+.PP
+Definition at line \fB145\fP of file \fBSkottiePlayer\&.cs\fP\&.
+.SS "void SkiaSharp\&.Unity\&.SkottiePlayer\&.LoadAnimation (string json)"
+
+.PP
+Loads an animation from a JSON string and prepares it for playback\&. 
+.PP
+\fBParameters\fP
+.RS 4
+\fIjson\fP The JSON string containing the animation data\&.
+.RE
+.PP
+
+.PP
+Definition at line \fB110\fP of file \fBSkottiePlayer\&.cs\fP\&.
+.SS "void SkiaSharp\&.Unity\&.SkottiePlayer\&.PlayAnimation (bool? reset = \fCnull\fP)"
+
+.PP
+Initiates playback of the loaded animation\&. 
+.PP
+\fBParameters\fP
+.RS 4
+\fIreset\fP Whether to reset the animation to the beginning when finished\&.
+.RE
+.PP
+
+.PP
+Definition at line \fB172\fP of file \fBSkottiePlayer\&.cs\fP\&.
+.SS "void SkiaSharp\&.Unity\&.SkottiePlayer\&.SetState (string name)"
+
+.PP
+Sets the current state of the Lottie animation\&. 
+.PP
+\fBParameters\fP
+.RS 4
+\fIname\fP The name of the state to set\&.
+.RE
+.PP
+
+.PP
+Definition at line \fB122\fP of file \fBSkottiePlayer\&.cs\fP\&.
+.SH "Member Data Documentation"
+.PP 
+.SS "UnityAction<string> SkiaSharp\&.Unity\&.SkottiePlayer\&.OnAnimationFinished"
+
+.PP
+Definition at line \fB42\fP of file \fBSkottiePlayer\&.cs\fP\&.
+
+.SH "Author"
+.PP 
+Generated automatically by Doxygen for SkiaForUnity from the source code\&.

@@ -1,0 +1,617 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="class_skia_sharp_1_1_unity_1_1_skottie_player" kind="class" language="C#" prot="public">
+    <compoundname>SkiaSharp::Unity::SkottiePlayer</compoundname>
+    <basecompoundref prot="public" virt="non-virtual">MonoBehaviour</basecompoundref>
+    <sectiondef kind="private-attrib">
+      <memberdef kind="variable" id="class_skia_sharp_1_1_unity_1_1_skottie_player_1aa03940bb8fd9f79f8ea9a39b62274cfc" prot="private" static="no" mutable="no">
+        <type>TextAsset</type>
+        <definition>TextAsset SkiaSharp.Unity.SkottiePlayer.lottieFile</definition>
+        <argsstring></argsstring>
+        <name>lottieFile</name>
+        <qualifiedname>SkiaSharp.Unity.SkottiePlayer.lottieFile</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="SkottiePlayer.cs" line="30" column="21" bodyfile="SkottiePlayer.cs" bodystart="30" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="class_skia_sharp_1_1_unity_1_1_skottie_player_1a76f06edc66fd8543ee934751b2afff2b" prot="private" static="no" mutable="no">
+        <type>int</type>
+        <definition>int SkiaSharp.Unity.SkottiePlayer.resWidth</definition>
+        <argsstring></argsstring>
+        <name>resWidth</name>
+        <qualifiedname>SkiaSharp.Unity.SkottiePlayer.resWidth</qualifiedname>
+        <initializer>= 250</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="SkottiePlayer.cs" line="32" column="7" bodyfile="SkottiePlayer.cs" bodystart="32" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="class_skia_sharp_1_1_unity_1_1_skottie_player_1a0aba9429bab2211724d2dabf6b4abfed" prot="private" static="no" mutable="no">
+        <type>int</type>
+        <definition>int SkiaSharp.Unity.SkottiePlayer.resHeight</definition>
+        <argsstring></argsstring>
+        <name>resHeight</name>
+        <qualifiedname>SkiaSharp.Unity.SkottiePlayer.resHeight</qualifiedname>
+        <initializer>= 250</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="SkottiePlayer.cs" line="32" column="17" bodyfile="SkottiePlayer.cs" bodystart="32" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="class_skia_sharp_1_1_unity_1_1_skottie_player_1ae3dd60c95978f0c048d39733d83cce9b" prot="private" static="no" mutable="no">
+        <type>string</type>
+        <definition>string SkiaSharp.Unity.SkottiePlayer.stateName</definition>
+        <argsstring></argsstring>
+        <name>stateName</name>
+        <qualifiedname>SkiaSharp.Unity.SkottiePlayer.stateName</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="SkottiePlayer.cs" line="34" column="18" bodyfile="SkottiePlayer.cs" bodystart="34" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="class_skia_sharp_1_1_unity_1_1_skottie_player_1afe0a5798e56fe9020951c3dab3d0cf8b" prot="private" static="no" mutable="no">
+        <type>bool</type>
+        <definition>bool SkiaSharp.Unity.SkottiePlayer.resetAfterFinished</definition>
+        <argsstring></argsstring>
+        <name>resetAfterFinished</name>
+        <qualifiedname>SkiaSharp.Unity.SkottiePlayer.resetAfterFinished</qualifiedname>
+        <initializer>= false</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="SkottiePlayer.cs" line="36" column="16" bodyfile="SkottiePlayer.cs" bodystart="36" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="class_skia_sharp_1_1_unity_1_1_skottie_player_1ac7ed3da06d0e31ec32563a9e67341a4c" prot="private" static="no" mutable="no">
+        <type>bool</type>
+        <definition>bool SkiaSharp.Unity.SkottiePlayer.autoPlay</definition>
+        <argsstring></argsstring>
+        <name>autoPlay</name>
+        <qualifiedname>SkiaSharp.Unity.SkottiePlayer.autoPlay</qualifiedname>
+        <initializer>= false</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="SkottiePlayer.cs" line="38" column="16" bodyfile="SkottiePlayer.cs" bodystart="38" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="class_skia_sharp_1_1_unity_1_1_skottie_player_1aad87c3bab97d60dd0b8aa2ff41ebdb2a" prot="private" static="no" mutable="no">
+        <type>bool</type>
+        <definition>bool SkiaSharp.Unity.SkottiePlayer.loop</definition>
+        <argsstring></argsstring>
+        <name>loop</name>
+        <qualifiedname>SkiaSharp.Unity.SkottiePlayer.loop</qualifiedname>
+        <initializer>= false</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="SkottiePlayer.cs" line="40" column="16" bodyfile="SkottiePlayer.cs" bodystart="40" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="class_skia_sharp_1_1_unity_1_1_skottie_player_1a42360191f244a127eaa255373ed01be0" prot="private" static="no" mutable="no">
+        <type>Animation</type>
+        <definition>Animation SkiaSharp.Unity.SkottiePlayer.currentAnimation</definition>
+        <argsstring></argsstring>
+        <name>currentAnimation</name>
+        <qualifiedname>SkiaSharp.Unity.SkottiePlayer.currentAnimation</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="SkottiePlayer.cs" line="44" column="21" bodyfile="SkottiePlayer.cs" bodystart="44" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="class_skia_sharp_1_1_unity_1_1_skottie_player_1a3dd958268ee3fbc6d2883350a485d55e" prot="private" static="no" mutable="no">
+        <type>SKCanvas</type>
+        <definition>SKCanvas SkiaSharp.Unity.SkottiePlayer.canvas</definition>
+        <argsstring></argsstring>
+        <name>canvas</name>
+        <qualifiedname>SkiaSharp.Unity.SkottiePlayer.canvas</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="SkottiePlayer.cs" line="45" column="20" bodyfile="SkottiePlayer.cs" bodystart="45" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="class_skia_sharp_1_1_unity_1_1_skottie_player_1a007bd5923596ff7de9fc69962dc4b945" prot="private" static="no" mutable="no">
+        <type>SKRect</type>
+        <definition>SKRect SkiaSharp.Unity.SkottiePlayer.rect</definition>
+        <argsstring></argsstring>
+        <name>rect</name>
+        <qualifiedname>SkiaSharp.Unity.SkottiePlayer.rect</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="SkottiePlayer.cs" line="46" column="18" bodyfile="SkottiePlayer.cs" bodystart="46" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="class_skia_sharp_1_1_unity_1_1_skottie_player_1af0fe5f3d9790adf46d9635992d17816c" prot="private" static="no" mutable="no">
+        <type>double</type>
+        <definition>double SkiaSharp.Unity.SkottiePlayer.timer</definition>
+        <argsstring></argsstring>
+        <name>timer</name>
+        <qualifiedname>SkiaSharp.Unity.SkottiePlayer.timer</qualifiedname>
+        <initializer>= 0</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="SkottiePlayer.cs" line="47" column="18" bodyfile="SkottiePlayer.cs" bodystart="47" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="class_skia_sharp_1_1_unity_1_1_skottie_player_1a8a4bc4141fede3ff241b064f4000ff3d" prot="private" static="no" mutable="no">
+        <type>double</type>
+        <definition>double SkiaSharp.Unity.SkottiePlayer.animationFps</definition>
+        <argsstring></argsstring>
+        <name>animationFps</name>
+        <qualifiedname>SkiaSharp.Unity.SkottiePlayer.animationFps</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="SkottiePlayer.cs" line="47" column="25" bodyfile="SkottiePlayer.cs" bodystart="47" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="class_skia_sharp_1_1_unity_1_1_skottie_player_1af67d21f49fdb0f305dd879aadf509f5e" prot="private" static="no" mutable="no">
+        <type>double</type>
+        <definition>double SkiaSharp.Unity.SkottiePlayer.animationDuration</definition>
+        <argsstring></argsstring>
+        <name>animationDuration</name>
+        <qualifiedname>SkiaSharp.Unity.SkottiePlayer.animationDuration</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="SkottiePlayer.cs" line="47" column="38" bodyfile="SkottiePlayer.cs" bodystart="47" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="class_skia_sharp_1_1_unity_1_1_skottie_player_1ac08f103e96c82b640880f523ae018258" prot="private" static="no" mutable="no">
+        <type>double</type>
+        <definition>double SkiaSharp.Unity.SkottiePlayer.animationStateDuration</definition>
+        <argsstring></argsstring>
+        <name>animationStateDuration</name>
+        <qualifiedname>SkiaSharp.Unity.SkottiePlayer.animationStateDuration</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="SkottiePlayer.cs" line="47" column="56" bodyfile="SkottiePlayer.cs" bodystart="47" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="class_skia_sharp_1_1_unity_1_1_skottie_player_1aab0cf604d7f88f3bc0fac9b89e8ed604" prot="private" static="no" mutable="no">
+        <type>SKImageInfo</type>
+        <definition>SKImageInfo SkiaSharp.Unity.SkottiePlayer.info</definition>
+        <argsstring></argsstring>
+        <name>info</name>
+        <qualifiedname>SkiaSharp.Unity.SkottiePlayer.info</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="SkottiePlayer.cs" line="48" column="23" bodyfile="SkottiePlayer.cs" bodystart="48" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="class_skia_sharp_1_1_unity_1_1_skottie_player_1abf19f6f995d44e6260e4c371174865fe" prot="private" static="no" mutable="no">
+        <type>SKSurface</type>
+        <definition>SKSurface SkiaSharp.Unity.SkottiePlayer.surface</definition>
+        <argsstring></argsstring>
+        <name>surface</name>
+        <qualifiedname>SkiaSharp.Unity.SkottiePlayer.surface</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="SkottiePlayer.cs" line="49" column="21" bodyfile="SkottiePlayer.cs" bodystart="49" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="class_skia_sharp_1_1_unity_1_1_skottie_player_1a354ff8b77e825877492361d851cb419e" prot="private" static="no" mutable="no">
+        <type>RawImage</type>
+        <definition>RawImage SkiaSharp.Unity.SkottiePlayer.rawImage</definition>
+        <argsstring></argsstring>
+        <name>rawImage</name>
+        <qualifiedname>SkiaSharp.Unity.SkottiePlayer.rawImage</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="SkottiePlayer.cs" line="50" column="20" bodyfile="SkottiePlayer.cs" bodystart="50" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="class_skia_sharp_1_1_unity_1_1_skottie_player_1ac00cf1259c4173eaf19b044976b0e668" prot="private" static="no" mutable="no">
+        <type>SpriteRenderer</type>
+        <definition>SpriteRenderer SkiaSharp.Unity.SkottiePlayer.spriteRenderer</definition>
+        <argsstring></argsstring>
+        <name>spriteRenderer</name>
+        <qualifiedname>SkiaSharp.Unity.SkottiePlayer.spriteRenderer</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="SkottiePlayer.cs" line="51" column="26" bodyfile="SkottiePlayer.cs" bodystart="51" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="class_skia_sharp_1_1_unity_1_1_skottie_player_1a2e99fa4436d6a844ace432b106f605b4" prot="private" static="no" mutable="no">
+        <type>Texture2D</type>
+        <definition>Texture2D SkiaSharp.Unity.SkottiePlayer.texture</definition>
+        <argsstring></argsstring>
+        <name>texture</name>
+        <qualifiedname>SkiaSharp.Unity.SkottiePlayer.texture</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="SkottiePlayer.cs" line="52" column="21" bodyfile="SkottiePlayer.cs" bodystart="52" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="class_skia_sharp_1_1_unity_1_1_skottie_player_1a7fa0123f7de8a2625edc70c25feca5f7" prot="private" static="no" mutable="no">
+        <type>bool</type>
+        <definition>bool SkiaSharp.Unity.SkottiePlayer.playAniamtion</definition>
+        <argsstring></argsstring>
+        <name>playAniamtion</name>
+        <qualifiedname>SkiaSharp.Unity.SkottiePlayer.playAniamtion</qualifiedname>
+        <initializer>= false</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="SkottiePlayer.cs" line="53" column="16" bodyfile="SkottiePlayer.cs" bodystart="53" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="class_skia_sharp_1_1_unity_1_1_skottie_player_1afde3e9203ac381caabb45167348d4693" prot="private" static="no" mutable="no">
+        <type><ref refid="class_skia_sharp_1_1_unity_1_1_skottie_markers" kindref="compound">SkottieMarkers</ref></type>
+        <definition>SkottieMarkers SkiaSharp.Unity.SkottiePlayer.states</definition>
+        <argsstring></argsstring>
+        <name>states</name>
+        <qualifiedname>SkiaSharp.Unity.SkottiePlayer.states</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="SkottiePlayer.cs" line="54" column="26" bodyfile="SkottiePlayer.cs" bodystart="54" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="class_skia_sharp_1_1_unity_1_1_skottie_player_1ab69de111b97c262b137b61d6dee523b8" prot="private" static="no" mutable="no">
+        <type><ref refid="class_skia_sharp_1_1_unity_1_1_skottie_markers_1_1state" kindref="compound">SkottieMarkers.state</ref></type>
+        <definition>SkottieMarkers.state SkiaSharp.Unity.SkottiePlayer.currentState</definition>
+        <argsstring></argsstring>
+        <name>currentState</name>
+        <qualifiedname>SkiaSharp.Unity.SkottiePlayer.currentState</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="SkottiePlayer.cs" line="55" column="31" bodyfile="SkottiePlayer.cs" bodystart="55" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="class_skia_sharp_1_1_unity_1_1_skottie_player_1a7be37410ba8ea9f9ba7d19aea56ccef5" prot="public" static="no" mutable="no">
+        <type>UnityAction&lt; string &gt;</type>
+        <definition>UnityAction&lt;string&gt; SkiaSharp.Unity.SkottiePlayer.OnAnimationFinished</definition>
+        <argsstring></argsstring>
+        <name>OnAnimationFinished</name>
+        <qualifiedname>SkiaSharp.Unity.SkottiePlayer.OnAnimationFinished</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="SkottiePlayer.cs" line="42" column="22" bodyfile="SkottiePlayer.cs" bodystart="42" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="private-func">
+      <memberdef kind="function" id="class_skia_sharp_1_1_unity_1_1_skottie_player_1a837364702e617358b422a522095e8b39" prot="private" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>void</type>
+        <definition>void SkiaSharp.Unity.SkottiePlayer.Start</definition>
+        <argsstring>()</argsstring>
+        <name>Start</name>
+        <qualifiedname>SkiaSharp.Unity.SkottiePlayer.Start</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="SkottiePlayer.cs" line="57" column="16" bodyfile="SkottiePlayer.cs" bodystart="57" bodyend="64"/>
+      </memberdef>
+      <memberdef kind="function" id="class_skia_sharp_1_1_unity_1_1_skottie_player_1ae4e9e79cd7f6d3d6da712b2988c7d6f1" prot="private" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>void</type>
+        <definition>void SkiaSharp.Unity.SkottiePlayer.LoadTexture</definition>
+        <argsstring>()</argsstring>
+        <name>LoadTexture</name>
+        <qualifiedname>SkiaSharp.Unity.SkottiePlayer.LoadTexture</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="SkottiePlayer.cs" line="66" column="8" bodyfile="SkottiePlayer.cs" bodystart="66" bodyend="104"/>
+      </memberdef>
+      <memberdef kind="function" id="class_skia_sharp_1_1_unity_1_1_skottie_player_1a299887e849a678d9ae48cf634d6a916e" prot="private" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>void</type>
+        <definition>void SkiaSharp.Unity.SkottiePlayer.Update</definition>
+        <argsstring>()</argsstring>
+        <name>Update</name>
+        <qualifiedname>SkiaSharp.Unity.SkottiePlayer.Update</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="SkottiePlayer.cs" line="178" column="18" bodyfile="SkottiePlayer.cs" bodystart="178" bodyend="202"/>
+      </memberdef>
+      <memberdef kind="function" id="class_skia_sharp_1_1_unity_1_1_skottie_player_1a0367aa070c1ef37d2362dd8d2a58ff86" prot="private" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>void</type>
+        <definition>void SkiaSharp.Unity.SkottiePlayer.OnDestroy</definition>
+        <argsstring>()</argsstring>
+        <name>OnDestroy</name>
+        <qualifiedname>SkiaSharp.Unity.SkottiePlayer.OnDestroy</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="SkottiePlayer.cs" line="204" column="18" bodyfile="SkottiePlayer.cs" bodystart="204" bodyend="220"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="class_skia_sharp_1_1_unity_1_1_skottie_player_1ac02264a2a99ca0eb29f2226ea55f55d7" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>void</type>
+        <definition>void SkiaSharp.Unity.SkottiePlayer.LoadAnimation</definition>
+        <argsstring>(string json)</argsstring>
+        <name>LoadAnimation</name>
+        <qualifiedname>SkiaSharp.Unity.SkottiePlayer.LoadAnimation</qualifiedname>
+        <param>
+          <type>string</type>
+          <declname>json</declname>
+        </param>
+        <briefdescription>
+<para>Loads an animation from a JSON string and prepares it for playback. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>json</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The JSON string containing the animation data.</para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="SkottiePlayer.cs" line="110" column="15" bodyfile="SkottiePlayer.cs" bodystart="110" bodyend="116"/>
+      </memberdef>
+      <memberdef kind="function" id="class_skia_sharp_1_1_unity_1_1_skottie_player_1ad7cf89fef4a76cc9a6df868357e48408" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>void</type>
+        <definition>void SkiaSharp.Unity.SkottiePlayer.SetState</definition>
+        <argsstring>(string name)</argsstring>
+        <name>SetState</name>
+        <qualifiedname>SkiaSharp.Unity.SkottiePlayer.SetState</qualifiedname>
+        <param>
+          <type>string</type>
+          <declname>name</declname>
+        </param>
+        <briefdescription>
+<para>Sets the current state of the Lottie animation. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>name</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The name of the state to set.</para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="SkottiePlayer.cs" line="122" column="15" bodyfile="SkottiePlayer.cs" bodystart="122" bodyend="139"/>
+      </memberdef>
+      <memberdef kind="function" id="class_skia_sharp_1_1_unity_1_1_skottie_player_1a4ff3ffb5dd20d038da6525157948e7c9" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>string</type>
+        <definition>string SkiaSharp.Unity.SkottiePlayer.GetStateName</definition>
+        <argsstring>()</argsstring>
+        <name>GetStateName</name>
+        <qualifiedname>SkiaSharp.Unity.SkottiePlayer.GetStateName</qualifiedname>
+        <briefdescription>
+<para>Gets the name of the current animation state. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><simplesect kind="return"><para>The name of the current state if available; otherwise, an empty string.</para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="SkottiePlayer.cs" line="145" column="19" bodyfile="SkottiePlayer.cs" bodystart="145" bodyend="150"/>
+      </memberdef>
+      <memberdef kind="function" id="class_skia_sharp_1_1_unity_1_1_skottie_player_1adde181cbe8d1c3b73fb01c5ba643cd50" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>double</type>
+        <definition>double SkiaSharp.Unity.SkottiePlayer.GetFps</definition>
+        <argsstring>()</argsstring>
+        <name>GetFps</name>
+        <qualifiedname>SkiaSharp.Unity.SkottiePlayer.GetFps</qualifiedname>
+        <briefdescription>
+<para>Gets the frames per second (FPS) of the loaded animation. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><simplesect kind="return"><para>The FPS of the loaded animation.</para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="SkottiePlayer.cs" line="156" column="19" bodyfile="SkottiePlayer.cs" bodystart="156" bodyend="158"/>
+      </memberdef>
+      <memberdef kind="function" id="class_skia_sharp_1_1_unity_1_1_skottie_player_1a3a7ad3f379c5a50ca555b25b7a6afd25" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>double</type>
+        <definition>double SkiaSharp.Unity.SkottiePlayer.GetDurations</definition>
+        <argsstring>()</argsstring>
+        <name>GetDurations</name>
+        <qualifiedname>SkiaSharp.Unity.SkottiePlayer.GetDurations</qualifiedname>
+        <briefdescription>
+<para>Gets the total duration of the loaded animation in seconds. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><simplesect kind="return"><para>The total duration of the loaded animation in seconds.</para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="SkottiePlayer.cs" line="164" column="19" bodyfile="SkottiePlayer.cs" bodystart="164" bodyend="166"/>
+      </memberdef>
+      <memberdef kind="function" id="class_skia_sharp_1_1_unity_1_1_skottie_player_1a0f03a1e138c0cf97485702ce8079f772" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>void</type>
+        <definition>void SkiaSharp.Unity.SkottiePlayer.PlayAnimation</definition>
+        <argsstring>(bool? reset=null)</argsstring>
+        <name>PlayAnimation</name>
+        <qualifiedname>SkiaSharp.Unity.SkottiePlayer.PlayAnimation</qualifiedname>
+        <param>
+          <type>bool?</type>
+          <declname>reset</declname>
+          <defval>null</defval>
+        </param>
+        <briefdescription>
+<para>Initiates playback of the loaded animation. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>reset</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Whether to reset the animation to the beginning when finished.</para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="SkottiePlayer.cs" line="172" column="17" bodyfile="SkottiePlayer.cs" bodystart="172" bodyend="175"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+<para>Provides functionality to play and control Lottie animations in Unity. </para>
+    </briefdescription>
+    <detaileddescription>
+<para><programlisting><codeline><highlight class="comment">//<sp/>Example<sp/>usage<sp/>within<sp/>the<sp/>Start<sp/>method:</highlight><highlight class="normal"></highlight></codeline>
+<codeline><highlight class="normal">[SerializeField]</highlight></codeline>
+<codeline><highlight class="normal">SkottiePlayer<sp/>skottiePlayer;</highlight></codeline>
+<codeline><highlight class="normal"></highlight></codeline>
+<codeline><highlight class="normal"></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/>Start()<sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>Set<sp/>the<sp/>desired<sp/>animation<sp/>state</highlight><highlight class="normal"></highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>skottiePlayer.SetState(</highlight><highlight class="stringliteral">&quot;YourStateName&quot;</highlight><highlight class="normal">);</highlight></codeline>
+<codeline><highlight class="normal"></highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>Start<sp/>playing<sp/>the<sp/>animation</highlight><highlight class="normal"></highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>skottiePlayer.PlayAnimation();</highlight></codeline>
+<codeline><highlight class="normal">}</highlight></codeline>
+</programlisting> </para>
+    </detaileddescription>
+    <inheritancegraph>
+      <node id="2">
+        <label>MonoBehaviour</label>
+      </node>
+      <node id="1">
+        <label>SkiaSharp.Unity.SkottiePlayer</label>
+        <link refid="class_skia_sharp_1_1_unity_1_1_skottie_player"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+    </inheritancegraph>
+    <collaborationgraph>
+      <node id="2">
+        <label>MonoBehaviour</label>
+      </node>
+      <node id="1">
+        <label>SkiaSharp.Unity.SkottiePlayer</label>
+        <link refid="class_skia_sharp_1_1_unity_1_1_skottie_player"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+    </collaborationgraph>
+    <location file="SkottiePlayer.cs" line="28" column="9" bodyfile="SkottiePlayer.cs" bodystart="28" bodyend="221"/>
+    <listofallmembers>
+      <member refid="class_skia_sharp_1_1_unity_1_1_skottie_player_1af67d21f49fdb0f305dd879aadf509f5e" prot="private" virt="non-virtual"><scope>SkiaSharp::Unity::SkottiePlayer</scope><name>animationDuration</name></member>
+      <member refid="class_skia_sharp_1_1_unity_1_1_skottie_player_1a8a4bc4141fede3ff241b064f4000ff3d" prot="private" virt="non-virtual"><scope>SkiaSharp::Unity::SkottiePlayer</scope><name>animationFps</name></member>
+      <member refid="class_skia_sharp_1_1_unity_1_1_skottie_player_1ac08f103e96c82b640880f523ae018258" prot="private" virt="non-virtual"><scope>SkiaSharp::Unity::SkottiePlayer</scope><name>animationStateDuration</name></member>
+      <member refid="class_skia_sharp_1_1_unity_1_1_skottie_player_1ac7ed3da06d0e31ec32563a9e67341a4c" prot="private" virt="non-virtual"><scope>SkiaSharp::Unity::SkottiePlayer</scope><name>autoPlay</name></member>
+      <member refid="class_skia_sharp_1_1_unity_1_1_skottie_player_1a3dd958268ee3fbc6d2883350a485d55e" prot="private" virt="non-virtual"><scope>SkiaSharp::Unity::SkottiePlayer</scope><name>canvas</name></member>
+      <member refid="class_skia_sharp_1_1_unity_1_1_skottie_player_1a42360191f244a127eaa255373ed01be0" prot="private" virt="non-virtual"><scope>SkiaSharp::Unity::SkottiePlayer</scope><name>currentAnimation</name></member>
+      <member refid="class_skia_sharp_1_1_unity_1_1_skottie_player_1ab69de111b97c262b137b61d6dee523b8" prot="private" virt="non-virtual"><scope>SkiaSharp::Unity::SkottiePlayer</scope><name>currentState</name></member>
+      <member refid="class_skia_sharp_1_1_unity_1_1_skottie_player_1a3a7ad3f379c5a50ca555b25b7a6afd25" prot="public" virt="non-virtual"><scope>SkiaSharp::Unity::SkottiePlayer</scope><name>GetDurations</name></member>
+      <member refid="class_skia_sharp_1_1_unity_1_1_skottie_player_1adde181cbe8d1c3b73fb01c5ba643cd50" prot="public" virt="non-virtual"><scope>SkiaSharp::Unity::SkottiePlayer</scope><name>GetFps</name></member>
+      <member refid="class_skia_sharp_1_1_unity_1_1_skottie_player_1a4ff3ffb5dd20d038da6525157948e7c9" prot="public" virt="non-virtual"><scope>SkiaSharp::Unity::SkottiePlayer</scope><name>GetStateName</name></member>
+      <member refid="class_skia_sharp_1_1_unity_1_1_skottie_player_1aab0cf604d7f88f3bc0fac9b89e8ed604" prot="private" virt="non-virtual"><scope>SkiaSharp::Unity::SkottiePlayer</scope><name>info</name></member>
+      <member refid="class_skia_sharp_1_1_unity_1_1_skottie_player_1ac02264a2a99ca0eb29f2226ea55f55d7" prot="public" virt="non-virtual"><scope>SkiaSharp::Unity::SkottiePlayer</scope><name>LoadAnimation</name></member>
+      <member refid="class_skia_sharp_1_1_unity_1_1_skottie_player_1ae4e9e79cd7f6d3d6da712b2988c7d6f1" prot="private" virt="non-virtual"><scope>SkiaSharp::Unity::SkottiePlayer</scope><name>LoadTexture</name></member>
+      <member refid="class_skia_sharp_1_1_unity_1_1_skottie_player_1aad87c3bab97d60dd0b8aa2ff41ebdb2a" prot="private" virt="non-virtual"><scope>SkiaSharp::Unity::SkottiePlayer</scope><name>loop</name></member>
+      <member refid="class_skia_sharp_1_1_unity_1_1_skottie_player_1aa03940bb8fd9f79f8ea9a39b62274cfc" prot="private" virt="non-virtual"><scope>SkiaSharp::Unity::SkottiePlayer</scope><name>lottieFile</name></member>
+      <member refid="class_skia_sharp_1_1_unity_1_1_skottie_player_1a7be37410ba8ea9f9ba7d19aea56ccef5" prot="public" virt="non-virtual"><scope>SkiaSharp::Unity::SkottiePlayer</scope><name>OnAnimationFinished</name></member>
+      <member refid="class_skia_sharp_1_1_unity_1_1_skottie_player_1a0367aa070c1ef37d2362dd8d2a58ff86" prot="private" virt="non-virtual"><scope>SkiaSharp::Unity::SkottiePlayer</scope><name>OnDestroy</name></member>
+      <member refid="class_skia_sharp_1_1_unity_1_1_skottie_player_1a7fa0123f7de8a2625edc70c25feca5f7" prot="private" virt="non-virtual"><scope>SkiaSharp::Unity::SkottiePlayer</scope><name>playAniamtion</name></member>
+      <member refid="class_skia_sharp_1_1_unity_1_1_skottie_player_1a0f03a1e138c0cf97485702ce8079f772" prot="public" virt="non-virtual"><scope>SkiaSharp::Unity::SkottiePlayer</scope><name>PlayAnimation</name></member>
+      <member refid="class_skia_sharp_1_1_unity_1_1_skottie_player_1a354ff8b77e825877492361d851cb419e" prot="private" virt="non-virtual"><scope>SkiaSharp::Unity::SkottiePlayer</scope><name>rawImage</name></member>
+      <member refid="class_skia_sharp_1_1_unity_1_1_skottie_player_1a007bd5923596ff7de9fc69962dc4b945" prot="private" virt="non-virtual"><scope>SkiaSharp::Unity::SkottiePlayer</scope><name>rect</name></member>
+      <member refid="class_skia_sharp_1_1_unity_1_1_skottie_player_1afe0a5798e56fe9020951c3dab3d0cf8b" prot="private" virt="non-virtual"><scope>SkiaSharp::Unity::SkottiePlayer</scope><name>resetAfterFinished</name></member>
+      <member refid="class_skia_sharp_1_1_unity_1_1_skottie_player_1a0aba9429bab2211724d2dabf6b4abfed" prot="private" virt="non-virtual"><scope>SkiaSharp::Unity::SkottiePlayer</scope><name>resHeight</name></member>
+      <member refid="class_skia_sharp_1_1_unity_1_1_skottie_player_1a76f06edc66fd8543ee934751b2afff2b" prot="private" virt="non-virtual"><scope>SkiaSharp::Unity::SkottiePlayer</scope><name>resWidth</name></member>
+      <member refid="class_skia_sharp_1_1_unity_1_1_skottie_player_1ad7cf89fef4a76cc9a6df868357e48408" prot="public" virt="non-virtual"><scope>SkiaSharp::Unity::SkottiePlayer</scope><name>SetState</name></member>
+      <member refid="class_skia_sharp_1_1_unity_1_1_skottie_player_1ac00cf1259c4173eaf19b044976b0e668" prot="private" virt="non-virtual"><scope>SkiaSharp::Unity::SkottiePlayer</scope><name>spriteRenderer</name></member>
+      <member refid="class_skia_sharp_1_1_unity_1_1_skottie_player_1a837364702e617358b422a522095e8b39" prot="private" virt="non-virtual"><scope>SkiaSharp::Unity::SkottiePlayer</scope><name>Start</name></member>
+      <member refid="class_skia_sharp_1_1_unity_1_1_skottie_player_1ae3dd60c95978f0c048d39733d83cce9b" prot="private" virt="non-virtual"><scope>SkiaSharp::Unity::SkottiePlayer</scope><name>stateName</name></member>
+      <member refid="class_skia_sharp_1_1_unity_1_1_skottie_player_1afde3e9203ac381caabb45167348d4693" prot="private" virt="non-virtual"><scope>SkiaSharp::Unity::SkottiePlayer</scope><name>states</name></member>
+      <member refid="class_skia_sharp_1_1_unity_1_1_skottie_player_1abf19f6f995d44e6260e4c371174865fe" prot="private" virt="non-virtual"><scope>SkiaSharp::Unity::SkottiePlayer</scope><name>surface</name></member>
+      <member refid="class_skia_sharp_1_1_unity_1_1_skottie_player_1a2e99fa4436d6a844ace432b106f605b4" prot="private" virt="non-virtual"><scope>SkiaSharp::Unity::SkottiePlayer</scope><name>texture</name></member>
+      <member refid="class_skia_sharp_1_1_unity_1_1_skottie_player_1af0fe5f3d9790adf46d9635992d17816c" prot="private" virt="non-virtual"><scope>SkiaSharp::Unity::SkottiePlayer</scope><name>timer</name></member>
+      <member refid="class_skia_sharp_1_1_unity_1_1_skottie_player_1a299887e849a678d9ae48cf634d6a916e" prot="private" virt="non-virtual"><scope>SkiaSharp::Unity::SkottiePlayer</scope><name>Update</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

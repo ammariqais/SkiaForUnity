@@ -1,0 +1,40 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="mainpage_8md" kind="file" language="Markdown">
+    <compoundname>mainpage.md</compoundname>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <programlisting>
+<codeline><highlight class="normal">@mainpage<sp/>SkiaForUnity</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal">#<sp/>Getting<sp/>Started</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal">To<sp/>get<sp/>started<sp/>with<sp/>Skia<sp/>Sharp<sp/>for<sp/>Unity,<sp/>follow<sp/>these<sp/>steps:</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal">1.<sp/>Clone<sp/>or<sp/>download<sp/>the<sp/>Skia<sp/>Sharp<sp/>for<sp/>Unity<sp/>repository<sp/>from<sp/>[GitHub](https://github.com/ammariqais/SkiaForUnity).<sp/>or<sp/>you<sp/>can<sp/>use</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal">**Package<sp/>Manager**</highlight></codeline>
+<codeline><highlight class="normal">1.<sp/>Open<sp/>your<sp/>Unity<sp/>project<sp/>and<sp/>navigate<sp/>to<sp/>`Windows`&gt;<sp/>`Package<sp/>Manager`.</highlight></codeline>
+<codeline><highlight class="normal">2.<sp/>Click<sp/>the<sp/>`+`<sp/>button<sp/>in<sp/>the<sp/>top-left<sp/>corner<sp/>and<sp/>select<sp/>Add<sp/>package<sp/>from<sp/>git<sp/>URL</highlight></codeline>
+<codeline><highlight class="normal">3.<sp/>Enter<sp/>the<sp/>following<sp/>URL<sp/>and<sp/>click<sp/>`Add`</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal">`https://github.com/ammariqais/SkiaForUnity.git?path=SkiaUnity/Assets/SkiaSharp`</highlight></codeline>
+<codeline></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal">3.<sp/>Import<sp/>the<sp/>Skia<sp/>Sharp<sp/>package<sp/>into<sp/>your<sp/>Unity<sp/>project.</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal">4.<sp/>In<sp/>Unity,<sp/>go<sp/>to<sp/>Edit<sp/>&gt;<sp/>Project<sp/>Settings<sp/>&gt;<sp/>Player<sp/>and<sp/>select<sp/>the<sp/>iOS<sp/>platform.</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal">5.<sp/>Scroll<sp/>down<sp/>to<sp/>the<sp/>Other<sp/>Settings<sp/>section<sp/>and<sp/>locate<sp/>the<sp/>Scripting<sp/>Define<sp/>Symbols<sp/>field.</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal">6.<sp/>Add<sp/>`__UNIFIED__`<sp/>and<sp/>`__IOS__`<sp/>to<sp/>the<sp/>Scripting<sp/>Define<sp/>Symbols.<sp/>This<sp/>is<sp/>necessary<sp/>to<sp/>enable<sp/>the<sp/>SkiaSharp<sp/>functionality<sp/>specifically<sp/>for<sp/>iOS.</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal">7.<sp/>Create<sp/>a<sp/>new<sp/>script<sp/>or<sp/>modify<sp/>an<sp/>existing<sp/>script<sp/>to<sp/>leverage<sp/>the<sp/>SkiaSharp<sp/>API<sp/>for<sp/>drawing<sp/>graphics<sp/>and<sp/>the<sp/>Skottie<sp/>API<sp/>for<sp/>playing<sp/>Lottie<sp/><sp/><sp/><sp/><sp/><sp/><sp/>animations.</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal">8.<sp/>Build<sp/>and<sp/>run<sp/>your<sp/>Unity<sp/>project<sp/>on<sp/>an<sp/>iOS<sp/>device<sp/>to<sp/>see<sp/>the<sp/>Skia<sp/>graphics<sp/>and<sp/>Lottie<sp/>animations<sp/>in<sp/>action.</highlight></codeline>
+    </programlisting>
+    <location file="docs/mainpage.md"/>
+  </compounddef>
+</doxygen>

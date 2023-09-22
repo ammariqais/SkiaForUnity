@@ -1,0 +1,86 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygenindex xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="index.xsd" version="1.9.8" xml:lang="en-US">
+  <compound refid="class_skia_sharp_1_1_unity_1_1_skottie_markers" kind="class"><name>SkiaSharp::Unity::SkottieMarkers</name>
+    <member refid="class_skia_sharp_1_1_unity_1_1_skottie_markers_1ad4116ee99e1bd99910bd623cab55d9f5" kind="variable"><name>markers</name></member>
+    <member refid="class_skia_sharp_1_1_unity_1_1_skottie_markers_1a96179574a4a468f32fa9bbbd1e515941" kind="function"><name>GetStateByName</name></member>
+  </compound>
+  <compound refid="class_skia_sharp_1_1_unity_1_1_skottie_player" kind="class"><name>SkiaSharp::Unity::SkottiePlayer</name>
+    <member refid="class_skia_sharp_1_1_unity_1_1_skottie_player_1aa03940bb8fd9f79f8ea9a39b62274cfc" kind="variable"><name>lottieFile</name></member>
+    <member refid="class_skia_sharp_1_1_unity_1_1_skottie_player_1a76f06edc66fd8543ee934751b2afff2b" kind="variable"><name>resWidth</name></member>
+    <member refid="class_skia_sharp_1_1_unity_1_1_skottie_player_1a0aba9429bab2211724d2dabf6b4abfed" kind="variable"><name>resHeight</name></member>
+    <member refid="class_skia_sharp_1_1_unity_1_1_skottie_player_1ae3dd60c95978f0c048d39733d83cce9b" kind="variable"><name>stateName</name></member>
+    <member refid="class_skia_sharp_1_1_unity_1_1_skottie_player_1afe0a5798e56fe9020951c3dab3d0cf8b" kind="variable"><name>resetAfterFinished</name></member>
+    <member refid="class_skia_sharp_1_1_unity_1_1_skottie_player_1ac7ed3da06d0e31ec32563a9e67341a4c" kind="variable"><name>autoPlay</name></member>
+    <member refid="class_skia_sharp_1_1_unity_1_1_skottie_player_1aad87c3bab97d60dd0b8aa2ff41ebdb2a" kind="variable"><name>loop</name></member>
+    <member refid="class_skia_sharp_1_1_unity_1_1_skottie_player_1a42360191f244a127eaa255373ed01be0" kind="variable"><name>currentAnimation</name></member>
+    <member refid="class_skia_sharp_1_1_unity_1_1_skottie_player_1a3dd958268ee3fbc6d2883350a485d55e" kind="variable"><name>canvas</name></member>
+    <member refid="class_skia_sharp_1_1_unity_1_1_skottie_player_1a007bd5923596ff7de9fc69962dc4b945" kind="variable"><name>rect</name></member>
+    <member refid="class_skia_sharp_1_1_unity_1_1_skottie_player_1af0fe5f3d9790adf46d9635992d17816c" kind="variable"><name>timer</name></member>
+    <member refid="class_skia_sharp_1_1_unity_1_1_skottie_player_1a8a4bc4141fede3ff241b064f4000ff3d" kind="variable"><name>animationFps</name></member>
+    <member refid="class_skia_sharp_1_1_unity_1_1_skottie_player_1af67d21f49fdb0f305dd879aadf509f5e" kind="variable"><name>animationDuration</name></member>
+    <member refid="class_skia_sharp_1_1_unity_1_1_skottie_player_1ac08f103e96c82b640880f523ae018258" kind="variable"><name>animationStateDuration</name></member>
+    <member refid="class_skia_sharp_1_1_unity_1_1_skottie_player_1aab0cf604d7f88f3bc0fac9b89e8ed604" kind="variable"><name>info</name></member>
+    <member refid="class_skia_sharp_1_1_unity_1_1_skottie_player_1abf19f6f995d44e6260e4c371174865fe" kind="variable"><name>surface</name></member>
+    <member refid="class_skia_sharp_1_1_unity_1_1_skottie_player_1a354ff8b77e825877492361d851cb419e" kind="variable"><name>rawImage</name></member>
+    <member refid="class_skia_sharp_1_1_unity_1_1_skottie_player_1ac00cf1259c4173eaf19b044976b0e668" kind="variable"><name>spriteRenderer</name></member>
+    <member refid="class_skia_sharp_1_1_unity_1_1_skottie_player_1a2e99fa4436d6a844ace432b106f605b4" kind="variable"><name>texture</name></member>
+    <member refid="class_skia_sharp_1_1_unity_1_1_skottie_player_1a7fa0123f7de8a2625edc70c25feca5f7" kind="variable"><name>playAniamtion</name></member>
+    <member refid="class_skia_sharp_1_1_unity_1_1_skottie_player_1afde3e9203ac381caabb45167348d4693" kind="variable"><name>states</name></member>
+    <member refid="class_skia_sharp_1_1_unity_1_1_skottie_player_1ab69de111b97c262b137b61d6dee523b8" kind="variable"><name>currentState</name></member>
+    <member refid="class_skia_sharp_1_1_unity_1_1_skottie_player_1a7be37410ba8ea9f9ba7d19aea56ccef5" kind="variable"><name>OnAnimationFinished</name></member>
+    <member refid="class_skia_sharp_1_1_unity_1_1_skottie_player_1a837364702e617358b422a522095e8b39" kind="function"><name>Start</name></member>
+    <member refid="class_skia_sharp_1_1_unity_1_1_skottie_player_1ae4e9e79cd7f6d3d6da712b2988c7d6f1" kind="function"><name>LoadTexture</name></member>
+    <member refid="class_skia_sharp_1_1_unity_1_1_skottie_player_1a299887e849a678d9ae48cf634d6a916e" kind="function"><name>Update</name></member>
+    <member refid="class_skia_sharp_1_1_unity_1_1_skottie_player_1a0367aa070c1ef37d2362dd8d2a58ff86" kind="function"><name>OnDestroy</name></member>
+    <member refid="class_skia_sharp_1_1_unity_1_1_skottie_player_1ac02264a2a99ca0eb29f2226ea55f55d7" kind="function"><name>LoadAnimation</name></member>
+    <member refid="class_skia_sharp_1_1_unity_1_1_skottie_player_1ad7cf89fef4a76cc9a6df868357e48408" kind="function"><name>SetState</name></member>
+    <member refid="class_skia_sharp_1_1_unity_1_1_skottie_player_1a4ff3ffb5dd20d038da6525157948e7c9" kind="function"><name>GetStateName</name></member>
+    <member refid="class_skia_sharp_1_1_unity_1_1_skottie_player_1adde181cbe8d1c3b73fb01c5ba643cd50" kind="function"><name>GetFps</name></member>
+    <member refid="class_skia_sharp_1_1_unity_1_1_skottie_player_1a3a7ad3f379c5a50ca555b25b7a6afd25" kind="function"><name>GetDurations</name></member>
+    <member refid="class_skia_sharp_1_1_unity_1_1_skottie_player_1a0f03a1e138c0cf97485702ce8079f772" kind="function"><name>PlayAnimation</name></member>
+  </compound>
+  <compound refid="class_skia_sharp_1_1_unity_1_1_skottie_markers_1_1state" kind="class"><name>SkiaSharp::Unity::SkottieMarkers::state</name>
+    <member refid="class_skia_sharp_1_1_unity_1_1_skottie_markers_1_1state_1a39c8ed008b2c9cd3e3ce433ef53d8dbe" kind="variable"><name>tm</name></member>
+    <member refid="class_skia_sharp_1_1_unity_1_1_skottie_markers_1_1state_1ad7eb8daf1eaece1e2ad53805b8ce6dc5" kind="variable"><name>dr</name></member>
+    <member refid="class_skia_sharp_1_1_unity_1_1_skottie_markers_1_1state_1a3d14ae376c6d102cfe81df1e0b07ecce" kind="variable"><name>cm</name></member>
+  </compound>
+  <compound refid="namespace_animation" kind="namespace"><name>Animation</name>
+  </compound>
+  <compound refid="namespace_newtonsoft_1_1_json" kind="namespace"><name>Newtonsoft::Json</name>
+  </compound>
+  <compound refid="namespace_skia_sharp" kind="namespace"><name>SkiaSharp</name>
+  </compound>
+  <compound refid="namespace_skia_sharp_1_1_unity" kind="namespace"><name>SkiaSharp::Unity</name>
+  </compound>
+  <compound refid="namespace_system" kind="namespace"><name>System</name>
+  </compound>
+  <compound refid="namespace_system_1_1_collections_1_1_generic" kind="namespace"><name>System::Collections::Generic</name>
+  </compound>
+  <compound refid="namespace_system_1_1_runtime_1_1_compiler_services" kind="namespace"><name>System::Runtime::CompilerServices</name>
+  </compound>
+  <compound refid="namespace_unity_engine" kind="namespace"><name>UnityEngine</name>
+  </compound>
+  <compound refid="namespace_unity_engine_1_1_events" kind="namespace"><name>UnityEngine::Events</name>
+  </compound>
+  <compound refid="namespace_unity_engine_1_1_u_i" kind="namespace"><name>UnityEngine::UI</name>
+  </compound>
+  <compound refid="_assembly_attributes_8cs" kind="file"><name>AssemblyAttributes.cs</name>
+  </compound>
+  <compound refid="mainpage_8md" kind="file"><name>mainpage.md</name>
+  </compound>
+  <compound refid="_tutorials_8md" kind="file"><name>Tutorials.md</name>
+  </compound>
+  <compound refid="markers_8cs" kind="file"><name>markers.cs</name>
+  </compound>
+  <compound refid="_skottie_player_8cs" kind="file"><name>SkottiePlayer.cs</name>
+    <member refid="_skottie_player_8cs_1a1642589a6feafbcc74c594e35b2607fd" kind="typedef"><name>Animation</name></member>
+  </compound>
+  <compound refid="subsytem1" kind="page"><name>subsytem1</name>
+  </compound>
+  <compound refid="dir_49e56c817e5e54854c35e136979f97ca" kind="dir"><name>docs</name>
+  </compound>
+  <compound refid="dir_1ae4179d5e953611aae20c997279e02c" kind="dir"><name>models</name>
+  </compound>
+  <compound refid="indexpage" kind="page"><name>index</name>
+  </compound>
+</doxygenindex>

@@ -1,0 +1,36 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="indexpage" kind="page">
+    <compoundname>index</compoundname>
+    <title>SkiaForUnity</title>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+<sect1 id="index_1getting-started">
+<title>Getting Started</title>
+<para>To get started with Skia Sharp for Unity, follow these steps:</para>
+<para><orderedlist>
+<listitem><para>Clone or download the Skia Sharp for Unity repository from <ulink url="https://github.com/ammariqais/SkiaForUnity">GitHub</ulink>. or you can use</para>
+</listitem></orderedlist>
+</para>
+<para><bold>Package Manager</bold><orderedlist>
+<listitem><para>Open your Unity project and navigate to <computeroutput>Windows</computeroutput>&gt; <computeroutput>Package Manager</computeroutput>.</para>
+</listitem><listitem><para>Click the <computeroutput>+</computeroutput> button in the top-left corner and select Add package from git URL</para>
+</listitem><listitem><para>Enter the following URL and click <computeroutput>Add</computeroutput></para>
+</listitem></orderedlist>
+</para>
+<para><computeroutput><ulink url="https://github.com/ammariqais/SkiaForUnity.git?path=SkiaUnity/Assets/SkiaSharp">https://github.com/ammariqais/SkiaForUnity.git?path=SkiaUnity/Assets/SkiaSharp</ulink></computeroutput></para>
+<para><orderedlist>
+<listitem><para>Import the Skia Sharp package into your Unity project.</para>
+</listitem><listitem><para>In Unity, go to Edit &gt; Project Settings &gt; Player and select the iOS platform.</para>
+</listitem><listitem><para>Scroll down to the Other Settings section and locate the Scripting Define Symbols field.</para>
+</listitem><listitem><para>Add <computeroutput>__UNIFIED__</computeroutput> and <computeroutput>__IOS__</computeroutput> to the Scripting Define Symbols. This is necessary to enable the <ref refid="namespace_skia_sharp" kindref="compound">SkiaSharp</ref> functionality specifically for iOS.</para>
+</listitem><listitem><para>Create a new script or modify an existing script to leverage the <ref refid="namespace_skia_sharp" kindref="compound">SkiaSharp</ref> API for drawing graphics and the Skottie API for playing Lottie animations.</para>
+</listitem><listitem><para>Build and run your Unity project on an iOS device to see the Skia graphics and Lottie animations in action. </para>
+</listitem></orderedlist>
+</para>
+</sect1>
+    </detaileddescription>
+    <location file="docs/mainpage.md"/>
+  </compounddef>
+</doxygen>
