@@ -48,7 +48,6 @@ namespace SkiaSharp.HarfBuzz
 			for (var i = 0; i < result.Codepoints.Length; i++)
 			{
 				g[i] = (ushort)result.Codepoints[i];
-				Debug.LogError(char.ConvertFromUtf32(g[i]));
 				p[i] = result.Points[i];
 			}
 
