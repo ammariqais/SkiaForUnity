@@ -1,0 +1,28 @@
+{
+    "name": "SkiaSharp",
+    "rootNamespace": "",
+    "references": [],
+    "includePlatforms": [
+        "Android",
+        "Editor",
+        "iOS"
+    ],
+    "excludePlatforms": [],
+    "allowUnsafeCode": true,
+    "overrideReferences": false,
+    "precompiledReferences": [
+        "SkiaSharp.HarfBuzz.dll",
+        "System.Buffers.dll",
+        "System.Memory.dll",
+        "System.Runtime.CompilerServices.Unsafe.dll",
+        "Unity.Plastic.Antlr3.Runtime.dll",
+        "Unity.Plastic.Newtonsoft.Json.dll",
+        "unityplastic.dll",
+        "log4netPlastic.dll",
+        "nunit.framework.dll"
+    ],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}
