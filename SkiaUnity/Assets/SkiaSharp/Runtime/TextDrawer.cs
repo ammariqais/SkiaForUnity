@@ -29,27 +29,19 @@ namespace SkiaSharp.Unity {
 						.Alignment(TextAlignment.Center)
 						.FontFamily("Segoe UI")
 						.MarginBottom(20)
-						.MarginTop(20)
-						.BackgroundColor(SKColors.SkyBlue)
-						.Add("Welcome To Skia4Unity", fontSize: 64, fontWeight: 700, fontItalic: true)
-						.BackgroundColor(SKColors.Black)
-
-						.Paragraph().Alignment(TextAlignment.Left)
-						.MarginRight(40).MarginLeft(40)
-						.FontSize(20)
-						.Add(
-							"😀😀This is a test string This is a test 😀😀string This is a test string This is a 🙆‍♂ test string This is a test string This is a test string",
-							textColor: SKColors.Tomato)
+						.MarginTop(200)
+						.BackgroundColor(SKColors.PaleVioletRed)
+						.Add("☞ ✥ Welcome To Skia4Unity ✥", fontSize: 80, fontWeight: 700, fontItalic: true)
+						.BackgroundColor(SKColors.White)
 						.Paragraph().Alignment(TextAlignment.Right)
-						.Add(message, fontSize: 40, textColor: SKColors.White)
-						.Paragraph().Alignment(TextAlignment.Center)
+						.Add(message, fontSize: 50, textColor: SKColors.Black)
+						.Paragraph().Alignment(TextAlignment.Left)
 						.Add(
-							"La célébration de Noël - Greek Lorem Ipsum is a transliteration of the (pseudo) Latin original, eg b => β, L => Λ, 有好多有碼的「糸」偏字是用「纟字」來輸入的",
-							fontSize: 60, haloBlur: 20, textColor: SKColors.Gray)
-						.MarginBottom(50)
-						.BackgroundColor(SKColors.Wheat)
-						.Add("🧛🏻", fontSize: 128, haloBlur: 200)
-
+							"𓀎 La célébration de Noël - 🌚 شكرا 🌕 Greek Lorem Ipsum is a transliteration of the (pseudo) Latin original 𓀀, eg b => β, L => Λ,𓀒 ",
+							fontSize: 50, haloBlur: 20, textColor: SKColors.DarkRed)
+						.Add("🧛🏻🎃👾👨‍👩‍👧‍👦👳🏻‍♂️🧕🏻 👮🏻‍️👨🏿‍🚒👩🏿‍✈️🌚🌕🃏", fontSize: 200, haloBlur: 200)
+						.Alignment(TextAlignment.Center)
+						.Add("♧ ♡ ♢ ♚ ♛ ♜ ♝ ♞ ♟", fontSize: 80)
 					;
 
 
