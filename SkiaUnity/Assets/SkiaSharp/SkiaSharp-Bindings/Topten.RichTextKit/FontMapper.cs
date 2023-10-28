@@ -17,6 +17,7 @@ using SkiaSharp;
 using System;
 using System.Collections.Generic;
 using System.Text;
+using UnityEngine;
 
 namespace Topten.RichTextKit
 {
@@ -24,13 +25,13 @@ namespace Topten.RichTextKit
     /// The FontMapper class is responsible for mapping style typeface information
     /// to an SKTypeface.
     /// </summary>
-    public class FontMapper
-    {
+    public class FontMapper {
+        public SKTypeface customSkTypeface;
         /// <summary>
         /// Constructs a new FontMapper instnace
         /// </summary>
-        public FontMapper()
-        {
+        public FontMapper(SKTypeface custom = null) {
+            customSkTypeface = custom;
         }
 
         /// <summary>
@@ -46,6 +47,10 @@ namespace Topten.RichTextKit
             if (!ignoreFontVariants && (style.FontVariant == FontVariant.SuperScript || style.FontVariant == FontVariant.SubScript))
             {
                 extraWeight += 100;
+            }
+
+            if (customSkTypeface != null) {
+                return customSkTypeface;
             }
 
             // Get the typeface

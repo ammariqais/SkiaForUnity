@@ -1,31 +1,31 @@
+using System;
 using UnityEngine;
 using UnityEngine.UI;
 using Topten.RichTextKit;
 using TextAlignment = Topten.RichTextKit.TextAlignment;
 
 namespace SkiaSharp.Unity {
-	public class TextDrawer : MonoBehaviour {
+	public class HB_TEXT : MonoBehaviour {
 		[SerializeField]
 		private string message;
+		[SerializeField]
+		private bool autoFitVertical = true;
+		[SerializeField]
+		RectTransform rectTransform;
 
 		private SKCanvas canvas;
 		private SKImageInfo info;
 		private SKSurface surface;
 		private RawImage rawImage;
 		private Texture2D texture;
-		RichString _richString;
+		private RichString rs;
+		private CaretPosition cr = new CaretPosition();
 
 
 		void Start() {
 			rawImage = GetComponent<RawImage>();
-			info = new SKImageInfo((int)GetComponent<RectTransform>().rect.width,
-				(int)GetComponent<RectTransform>().rect.height);
-			surface = SKSurface.Create(info);
-			canvas = surface.Canvas;
-
-
 			if (rawImage) {
-				var rs = new RichString()
+				rs = new RichString()
 						.Alignment(TextAlignment.Center)
 						.FontFamily("Segoe UI")
 						.MarginBottom(20)
@@ -41,12 +41,25 @@ namespace SkiaSharp.Unity {
 							fontSize: 50, haloBlur: 20, textColor: SKColors.DarkRed)
 						.Add("🧛🏻🎃👾👨‍👩‍👧‍👦👳🏻‍♂️🧕🏻 👮🏻‍️👨🏿‍🚒👩🏿‍✈️🌚🌕🃏", fontSize: 200, haloBlur: 200)
 						.Alignment(TextAlignment.Center)
-						.Add("♧ ♡ ♢ ♚ ♛ ♜ ♝ ♞ ♟", fontSize: 80)
-					;
-
-
+						.Add("♧ ♡ ♢ ♚ ♛ ♜ ♝ ♞ ♟", fontSize: 80);
 				rs.MaxWidth = (int)GetComponent<RectTransform>().rect.width;
-				rs.MaxHeight = (int)GetComponent<RectTransform>().rect.height;
+
+				Debug.LogError(rs.MeasuredHeight);
+				if (autoFitVertical) {
+					rectTransform.sizeDelta = new Vector2(rectTransform.sizeDelta.x, rs.MeasuredHeight );
+				}
+
+				rs.MaxHeight = autoFitVertical ? rs.MeasuredHeight : (int)GetComponent<RectTransform>().rect.height;
+				Debug.LogError(rs.Revision);
+				Debug.LogError(rs.MeasuredHeight);
+				Debug.LogError(rs.MaxHeight);
+				
+				info = new SKImageInfo((int)GetComponent<RectTransform>().rect.width,
+					(int)GetComponent<RectTransform>().rect.height);
+				surface = SKSurface.Create(info);
+				canvas = surface.Canvas;
+				
+				
 				// Highlight code points 10 through 19...
 				var options = new TextPaintOptions() {
 					Selection = new TextRange(200, 300, true),
@@ -65,6 +78,29 @@ namespace SkiaSharp.Unity {
 				rawImage.texture = texture;
 			}
 
+		}
+
+		private void Update() {
+			if (Input.GetMouseButtonUp(0)) {
+				Vector3 mousePosition = Input.mousePosition;
+				mousePosition.y = Screen.height - mousePosition.y; // Convert from bottom-left to upper-left
+				Debug.LogError(rs.HitTest(mousePosition.x,mousePosition.y).ClosestLine);
+				rs.Paragraph();
+				rs.Add("noodckdpockpodecjkopdejkopdkcopice", fontSize:200,textColor:SKColors.Bisque);
+
+				var carret = rs.HitTest(mousePosition.x, mousePosition.y).CaretPosition;
+				carret.AltPosition = true;
+				rs.Paint(canvas);
+				rs.MaxHeight = null;
+				Debug.LogError(rs.MeasuredHeight);
+				rs.MaxHeight = rs.MeasuredHeight;
+				rectTransform.sizeDelta = new Vector2(rectTransform.sizeDelta.x, rs.MeasuredHeight );
+
+				var pixmap = surface.PeekPixels();
+				texture.LoadRawTextureData(pixmap.GetPixels(), pixmap.RowBytes * pixmap.Height);
+				texture.Apply();
+				rawImage.texture = texture;
+			}
 		}
 	}
 }
