@@ -85,11 +85,10 @@ namespace SkiaSharp.Unity.HB {
             
 			info = new SKImageInfo((int)rectTransform.rect.width,
 				(int)rectTransform.rect.height);
-			info.ColorType = SKColorType.Alpha8;
 			surface = SKSurface.Create(info);
 			canvas = surface.Canvas;
 			rs.Paint(canvas);
-			TextureFormat format = (info.ColorType == SKColorType.Rgba8888) ? TextureFormat.RGBA32 : TextureFormat.Alpha8;
+			TextureFormat format = (info.ColorType == SKColorType.Rgba8888) ? TextureFormat.RGBA32 : TextureFormat.BGRA32;
 			texture = new Texture2D(info.Width, info.Height, format, false);
 			texture.wrapMode = TextureWrapMode.Repeat;
 			pixmap = surface.PeekPixels();
