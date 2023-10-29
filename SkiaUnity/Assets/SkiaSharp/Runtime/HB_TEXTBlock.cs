@@ -6,13 +6,11 @@ using UnityEngine.UI;
 using Topten.RichTextKit;
 
 namespace SkiaSharp.Unity.HB {
-	public class HB_TEXTBlock : MonoBehaviour {
+	public class HB_TEXTBlock : MonoBehaviour, ILayoutElement {
 		[SerializeField]
 		private string message;
 		[SerializeField]
 		private bool autoFitVertical = true;
-		[SerializeField]
-		RectTransform rectTransform;
 		[SerializeField]
 		private bool renderLinks;
 		[SerializeField]
@@ -21,10 +19,13 @@ namespace SkiaSharp.Unity.HB {
 		private SKCanvas canvas;
 		private SKImageInfo info;
 		private SKSurface surface;
+		private SKPixmap pixmap;
 		private RawImage rawImage;
 		private Texture2D texture;
 		private TextBlock rs;
 		private Dictionary<int, HBLinks> urls = new Dictionary<int, HBLinks>();
+		RectTransform rectTransform;
+
 		private float currentWidth, currentHeight;
 
 		public string text {
@@ -40,6 +41,7 @@ namespace SkiaSharp.Unity.HB {
 
 		void Awake() {
 			rawImage = GetComponent<RawImage>();
+			rectTransform = transform as RectTransform;
 			if (String.IsNullOrEmpty(message)){
 				return;
 			}
@@ -50,11 +52,7 @@ namespace SkiaSharp.Unity.HB {
 		}
 
 		private void RenderText() {
-			currentWidth = GetComponent<RectTransform>().rect.width;
-			currentHeight = GetComponent<RectTransform>().rect.height;
-			if (currentWidth == 0 || currentHeight == 0) {
-				return;
-			}
+			Dispose();
 			rs = new TextBlock();
 			rs.AddText(message, styleBoldItalic);
 			
@@ -69,25 +67,32 @@ namespace SkiaSharp.Unity.HB {
 				rs.FontMapper = new FontMapper(skTypeface);
 			}
             
-			rs.MaxWidth = (int)GetComponent<RectTransform>().rect.width;
-			rs.MaxHeight = autoFitVertical ? rs.MeasuredHeight : (int)GetComponent<RectTransform>().rect.height;
-			
+			rs.MaxWidth = rectTransform.rect.width;
+			rs.MaxHeight = autoFitVertical ? rs.MeasuredHeight : rectTransform.rect.height;
+			LayoutRebuilder.ForceRebuildLayoutImmediate(rectTransform);
+
 			if (autoFitVertical) {
 				rectTransform.sizeDelta = new Vector2(rectTransform.sizeDelta.x, rs.MeasuredHeight );
 			}
-				
-			info = new SKImageInfo((int)GetComponent<RectTransform>().rect.width,
-				(int)GetComponent<RectTransform>().rect.height);
+
+			
+			currentWidth = rectTransform.rect.width;
+			currentHeight = rectTransform.rect.height;
+			
+			if (currentWidth == 0 || currentHeight == 0) {
+				return;
+			}
+            
+			info = new SKImageInfo((int)rectTransform.rect.width,
+				(int)rectTransform.rect.height);
+			info.ColorType = SKColorType.Alpha8;
 			surface = SKSurface.Create(info);
 			canvas = surface.Canvas;
-				
-                
 			rs.Paint(canvas);
-
-			TextureFormat format = (info.ColorType == SKColorType.Rgba8888) ? TextureFormat.RGBA32 : TextureFormat.BGRA32;
+			TextureFormat format = (info.ColorType == SKColorType.Rgba8888) ? TextureFormat.RGBA32 : TextureFormat.Alpha8;
 			texture = new Texture2D(info.Width, info.Height, format, false);
 			texture.wrapMode = TextureWrapMode.Repeat;
-			var pixmap = surface.PeekPixels();
+			pixmap = surface.PeekPixels();
 			texture.LoadRawTextureData(pixmap.GetPixels(), pixmap.RowBytes * pixmap.Height);
 			texture.Apply();
 			rawImage.texture = texture;
@@ -123,9 +128,8 @@ namespace SkiaSharp.Unity.HB {
 			FontSize = 32,
 		};
 
-		private void Update() {
-			if (currentWidth != GetComponent<RectTransform>().rect.width ||
-			    GetComponent<RectTransform>().rect.height != currentHeight) {
+		private void FixedUpdate() {
+			if (currentWidth != rectTransform.rect.width || rectTransform.rect.height != currentHeight) {
 				urls.Clear();
 				RenderText();
 			}
@@ -146,5 +150,58 @@ namespace SkiaSharp.Unity.HB {
 					}
 				}
 		}
+
+		private void OnDestroy() {
+			Dispose();
+		}
+
+		private void Dispose() {
+			if (rs != null) {
+				rs.Clear();
+				rs = null;
+			}
+
+			if (pixmap != null) {
+				pixmap.Dispose();
+				pixmap = null;
+			}
+			
+			if (surface != null) {
+				surface.Dispose();
+			}
+			
+			if (canvas != null) {
+				canvas.Dispose();
+				canvas = null;
+			}
+			
+			if (texture != null) {
+				DestroyImmediate(texture);
+				texture = null;
+			}
+		}
+
+		
+		public void CalculateLayoutInputHorizontal() {
+			if (rs != null) {
+				preferredWidth = rs.MeasuredWidth;
+			}
+		}
+
+		
+		public void CalculateLayoutInputVertical() {
+			if (rs != null) {
+				preferredHeight = rs.MeasuredHeight;
+			}
+		}
+
+		
+		public float minWidth { get; }
+		public float preferredWidth { get; set; }
+		public float flexibleWidth { get; }
+		public float minHeight { get; }
+		public float preferredHeight { get; set; }
+		public float flexibleHeight { get; }
+		public int layoutPriority { get; }
 	}
 }
