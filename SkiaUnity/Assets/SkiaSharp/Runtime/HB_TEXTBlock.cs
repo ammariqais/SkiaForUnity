@@ -48,6 +48,8 @@ namespace SkiaSharp.Unity.HB {
 		RectTransform rectTransform;
 		private float currentWidth, currentHeight;
 
+		public TextBlock Info => rs;
+
 		public string text {
 			get => Text;
 			set {
