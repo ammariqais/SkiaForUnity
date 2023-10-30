@@ -546,6 +546,10 @@ namespace SkiaSharp.Unity.HB {
 		}
 
 		public void ReUpdate() {
+			if (rawImage == null) {
+				rawImage = GetComponent<RawImage>();
+				rectTransform = transform as RectTransform;
+			}
 			urls.Clear();
 			RenderText();
 		}
