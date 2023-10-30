@@ -21,7 +21,7 @@
   ],
   "category": "Unity",
   "dependencies": {
-    "com.newtonsoft.json": "1.0.0"
+    "com.newtonsoft.json": "latest"
   },
   "files": [
     "/Editor",
