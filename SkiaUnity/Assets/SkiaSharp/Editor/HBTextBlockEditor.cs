@@ -1,0 +1,171 @@
+#if UNITY_EDITOR
+
+using SkiaSharp.Unity.HB;
+using UnityEngine;
+using UnityEditor;
+using UnityEditor.SceneManagement;
+using TextAlignment = Topten.RichTextKit.TextAlignment;
+
+
+[CustomEditor(typeof(HB_TEXTBlock))]
+public class HBTextBlockEditor : Editor {
+  private GUIStyle selectedStyle;
+  private SerializedProperty fontSizeProperty, fontColorProperty, fontProperty,
+    italicProperty, boldProperty, haloColorProperty, haloWidthProperty, 
+    letterSpacingProperty, autoFitVerticalProperty, renderLinksProperty, 
+    haloBlurProperty, backgroundColorProperty, underlineStyleProperty, lineHeightProperty,
+    strikeThroughStyleProperty,textProperty, textAligmentProperty,colorTypeProperty ;
+  bool showHaloSettings = false;
+  bool showMoreSettings = false;
+
+  private void OnEnable(){
+    selectedStyle = new GUIStyle();
+    selectedStyle.normal.background = EditorGUIUtility.Load("builtin skins/darkskin/images/pre background@2x.png") as Texture2D;
+    selectedStyle.normal.textColor = Color.white;
+    selectedStyle.alignment = TextAnchor.MiddleCenter;
+    selectedStyle.fontSize = 14;
+    
+    // Find the serialized property for fontSize
+    fontSizeProperty = serializedObject.FindProperty("fontSize");
+    fontColorProperty = serializedObject.FindProperty("fontColor");
+    fontProperty = serializedObject.FindProperty("font");
+    italicProperty = serializedObject.FindProperty("italic");
+    boldProperty = serializedObject.FindProperty("bold");
+    haloColorProperty = serializedObject.FindProperty("haloColor");
+    haloWidthProperty = serializedObject.FindProperty("haloWidth");
+    letterSpacingProperty = serializedObject.FindProperty("letterSpacing");
+    autoFitVerticalProperty = serializedObject.FindProperty("autoFitVertical");
+    renderLinksProperty = serializedObject.FindProperty("renderLinks");
+    haloBlurProperty =  serializedObject.FindProperty("haloBlur");
+    backgroundColorProperty = serializedObject.FindProperty("backgroundColor");
+    underlineStyleProperty = serializedObject.FindProperty("underlineStyle");
+    lineHeightProperty = serializedObject.FindProperty("lineHeight");
+    strikeThroughStyleProperty = serializedObject.FindProperty("strikeThroughStyle");
+    textProperty = serializedObject.FindProperty("Text");
+    textAligmentProperty = serializedObject.FindProperty("textAlignment");
+    colorTypeProperty = serializedObject.FindProperty("colorType");
+  }
+  public override void OnInspectorGUI(){
+    HB_TEXTBlock script = (HB_TEXTBlock)target;
+    GUIStyle largeLabelStyle = new GUIStyle(GUI.skin.label);
+    largeLabelStyle.fontSize = 12; // Adjust the font size as needed
+    largeLabelStyle.fontStyle = FontStyle.Bold;
+    //script.text = EditorGUILayout.TextArea(script.text, GUILayout.Height(100));
+    //textProperty.stringValue = script.text;
+    EditorGUILayout.PropertyField(textProperty);
+    EditorGUILayout.PropertyField(colorTypeProperty);
+
+    // Display the fontSize field using the serialized property
+    EditorGUILayout.PropertyField(fontProperty);
+    EditorGUILayout.PropertyField(fontSizeProperty);
+    EditorGUILayout.PropertyField(fontColorProperty);
+    GUILayout.Label("Font Style:", largeLabelStyle);   
+    EditorGUILayout.BeginHorizontal();
+        
+    Rect position = EditorGUILayout.GetControlRect();
+    EditorGUI.LabelField(position, "Italic");
+    position.x += EditorGUIUtility.labelWidth;
+    position.width = 100f;
+    italicProperty.boolValue = EditorGUI.Toggle(position, italicProperty.boolValue);
+
+    position = EditorGUILayout.GetControlRect();
+    EditorGUI.LabelField(position, "Bold");
+    position.x += EditorGUIUtility.labelWidth;
+    position.width = 100f;
+    boldProperty.boolValue = EditorGUI.Toggle(position, boldProperty.boolValue);
+
+    EditorGUILayout.EndHorizontal();
+
+    GUILayout.Label("Text Alignment:",largeLabelStyle);
+    EditorGUILayout.PropertyField(textAligmentProperty);
+
+    EditorGUILayout.PropertyField(letterSpacingProperty);
+    EditorGUILayout.PropertyField(autoFitVerticalProperty);
+    EditorGUILayout.PropertyField(renderLinksProperty);
+
+    
+    showHaloSettings = EditorGUILayout.Foldout(showHaloSettings, "Halo Settings", CreateTitleStyle());
+
+    if (showHaloSettings)
+    {
+      EditorGUILayout.BeginVertical("box");
+      EditorGUILayout.PropertyField(haloWidthProperty);
+      EditorGUILayout.PropertyField(haloColorProperty);
+      EditorGUILayout.PropertyField(haloBlurProperty);
+      EditorGUILayout.EndVertical();
+    }
+    
+    showMoreSettings = EditorGUILayout.Foldout(showMoreSettings, "More Settings", CreateTitleStyle());
+
+    if (showMoreSettings)
+    {
+      EditorGUILayout.BeginVertical("box");
+      EditorGUILayout.PropertyField(backgroundColorProperty);
+      EditorGUILayout.PropertyField(underlineStyleProperty);
+      EditorGUILayout.PropertyField(lineHeightProperty);
+      EditorGUILayout.PropertyField(strikeThroughStyleProperty);
+      EditorGUILayout.EndVertical();
+    }
+
+    serializedObject.ApplyModifiedProperties();
+    script.ReUpdate();
+  }
+  
+  private GUIStyle CreateTitleStyle()
+  {
+    GUIStyle style = new GUIStyle(EditorStyles.foldout);
+    style.fontSize = 12;
+    style.fontStyle = FontStyle.Bold;
+
+    return style;
+  }
+  
+  private void Update()
+  {
+    #if UNITY_EDITOR
+    if (!EditorApplication.isPlaying)
+    {
+      Debug.LogError("xdc");
+    }
+    #endif
+  }
+}
+
+
+[InitializeOnLoad]
+public class HBTextBlockOpenCallback {
+  static HBTextBlockOpenCallback() {
+    EditorApplication.playModeStateChanged += OnPlayModeStateChanged;
+    EditorSceneManager.sceneOpened += OnSceneOpened;
+
+    if (!EditorApplication.isPlayingOrWillChangePlaymode) {
+      RenderTextures();
+    }
+     
+  }
+
+  private static void OnSceneOpened(UnityEngine.SceneManagement.Scene scene, OpenSceneMode mode) {
+    RenderTextures();
+  }
+
+  private static void OnPlayModeStateChanged(PlayModeStateChange state) {
+    if (state == PlayModeStateChange.EnteredEditMode) {
+      RenderTextures();
+    }
+  }
+
+  private static void RenderTextures() {
+    Object[] objects = Resources.FindObjectsOfTypeAll(typeof(GameObject));
+    foreach (Object obj in objects) {
+      GameObject gameObj = obj as GameObject;
+      if (gameObj != null){
+        HB_TEXTBlock myComponent = gameObj.GetComponent<HB_TEXTBlock>();
+        if (myComponent != null) {
+          myComponent.text = myComponent.text;
+        }
+      }
+    }
+  }
+
+}
+#endif
