@@ -1,4 +1,4 @@
-# SkiaSharp for Unity with HarfBuzz Support
+# SkiaSharp for Unity with Lottie Animation and HarfBuzz Text Support
 
 SkiaSharp for Unity is a powerful plugin that leverages the SkiaSharp 2D graphics library to enhance Unity game development. With the added advantage of HarfBuzz support, this plugin allows you to create high-quality, cross-platform 2D graphics and user interfaces for your Unity projects. HarfBuzz support enables better text rendering, including advanced features such as native fonts, emoji support, and right-to-left (RTL) language rendering.
 
