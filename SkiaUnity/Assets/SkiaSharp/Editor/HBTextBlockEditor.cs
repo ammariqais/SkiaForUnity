@@ -1,30 +1,26 @@
+using SkiaSharp.Unity;
 using SkiaSharp.Unity.HB;
 using UnityEngine;
 using UnityEditor;
+using UnityEditor.SceneManagement;
+using UnityEngine.SceneManagement;
+using UnityEditor.SearchService;
 using TextAlignment = Topten.RichTextKit.TextAlignment;
 
 
 [CustomEditor(typeof(HB_TEXTBlock))]
 public class HBTextBlockEditor : Editor {
-  private Texture2D autoAlignmentIcon;
-  private Texture2D leftAlignmentIcon;
-  private Texture2D centerAlignmentIcon;
-  private Texture2D rightAlignmentIcon;
   private GUIStyle selectedStyle;
   private TextAlignment selectedAlignment;
   private SerializedProperty fontSizeProperty, fontColorProperty, fontProperty,
     italicProperty, boldProperty, haloColorProperty, haloWidthProperty, 
     letterSpacingProperty, autoFitVerticalProperty, renderLinksProperty, 
     haloBlurProperty, backgroundColorProperty, underlineStyleProperty, lineHeightProperty,
-    strikeThroughStyleProperty ;
+    strikeThroughStyleProperty,textProperty, textAligmentProperty ;
   bool showHaloSettings = false;
   bool showMoreSettings = false;
 
   private void OnEnable(){
-    autoAlignmentIcon = AssetDatabase.LoadAssetAtPath<Texture2D>("Assets/SkiaSharp/Editor/Icons/btn_AlignMidLine.psd"); // Replace with the actual path to your left alignment icon
-    leftAlignmentIcon = AssetDatabase.LoadAssetAtPath<Texture2D>("Assets/SkiaSharp/Editor/Icons/btn_AlignLeft.psd"); // Replace with the actual path to your left alignment icon
-    centerAlignmentIcon = AssetDatabase.LoadAssetAtPath<Texture2D>("Assets/SkiaSharp/Editor/Icons/btn_AlignCenter.psd"); // Replace with the actual path to your center alignment icon
-    rightAlignmentIcon = AssetDatabase.LoadAssetAtPath<Texture2D>("Assets/SkiaSharp/Editor/Icons/btn_AlignRight.psd"); // Replace with the actual path to your right alignment icon
     selectedStyle = new GUIStyle();
     selectedStyle.normal.background = EditorGUIUtility.Load("builtin skins/darkskin/images/pre background@2x.png") as Texture2D;
     selectedStyle.normal.textColor = Color.white;
@@ -47,6 +43,8 @@ public class HBTextBlockEditor : Editor {
     underlineStyleProperty = serializedObject.FindProperty("underlineStyle");
     lineHeightProperty = serializedObject.FindProperty("lineHeight");
     strikeThroughStyleProperty = serializedObject.FindProperty("strikeThroughStyle");
+    textProperty = serializedObject.FindProperty("Text");
+    textAligmentProperty = serializedObject.FindProperty("textAlignment");
 
     HB_TEXTBlock script = (HB_TEXTBlock)target;
     selectedAlignment = script.textAlignment;
@@ -56,7 +54,10 @@ public class HBTextBlockEditor : Editor {
     GUIStyle largeLabelStyle = new GUIStyle(GUI.skin.label);
     largeLabelStyle.fontSize = 12; // Adjust the font size as needed
     largeLabelStyle.fontStyle = FontStyle.Bold;
-    script.text = EditorGUILayout.TextArea(script.text, GUILayout.Height(100));
+    //script.text = EditorGUILayout.TextArea(script.text, GUILayout.Height(100));
+    //textProperty.stringValue = script.text;
+    EditorGUILayout.PropertyField(textProperty);
+
 
     // Display the fontSize field using the serialized property
     EditorGUILayout.PropertyField(fontProperty);
@@ -80,7 +81,8 @@ public class HBTextBlockEditor : Editor {
     EditorGUILayout.EndHorizontal();
 
     GUILayout.Label("Text Alignment:",largeLabelStyle);
-    script.textAlignment = (TextAlignment)EditorGUILayout.EnumPopup(script.textAlignment);
+    EditorGUILayout.PropertyField(textAligmentProperty);
+
     EditorGUILayout.PropertyField(letterSpacingProperty);
     EditorGUILayout.PropertyField(autoFitVerticalProperty);
     EditorGUILayout.PropertyField(renderLinksProperty);
@@ -108,11 +110,9 @@ public class HBTextBlockEditor : Editor {
       EditorGUILayout.PropertyField(strikeThroughStyleProperty);
       EditorGUILayout.EndVertical();
     }
-      
-
 
     serializedObject.ApplyModifiedProperties();
-    
+    script.ReUpdate();
   }
   
   private GUIStyle CreateTitleStyle()
@@ -123,4 +123,52 @@ public class HBTextBlockEditor : Editor {
 
     return style;
   }
+  
+  private void Update()
+  {
+    #if UNITY_EDITOR
+    if (!EditorApplication.isPlaying)
+    {
+      Debug.LogError("xdc");
+    }
+    #endif
+  }
+}
+
+
+[InitializeOnLoad]
+public class HBTextBlockOpenCallback {
+  static HBTextBlockOpenCallback() {
+    EditorApplication.playModeStateChanged += OnPlayModeStateChanged;
+    EditorSceneManager.sceneOpened += OnSceneOpened;
+
+    if (!EditorApplication.isPlayingOrWillChangePlaymode) {
+      RenderTextures();
+    }
+     
+  }
+
+  private static void OnSceneOpened(UnityEngine.SceneManagement.Scene scene, OpenSceneMode mode) {
+    RenderTextures();
+  }
+
+  private static void OnPlayModeStateChanged(PlayModeStateChange state) {
+    if (state == PlayModeStateChange.EnteredEditMode) {
+      RenderTextures();
+    }
+  }
+
+  private static void RenderTextures() {
+    Object[] objects = Resources.FindObjectsOfTypeAll(typeof(GameObject));
+    foreach (Object obj in objects) {
+      GameObject gameObj = obj as GameObject;
+      if (gameObj != null){
+        HB_TEXTBlock myComponent = gameObj.GetComponent<HB_TEXTBlock>();
+        if (myComponent != null) {
+          myComponent.text = myComponent.text;
+        }
+      }
+    }
+  }
+
 }

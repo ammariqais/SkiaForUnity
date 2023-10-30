@@ -4,6 +4,7 @@ using System.Text.RegularExpressions;
 using UnityEngine;
 using UnityEngine.UI;
 using Topten.RichTextKit;
+using UnityEditor;
 using TextAlignment = Topten.RichTextKit.TextAlignment;
 
 namespace SkiaSharp.Unity.HB {
@@ -193,6 +194,10 @@ namespace SkiaSharp.Unity.HB {
 			}
 		}
 
+		public void ReUpdate() {
+			urls.Clear();
+			RenderText();
+		}
 
 		public void LinkPressed() {
 				RectTransform rawImageRect = GetComponent<RectTransform>();
