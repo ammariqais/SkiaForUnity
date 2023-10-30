@@ -8,13 +8,34 @@ using UnityEditor;
 using TextAlignment = Topten.RichTextKit.TextAlignment;
 
 namespace SkiaSharp.Unity.HB {
+	public enum HBColorFormat {
+		alpha8,
+		rgb32
+	}
+	
 	public class HB_TEXTBlock : MonoBehaviour, ILayoutElement {
 		[SerializeField]
 		[TextArea]
 		private string Text;
 		[SerializeField]
 		public TextAsset font;
-
+		[SerializeField]
+		private int fontSize = 12, haloWidth, letterSpacing, haloBlur;
+		[SerializeField]
+		private Color fontColor = Color.black, haloColor = Color.black, backgroundColor = Color.clear;
+		[SerializeField]
+		private bool italic, bold, autoFitVertical = true, renderLinks;
+		[SerializeField]
+		private UnderlineStyle underlineStyle;
+		[SerializeField]
+		private StrikeThroughStyle strikeThroughStyle;
+		[SerializeField]
+		private float lineHeight = 1.0f;
+		[SerializeField]
+		private HBColorFormat colorType = HBColorFormat.alpha8; 
+		[SerializeField] 
+		private TextAlignment textAlignment = TextAlignment.Left;
+        
 		private SKCanvas canvas;
 		private SKImageInfo info;
 		private SKSurface surface;
@@ -25,8 +46,6 @@ namespace SkiaSharp.Unity.HB {
 		private Dictionary<int, HBLinks> urls = new Dictionary<int, HBLinks>();
 		SKTypeface skTypeface;
 		RectTransform rectTransform;
-		public TextAlignment textAlignment = TextAlignment.Left;
-
 		private float currentWidth, currentHeight;
 
 		public string text {
@@ -43,19 +62,346 @@ namespace SkiaSharp.Unity.HB {
 				}
 			}
 		}
-		public int fontSize = 12;
-		public Color fontColor = Color.black;
-		public bool italic = false;
-		public bool bold = false;
-		public Color haloColor = Color.black;
-		public int haloWidth, letterSpacing;
-		public bool autoFitVertical = true;
-		public bool renderLinks;
-		public int haloBlur;
-		public Color backgroundColor = Color.clear;
-		public UnderlineStyle underlineStyle;
-		public StrikeThroughStyle strikeThroughStyle;
-		public float lineHeight = 1.0f;
+
+		public Color FontColor {
+			get {
+				return fontColor;
+			}
+			set {
+				fontColor = value;
+				if (rawImage == null) {
+					rawImage = GetComponent<RawImage>();
+					rectTransform = transform as RectTransform;
+				}
+
+				if (!rawImage) {
+					return;
+				}
+				
+				urls.Clear();
+				RenderText();
+			}
+		}
+		
+		public Color HaloColor {
+			get {
+				return haloColor;
+			}
+			set {
+				haloColor = value;
+				if (rawImage == null) {
+					rawImage = GetComponent<RawImage>();
+					rectTransform = transform as RectTransform;
+				}
+
+				if (!rawImage) {
+					return;
+				}
+				
+				urls.Clear();
+				RenderText();
+			}
+		}
+		
+		public Color BackgroundColor {
+			get {
+				return backgroundColor;
+			}
+			set {
+				backgroundColor = value;
+				if (rawImage == null) {
+					rawImage = GetComponent<RawImage>();
+					rectTransform = transform as RectTransform;
+				}
+
+				if (!rawImage) {
+					return;
+				}
+				
+				urls.Clear();
+				RenderText();
+			}
+		}
+		
+		public HBColorFormat ColorType {
+			get {
+				return colorType;
+			}
+			set {
+				colorType = value;
+				if (rawImage == null) {
+					rawImage = GetComponent<RawImage>();
+					rectTransform = transform as RectTransform;
+				}
+
+				if (!rawImage) {
+					return;
+				}
+				
+				urls.Clear();
+				RenderText();
+			}
+		}
+		
+		public bool AutoFitVertical {
+			get {
+				return autoFitVertical;
+			}
+			set {
+				autoFitVertical = value;
+				if (rawImage == null) {
+					rawImage = GetComponent<RawImage>();
+					rectTransform = transform as RectTransform;
+				}
+
+				if (!rawImage) {
+					return;
+				}
+				
+				urls.Clear();
+				RenderText();
+			}
+		}
+		
+		public bool RenderLinks {
+			get {
+				return renderLinks;
+			}
+			set {
+				renderLinks = value;
+				if (rawImage == null) {
+					rawImage = GetComponent<RawImage>();
+					rectTransform = transform as RectTransform;
+				}
+
+				if (!rawImage) {
+					return;
+				}
+				
+				urls.Clear();
+				RenderText();
+			}
+		}
+		
+		public TextAsset Font {
+			get {
+				return font;
+			}
+			set {
+				font = value;
+				if (rawImage == null) {
+					rawImage = GetComponent<RawImage>();
+					rectTransform = transform as RectTransform;
+				}
+
+				if (!rawImage) {
+					return;
+				}
+				
+				urls.Clear();
+				RenderText();
+			}
+		}
+		
+		public bool Bold {
+			get {
+				return bold;
+			}
+			set {
+				bold = value;
+				if (rawImage == null) {
+					rawImage = GetComponent<RawImage>();
+					rectTransform = transform as RectTransform;
+				}
+
+				if (!rawImage) {
+					return;
+				}
+				
+				urls.Clear();
+				RenderText();
+			}
+		}
+		
+		public bool Italic {
+			get {
+				return italic;
+			}
+			set {
+				italic = value;
+				if (rawImage == null) {
+					rawImage = GetComponent<RawImage>();
+					rectTransform = transform as RectTransform;
+				}
+
+				if (!rawImage) {
+					return;
+				}
+				
+				urls.Clear();
+				RenderText();
+			}
+		}
+		
+		public int FontSize {
+			get {
+				return fontSize;
+			}
+			set {
+				fontSize = value;
+				if (rawImage == null) {
+					rawImage = GetComponent<RawImage>();
+					rectTransform = transform as RectTransform;
+				}
+
+				if (!rawImage) {
+					return;
+				}
+				
+				urls.Clear();
+				RenderText();
+			}
+		}
+		
+		public int HaloWidth {
+			get {
+				return haloWidth;
+			}
+			set {
+				haloWidth = value;
+				if (rawImage == null) {
+					rawImage = GetComponent<RawImage>();
+					rectTransform = transform as RectTransform;
+				}
+
+				if (!rawImage) {
+					return;
+				}
+				
+				urls.Clear();
+				RenderText();
+			}
+		}
+		
+		public int LetterSpacing {
+			get {
+				return letterSpacing;
+			}
+			set {
+				letterSpacing = value;
+				if (rawImage == null) {
+					rawImage = GetComponent<RawImage>();
+					rectTransform = transform as RectTransform;
+				}
+
+				if (!rawImage) {
+					return;
+				}
+				
+				urls.Clear();
+				RenderText();
+			}
+		}
+		
+		public int HaloBlur {
+			get {
+				return haloBlur;
+			}
+			set {
+				haloBlur = value;
+				if (rawImage == null) {
+					rawImage = GetComponent<RawImage>();
+					rectTransform = transform as RectTransform;
+				}
+
+				if (!rawImage) {
+					return;
+				}
+				
+				urls.Clear();
+				RenderText();
+			}
+		}
+		
+		public UnderlineStyle UnderLineStyle {
+			get {
+				return underlineStyle;
+			}
+			set {
+				underlineStyle = value;
+				if (rawImage == null) {
+					rawImage = GetComponent<RawImage>();
+					rectTransform = transform as RectTransform;
+				}
+
+				if (!rawImage) {
+					return;
+				}
+				
+				urls.Clear();
+				RenderText();
+			}
+		}
+		
+		public StrikeThroughStyle  StrikeThroughStyle{
+			get {
+				return strikeThroughStyle;
+			}
+			set {
+				strikeThroughStyle = value;
+				if (rawImage == null) {
+					rawImage = GetComponent<RawImage>();
+					rectTransform = transform as RectTransform;
+				}
+
+				if (!rawImage) {
+					return;
+				}
+				
+				urls.Clear();
+				RenderText();
+			}
+		}
+		
+		public float  LineHeight{
+			get {
+				return LineHeight;
+			}
+			set {
+				LineHeight = value;
+				if (rawImage == null) {
+					rawImage = GetComponent<RawImage>();
+					rectTransform = transform as RectTransform;
+				}
+
+				if (!rawImage) {
+					return;
+				}
+				
+				urls.Clear();
+				RenderText();
+			}
+		}
+		
+		public TextAlignment  TextAlignment{
+			get {
+				return textAlignment;
+			}
+			set {
+				textAlignment = value;
+				if (rawImage == null) {
+					rawImage = GetComponent<RawImage>();
+					rectTransform = transform as RectTransform;
+				}
+
+				if (!rawImage) {
+					return;
+				}
+				
+				urls.Clear();
+				RenderText();
+			}
+		}
 
 		void Awake() {
 			rawImage = GetComponent<RawImage>();
@@ -70,13 +416,11 @@ namespace SkiaSharp.Unity.HB {
 		}
 		
 		// Convert a Color to a uint
-		public uint ColorToUint(Color color)
-		{
+		public uint ColorToUint(Color color){
 			uint alpha = (uint)(color.a * 255);
 			uint red = (uint)(color.r * 255);
 			uint green = (uint)(color.g * 255);
 			uint blue = (uint)(color.b * 255);
-
 			return (alpha << 24) | (red << 16) | (green << 8) | blue;
 		}
 
@@ -108,11 +452,16 @@ namespace SkiaSharp.Unity.HB {
 				rs.Clear();
 			}
 			rs = new TextBlock();
+			if (colorType == HBColorFormat.alpha8) {
+				rawImage.color = fontColor;
+			} else {
+				rawImage.color = Color.white;
+			}
 			rs.Alignment = textAlignment;
 			rs.AddText(Text, styleBoldItalic);
 			
 			if (renderLinks) {
-				RenderLinks();
+				RenderLinksCall();
 			}
 
 			if (font != null) {
@@ -155,7 +504,7 @@ namespace SkiaSharp.Unity.HB {
 			Dispose();
 		}
 
-		private void RenderLinks() {
+		private void RenderLinksCall() {
 			Style styleLink = new Style() {
 			FontFamily = "Arial",
 			FontSize = fontSize,

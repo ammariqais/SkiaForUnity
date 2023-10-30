@@ -1,22 +1,20 @@
-using SkiaSharp.Unity;
+#if UNITY_EDITOR
+
 using SkiaSharp.Unity.HB;
 using UnityEngine;
 using UnityEditor;
 using UnityEditor.SceneManagement;
-using UnityEngine.SceneManagement;
-using UnityEditor.SearchService;
 using TextAlignment = Topten.RichTextKit.TextAlignment;
 
 
 [CustomEditor(typeof(HB_TEXTBlock))]
 public class HBTextBlockEditor : Editor {
   private GUIStyle selectedStyle;
-  private TextAlignment selectedAlignment;
   private SerializedProperty fontSizeProperty, fontColorProperty, fontProperty,
     italicProperty, boldProperty, haloColorProperty, haloWidthProperty, 
     letterSpacingProperty, autoFitVerticalProperty, renderLinksProperty, 
     haloBlurProperty, backgroundColorProperty, underlineStyleProperty, lineHeightProperty,
-    strikeThroughStyleProperty,textProperty, textAligmentProperty ;
+    strikeThroughStyleProperty,textProperty, textAligmentProperty,colorTypeProperty ;
   bool showHaloSettings = false;
   bool showMoreSettings = false;
 
@@ -45,9 +43,7 @@ public class HBTextBlockEditor : Editor {
     strikeThroughStyleProperty = serializedObject.FindProperty("strikeThroughStyle");
     textProperty = serializedObject.FindProperty("Text");
     textAligmentProperty = serializedObject.FindProperty("textAlignment");
-
-    HB_TEXTBlock script = (HB_TEXTBlock)target;
-    selectedAlignment = script.textAlignment;
+    colorTypeProperty = serializedObject.FindProperty("colorType");
   }
   public override void OnInspectorGUI(){
     HB_TEXTBlock script = (HB_TEXTBlock)target;
@@ -57,7 +53,7 @@ public class HBTextBlockEditor : Editor {
     //script.text = EditorGUILayout.TextArea(script.text, GUILayout.Height(100));
     //textProperty.stringValue = script.text;
     EditorGUILayout.PropertyField(textProperty);
-
+    EditorGUILayout.PropertyField(colorTypeProperty);
 
     // Display the fontSize field using the serialized property
     EditorGUILayout.PropertyField(fontProperty);
@@ -172,3 +168,4 @@ public class HBTextBlockOpenCallback {
   }
 
 }
+#endif
