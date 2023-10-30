@@ -24,6 +24,7 @@ namespace SkiaSharp.Unity.HB {
 		private Texture2D texture;
 		private TextBlock rs;
 		private Dictionary<int, HBLinks> urls = new Dictionary<int, HBLinks>();
+		SKTypeface skTypeface;
 		RectTransform rectTransform;
 
 		private float currentWidth, currentHeight;
@@ -53,6 +54,10 @@ namespace SkiaSharp.Unity.HB {
 
 		private void RenderText() {
 			Dispose();
+			if (texture != null) {
+				DestroyImmediate(texture);
+				texture = null;
+			}
 			rs = new TextBlock();
 			rs.AddText(message, styleBoldItalic);
 			
@@ -61,9 +66,12 @@ namespace SkiaSharp.Unity.HB {
 			}
 
 			if (font != null) {
-				var bytes = font.bytes;
-				var datadata = SKData.CreateCopy(bytes);
-				SKTypeface skTypeface = SKTypeface.FromData(datadata);
+				if (skTypeface == null) {
+					var bytes = font.bytes;
+					SKData copy = SKData.CreateCopy(bytes);
+					skTypeface = SKTypeface.FromData(copy);
+					copy.Dispose();
+				}
 				rs.FontMapper = new FontMapper(skTypeface);
 			}
             
@@ -95,6 +103,7 @@ namespace SkiaSharp.Unity.HB {
 			texture.LoadRawTextureData(pixmap.GetPixels(), pixmap.RowBytes * pixmap.Height);
 			texture.Apply();
 			rawImage.texture = texture;
+			Dispose();
 		}
 
 		private void RenderLinks() {
@@ -152,6 +161,13 @@ namespace SkiaSharp.Unity.HB {
 
 		private void OnDestroy() {
 			Dispose();
+			if (texture != null) {
+				DestroyImmediate(texture);
+			}
+
+			if (skTypeface != null) {
+				skTypeface.Dispose();
+			}
 		}
 
 		private void Dispose() {
@@ -172,11 +188,6 @@ namespace SkiaSharp.Unity.HB {
 			if (canvas != null) {
 				canvas.Dispose();
 				canvas = null;
-			}
-			
-			if (texture != null) {
-				DestroyImmediate(texture);
-				texture = null;
 			}
 		}
 
