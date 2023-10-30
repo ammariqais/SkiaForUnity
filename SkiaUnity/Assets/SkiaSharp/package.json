@@ -1,7 +1,7 @@
 {
   "name": "com.ammariqais.skiaforunity",
   "displayName": "Skia For Unity",
-  "version": "2.0.0",
+  "version": "2.0.1",
   "unity": "2019.3",
   "description": "Skia For Unity With Harfbuzz texts, Skottie Animations, lottie",
   "author": {
@@ -21,7 +21,7 @@
   ],
   "category": "Unity",
   "dependencies": {
-    "com.newtonsoft.json": "2.0"
+    "com.newtonsoft.json": "1.0.0"
   },
   "files": [
     "/Editor",
