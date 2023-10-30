@@ -20,6 +20,9 @@
     "2d graphics"
   ],
   "category": "Unity",
+  "dependencies": {
+    "com.newtonsoft.json": "2.0.2"
+  },
   "files": [
     "/Editor",
     "/Editor.meta",
