@@ -21,7 +21,7 @@
   ],
   "category": "Unity",
   "dependencies": {
-    "com.unity.nuget.newtonsoft-json": "3.2.0",
+    "com.unity.nuget.newtonsoft-json": "3.2.0"
   },
   "files": [
     "/Editor",
