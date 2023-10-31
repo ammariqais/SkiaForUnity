@@ -14,7 +14,7 @@ public class HBTextBlockEditor : Editor {
     italicProperty, boldProperty, haloColorProperty, haloWidthProperty, 
     letterSpacingProperty, autoFitVerticalProperty, renderLinksProperty, 
     haloBlurProperty, backgroundColorProperty, underlineStyleProperty, lineHeightProperty,
-    strikeThroughStyleProperty,textProperty, textAligmentProperty,colorTypeProperty ;
+    strikeThroughStyleProperty,textProperty, textAligmentProperty,colorTypeProperty, autoFitHorizontalProperty, maxWidthProperty ;
   bool showHaloSettings = false;
   bool showMoreSettings = false;
 
@@ -35,6 +35,8 @@ public class HBTextBlockEditor : Editor {
     haloWidthProperty = serializedObject.FindProperty("haloWidth");
     letterSpacingProperty = serializedObject.FindProperty("letterSpacing");
     autoFitVerticalProperty = serializedObject.FindProperty("autoFitVertical");
+    autoFitHorizontalProperty = serializedObject.FindProperty("autoFitHorizontal");
+    maxWidthProperty = serializedObject.FindProperty("maxWidth");
     renderLinksProperty = serializedObject.FindProperty("renderLinks");
     haloBlurProperty =  serializedObject.FindProperty("haloBlur");
     backgroundColorProperty = serializedObject.FindProperty("backgroundColor");
@@ -81,7 +83,12 @@ public class HBTextBlockEditor : Editor {
 
     EditorGUILayout.PropertyField(letterSpacingProperty);
     EditorGUILayout.PropertyField(autoFitVerticalProperty);
+    EditorGUILayout.PropertyField(autoFitHorizontalProperty);
+    if (script.AutoFitHorizontal) {
+      EditorGUILayout.PropertyField(maxWidthProperty);
+    }
     EditorGUILayout.PropertyField(renderLinksProperty);
+    
 
     
     showHaloSettings = EditorGUILayout.Foldout(showHaloSettings, "Halo Settings", CreateTitleStyle());
@@ -108,7 +115,9 @@ public class HBTextBlockEditor : Editor {
     }
 
     serializedObject.ApplyModifiedProperties();
-    script.ReUpdate();
+    if (!EditorApplication.isPlayingOrWillChangePlaymode) {
+      script.ReUpdate();
+    }
   }
   
   private GUIStyle CreateTitleStyle()
@@ -118,16 +127,6 @@ public class HBTextBlockEditor : Editor {
     style.fontStyle = FontStyle.Bold;
 
     return style;
-  }
-  
-  private void Update()
-  {
-    #if UNITY_EDITOR
-    if (!EditorApplication.isPlaying)
-    {
-      Debug.LogError("xdc");
-    }
-    #endif
   }
 }
 
