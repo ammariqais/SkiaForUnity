@@ -24,13 +24,13 @@ namespace SkiaSharp.Unity.HB {
 		[SerializeField]
 		private Color fontColor = Color.black, haloColor = Color.black, backgroundColor = Color.clear;
 		[SerializeField]
-		private bool italic, bold, autoFitVertical = true, renderLinks;
+		private bool italic, bold, autoFitVertical = true, autoFitHorizontal, renderLinks;
 		[SerializeField]
 		private UnderlineStyle underlineStyle;
 		[SerializeField]
 		private StrikeThroughStyle strikeThroughStyle;
 		[SerializeField]
-		private float lineHeight = 1.0f;
+		private float lineHeight = 1.0f, maxWidth = 264;
 		[SerializeField]
 		private HBColorFormat colorType = HBColorFormat.alpha8; 
 		[SerializeField] 
@@ -46,14 +46,14 @@ namespace SkiaSharp.Unity.HB {
 		private Dictionary<int, HBLinks> urls = new Dictionary<int, HBLinks>();
 		SKTypeface skTypeface;
 		RectTransform rectTransform;
-		private float currentWidth, currentHeight;
+		private float currentWidth, currentHeight, currentPreferdWidth = 0;
 
 		public TextBlock Info => rs;
 
-		public string text {
-			get => Text;
+		public float MaxWidth {
+			get => maxWidth;
 			set {
-				Text = value;
+				maxWidth = value;
 				if (rawImage == null) {
 					rawImage = GetComponent<RawImage>();
 					rectTransform = transform as RectTransform;
@@ -64,6 +64,14 @@ namespace SkiaSharp.Unity.HB {
 				}
 			}
 		}
+		
+		public string text {
+			get => Text;
+			set {
+				Text = value;
+				ReUpdate();
+			}
+		}
 
 		public Color FontColor {
 			get {
@@ -71,17 +79,7 @@ namespace SkiaSharp.Unity.HB {
 			}
 			set {
 				fontColor = value;
-				if (rawImage == null) {
-					rawImage = GetComponent<RawImage>();
-					rectTransform = transform as RectTransform;
-				}
-
-				if (!rawImage) {
-					return;
-				}
-				
-				urls.Clear();
-				RenderText();
+				ReUpdate();
 			}
 		}
 		
@@ -91,17 +89,7 @@ namespace SkiaSharp.Unity.HB {
 			}
 			set {
 				haloColor = value;
-				if (rawImage == null) {
-					rawImage = GetComponent<RawImage>();
-					rectTransform = transform as RectTransform;
-				}
-
-				if (!rawImage) {
-					return;
-				}
-				
-				urls.Clear();
-				RenderText();
+				ReUpdate();
 			}
 		}
 		
@@ -111,17 +99,7 @@ namespace SkiaSharp.Unity.HB {
 			}
 			set {
 				backgroundColor = value;
-				if (rawImage == null) {
-					rawImage = GetComponent<RawImage>();
-					rectTransform = transform as RectTransform;
-				}
-
-				if (!rawImage) {
-					return;
-				}
-				
-				urls.Clear();
-				RenderText();
+				ReUpdate();
 			}
 		}
 		
@@ -131,17 +109,7 @@ namespace SkiaSharp.Unity.HB {
 			}
 			set {
 				colorType = value;
-				if (rawImage == null) {
-					rawImage = GetComponent<RawImage>();
-					rectTransform = transform as RectTransform;
-				}
-
-				if (!rawImage) {
-					return;
-				}
-				
-				urls.Clear();
-				RenderText();
+				ReUpdate();
 			}
 		}
 		
@@ -151,17 +119,17 @@ namespace SkiaSharp.Unity.HB {
 			}
 			set {
 				autoFitVertical = value;
-				if (rawImage == null) {
-					rawImage = GetComponent<RawImage>();
-					rectTransform = transform as RectTransform;
-				}
-
-				if (!rawImage) {
-					return;
-				}
-				
-				urls.Clear();
-				RenderText();
+				ReUpdate();
+			}
+		}
+		
+		public bool AutoFitHorizontal {
+			get {
+				return autoFitHorizontal;
+			}
+			set {
+				autoFitHorizontal = value;
+				ReUpdate();
 			}
 		}
 		
@@ -171,17 +139,7 @@ namespace SkiaSharp.Unity.HB {
 			}
 			set {
 				renderLinks = value;
-				if (rawImage == null) {
-					rawImage = GetComponent<RawImage>();
-					rectTransform = transform as RectTransform;
-				}
-
-				if (!rawImage) {
-					return;
-				}
-				
-				urls.Clear();
-				RenderText();
+				ReUpdate();
 			}
 		}
 		
@@ -191,17 +149,7 @@ namespace SkiaSharp.Unity.HB {
 			}
 			set {
 				font = value;
-				if (rawImage == null) {
-					rawImage = GetComponent<RawImage>();
-					rectTransform = transform as RectTransform;
-				}
-
-				if (!rawImage) {
-					return;
-				}
-				
-				urls.Clear();
-				RenderText();
+				ReUpdate();
 			}
 		}
 		
@@ -211,17 +159,7 @@ namespace SkiaSharp.Unity.HB {
 			}
 			set {
 				bold = value;
-				if (rawImage == null) {
-					rawImage = GetComponent<RawImage>();
-					rectTransform = transform as RectTransform;
-				}
-
-				if (!rawImage) {
-					return;
-				}
-				
-				urls.Clear();
-				RenderText();
+				ReUpdate();
 			}
 		}
 		
@@ -231,17 +169,7 @@ namespace SkiaSharp.Unity.HB {
 			}
 			set {
 				italic = value;
-				if (rawImage == null) {
-					rawImage = GetComponent<RawImage>();
-					rectTransform = transform as RectTransform;
-				}
-
-				if (!rawImage) {
-					return;
-				}
-				
-				urls.Clear();
-				RenderText();
+				ReUpdate();
 			}
 		}
 		
@@ -251,17 +179,7 @@ namespace SkiaSharp.Unity.HB {
 			}
 			set {
 				fontSize = value;
-				if (rawImage == null) {
-					rawImage = GetComponent<RawImage>();
-					rectTransform = transform as RectTransform;
-				}
-
-				if (!rawImage) {
-					return;
-				}
-				
-				urls.Clear();
-				RenderText();
+				ReUpdate();
 			}
 		}
 		
@@ -271,17 +189,7 @@ namespace SkiaSharp.Unity.HB {
 			}
 			set {
 				haloWidth = value;
-				if (rawImage == null) {
-					rawImage = GetComponent<RawImage>();
-					rectTransform = transform as RectTransform;
-				}
-
-				if (!rawImage) {
-					return;
-				}
-				
-				urls.Clear();
-				RenderText();
+				ReUpdate();
 			}
 		}
 		
@@ -291,17 +199,7 @@ namespace SkiaSharp.Unity.HB {
 			}
 			set {
 				letterSpacing = value;
-				if (rawImage == null) {
-					rawImage = GetComponent<RawImage>();
-					rectTransform = transform as RectTransform;
-				}
-
-				if (!rawImage) {
-					return;
-				}
-				
-				urls.Clear();
-				RenderText();
+				ReUpdate();
 			}
 		}
 		
@@ -311,17 +209,7 @@ namespace SkiaSharp.Unity.HB {
 			}
 			set {
 				haloBlur = value;
-				if (rawImage == null) {
-					rawImage = GetComponent<RawImage>();
-					rectTransform = transform as RectTransform;
-				}
-
-				if (!rawImage) {
-					return;
-				}
-				
-				urls.Clear();
-				RenderText();
+				ReUpdate();
 			}
 		}
 		
@@ -331,17 +219,7 @@ namespace SkiaSharp.Unity.HB {
 			}
 			set {
 				underlineStyle = value;
-				if (rawImage == null) {
-					rawImage = GetComponent<RawImage>();
-					rectTransform = transform as RectTransform;
-				}
-
-				if (!rawImage) {
-					return;
-				}
-				
-				urls.Clear();
-				RenderText();
+				ReUpdate();
 			}
 		}
 		
@@ -351,17 +229,7 @@ namespace SkiaSharp.Unity.HB {
 			}
 			set {
 				strikeThroughStyle = value;
-				if (rawImage == null) {
-					rawImage = GetComponent<RawImage>();
-					rectTransform = transform as RectTransform;
-				}
-
-				if (!rawImage) {
-					return;
-				}
-				
-				urls.Clear();
-				RenderText();
+				ReUpdate();
 			}
 		}
 		
@@ -371,17 +239,7 @@ namespace SkiaSharp.Unity.HB {
 			}
 			set {
 				LineHeight = value;
-				if (rawImage == null) {
-					rawImage = GetComponent<RawImage>();
-					rectTransform = transform as RectTransform;
-				}
-
-				if (!rawImage) {
-					return;
-				}
-				
-				urls.Clear();
-				RenderText();
+				ReUpdate();
 			}
 		}
 		
@@ -391,17 +249,7 @@ namespace SkiaSharp.Unity.HB {
 			}
 			set {
 				textAlignment = value;
-				if (rawImage == null) {
-					rawImage = GetComponent<RawImage>();
-					rectTransform = transform as RectTransform;
-				}
-
-				if (!rawImage) {
-					return;
-				}
-				
-				urls.Clear();
-				RenderText();
+				ReUpdate();
 			}
 		}
 
@@ -475,12 +323,13 @@ namespace SkiaSharp.Unity.HB {
 				}
 				rs.FontMapper = new FontMapper(skTypeface);
 			}
-			rs.MaxWidth = rectTransform.rect.width;
+
+			currentPreferdWidth = autoFitHorizontal ? rs.MeasuredWidth > maxWidth ? maxWidth : rs.MeasuredWidth + 20 : rectTransform.sizeDelta.x;
+			rs.MaxWidth = currentPreferdWidth;
 			rs.MaxHeight = autoFitVertical ? rs.MeasuredHeight : rectTransform.rect.height;
-			LayoutRebuilder.ForceRebuildLayoutImmediate(rectTransform);
 
 			if (autoFitVertical) {
-				rectTransform.sizeDelta = new Vector2(rectTransform.sizeDelta.x, rs.MeasuredHeight );
+				rectTransform.sizeDelta = autoFitHorizontal ? new Vector2(currentPreferdWidth, rs.MeasuredHeight ) : new Vector2(rectTransform.sizeDelta.x, rs.MeasuredHeight );
 			}
 
 			
