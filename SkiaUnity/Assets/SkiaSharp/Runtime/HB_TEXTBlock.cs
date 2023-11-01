@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
+using JetBrains.Annotations;
 using UnityEngine;
 using UnityEngine.UI;
 using Topten.RichTextKit;
@@ -264,6 +265,8 @@ namespace SkiaSharp.Unity.HB {
 				RenderText();
 			}
 		}
+		private bool textRendered;
+        
 		
 		// Convert a Color to a uint
 		public uint ColorToUint(Color color){
@@ -353,6 +356,7 @@ namespace SkiaSharp.Unity.HB {
 			texture.Apply();
 			rawImage.texture = texture;
 			Dispose();
+			textRendered = true;
 		}
 
 		private void RenderLinksCall() {
@@ -403,7 +407,7 @@ namespace SkiaSharp.Unity.HB {
 			RenderText();
 		}
 
-		public void LinkPressed() {
+		public string LinkPressed() {
 				RectTransform rawImageRect = GetComponent<RectTransform>();
 				if (RectTransformUtility.ScreenPointToLocalPointInRectangle(rawImageRect, Input.mousePosition, null, out var localMousePosition)) {
 					float normalizedX = Mathf.InverseLerp(-rawImageRect.rect.width / 2, rawImageRect.rect.width / 2, localMousePosition.x);
@@ -411,11 +415,12 @@ namespace SkiaSharp.Unity.HB {
 					var caretPos = rs.HitTest(rawImageRect.sizeDelta.x * normalizedX, rawImageRect.sizeDelta.y * normalizedY);
 					foreach (var url in urls) {
 						if (caretPos.ClosestCodePointIndex >= url.Value.IndexStart && caretPos.ClosestCodePointIndex <=  url.Value.IndexEnd) {
-							Application.OpenURL(rs.Copy(url.Key,url.Value.Length).ToString());
-							break;
+							return rs.Copy(url.Key, url.Value.Length).ToString();
 						}
 					}
 				}
+
+				return "";
 		}
 
 		private void OnDestroy() {
@@ -446,25 +451,76 @@ namespace SkiaSharp.Unity.HB {
 		}
 
 		
-		public void CalculateLayoutInputHorizontal() {
-			if (rs != null) {
-				preferredWidth = rs.MeasuredWidth;
-			}
-		}
+		public void CalculateLayoutInputHorizontal() {}
 
 		
-		public void CalculateLayoutInputVertical() {
-			if (rs != null) {
-				preferredHeight = rs.MeasuredHeight;
-			}
-		}
+		public void CalculateLayoutInputVertical() {}
 
 		
 		public float minWidth { get; }
-		public float preferredWidth { get; set; }
+		public float preferredWidth {
+			get {
+				if (rs != null && textRendered) {
+					return rs.MeasuredWidth;
+				}
+
+				TextBlock temp = new TextBlock();
+				Style styleBoldItalic = new Style() {
+					FontFamily = "Segoe UI",
+					FontSize = fontSize,
+					TextColor = new SKColor(ColorToUint(fontColor)),
+					HaloWidth = haloWidth,
+					HaloColor = haloWidth > 0 ? new SKColor(ColorToUint(haloColor)) : SKColor.Empty,
+					FontItalic = italic,
+					FontWeight = bold ? 700 : 400,
+					LetterSpacing = letterSpacing,
+					TextDirection = TextDirection.Auto,
+					HaloBlur = haloBlur,
+					BackgroundColor = backgroundColor.a > 0 ? new SKColor(ColorToUint(backgroundColor)) : SKColors.Empty,
+					Underline = underlineStyle,
+					LineHeight = lineHeight,
+					StrikeThrough = strikeThroughStyle,
+				};
+				temp.AddText(text,styleBoldItalic);
+				var currentPreferdWidth2 = autoFitHorizontal ? temp.MeasuredWidth > maxWidth ? maxWidth : temp.MeasuredWidth + 20 : rectTransform.sizeDelta.x;
+				temp.MaxWidth = currentPreferdWidth2;
+				temp.MaxHeight = autoFitVertical ? temp.MeasuredHeight : rectTransform.rect.height;
+
+				return 550;
+			}
+		}
 		public float flexibleWidth { get; }
 		public float minHeight { get; }
-		public float preferredHeight { get; set; }
+		public float preferredHeight {
+			get {
+				if (rs != null && textRendered) {
+					return rs.MeasuredHeight;
+				}
+
+				TextBlock temp = new TextBlock();
+				Style styleBoldItalic = new Style() {
+					FontFamily = "Segoe UI",
+					FontSize = fontSize,
+					TextColor = new SKColor(ColorToUint(fontColor)),
+					HaloWidth = haloWidth,
+					HaloColor = haloWidth > 0 ? new SKColor(ColorToUint(haloColor)) : SKColor.Empty,
+					FontItalic = italic,
+					FontWeight = bold ? 700 : 400,
+					LetterSpacing = letterSpacing,
+					TextDirection = TextDirection.Auto,
+					HaloBlur = haloBlur,
+					BackgroundColor = backgroundColor.a > 0 ? new SKColor(ColorToUint(backgroundColor)) : SKColors.Empty,
+					Underline = underlineStyle,
+					LineHeight = lineHeight,
+					StrikeThrough = strikeThroughStyle,
+				};
+				temp.AddText(text,styleBoldItalic);
+				var currentPreferdWidth2 = autoFitHorizontal ? temp.MeasuredWidth > maxWidth ? maxWidth : temp.MeasuredWidth + 20 : rectTransform.sizeDelta.x;
+				temp.MaxWidth = currentPreferdWidth2;
+				temp.MaxHeight = autoFitVertical ? temp.MeasuredHeight : rectTransform.rect.height;
+				return temp.MeasuredHeight;
+			}
+		}
 		public float flexibleHeight { get; }
 		public int layoutPriority { get; }
 	}
