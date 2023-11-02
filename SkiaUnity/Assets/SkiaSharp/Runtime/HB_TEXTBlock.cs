@@ -79,8 +79,10 @@ namespace SkiaSharp.Unity.HB {
 				return fontColor;
 			}
 			set {
-				fontColor = value;
-				ReUpdate();
+				if (value != fontColor) {
+					fontColor = value;
+					ReUpdate();
+				}
 			}
 		}
 		
@@ -249,8 +251,10 @@ namespace SkiaSharp.Unity.HB {
 				return textAlignment;
 			}
 			set {
-				textAlignment = value;
-				ReUpdate();
+				if (textAlignment != value) {
+					textAlignment = value;
+					ReUpdate();
+				}
 			}
 		}
 
@@ -338,10 +342,10 @@ namespace SkiaSharp.Unity.HB {
 			
 			currentWidth = rectTransform.rect.width;
 			currentHeight = rectTransform.rect.height;
-			
 			if (currentWidth == 0 || currentHeight == 0) {
 				return;
 			}
+
             
 			info = new SKImageInfo((int)rectTransform.rect.width,
 				(int)rectTransform.rect.height);
@@ -403,6 +407,7 @@ namespace SkiaSharp.Unity.HB {
 				rawImage = GetComponent<RawImage>();
 				rectTransform = transform as RectTransform;
 			}
+
 			urls.Clear();
 			RenderText();
 		}
@@ -460,44 +465,26 @@ namespace SkiaSharp.Unity.HB {
 		public float minWidth { get; }
 		public float preferredWidth {
 			get {
-				if (rs != null && textRendered) {
+				if (rs != null) {
 					return rs.MeasuredWidth;
 				}
-
-				TextBlock temp = new TextBlock();
-				Style styleBoldItalic = new Style() {
-					FontFamily = "Segoe UI",
-					FontSize = fontSize,
-					TextColor = new SKColor(ColorToUint(fontColor)),
-					HaloWidth = haloWidth,
-					HaloColor = haloWidth > 0 ? new SKColor(ColorToUint(haloColor)) : SKColor.Empty,
-					FontItalic = italic,
-					FontWeight = bold ? 700 : 400,
-					LetterSpacing = letterSpacing,
-					TextDirection = TextDirection.Auto,
-					HaloBlur = haloBlur,
-					BackgroundColor = backgroundColor.a > 0 ? new SKColor(ColorToUint(backgroundColor)) : SKColors.Empty,
-					Underline = underlineStyle,
-					LineHeight = lineHeight,
-					StrikeThrough = strikeThroughStyle,
-				};
-				temp.AddText(text,styleBoldItalic);
-				var currentPreferdWidth2 = autoFitHorizontal ? temp.MeasuredWidth > maxWidth ? maxWidth : temp.MeasuredWidth + 20 : rectTransform.sizeDelta.x;
-				temp.MaxWidth = currentPreferdWidth2;
-				temp.MaxHeight = autoFitVertical ? temp.MeasuredHeight : rectTransform.rect.height;
-
-				return 550;
+				return currentWidth;
 			}
 		}
 		public float flexibleWidth { get; }
 		public float minHeight { get; }
+		private TextBlock temp;
 		public float preferredHeight {
 			get {
 				if (rs != null && textRendered) {
 					return rs.MeasuredHeight;
 				}
 
-				TextBlock temp = new TextBlock();
+				if (temp != null) {
+					return temp.MeasuredHeight;
+				}
+                
+				temp = new TextBlock();
 				Style styleBoldItalic = new Style() {
 					FontFamily = "Segoe UI",
 					FontSize = fontSize,
