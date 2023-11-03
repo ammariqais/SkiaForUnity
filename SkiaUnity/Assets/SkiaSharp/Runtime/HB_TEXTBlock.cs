@@ -306,18 +306,21 @@ namespace SkiaSharp.Unity.HB {
 
 		private void RenderText() {
 			Dispose();
-			if (texture != null) {
+			/*if (texture != null) {
 				#if !UNITY_EDITOR
 				Destroy(texture);
 				#else
 				DestroyImmediate(texture);
     #endif
-				texture = null;
 			}
-			if (rs != null) {
-				rs.Clear();
+			*/
+			if (rs == null) {
+				rs = new TextBlock();
 			}
-			rs = new TextBlock();
+			rs.Clear();
+			rs.MaxHeight = null;
+			rs.MaxWidth = null;
+
 			if (colorType == HBColorFormat.alpha8) {
 				rawImage.color = fontColor;
 			} else {
@@ -343,7 +346,6 @@ namespace SkiaSharp.Unity.HB {
 			currentPreferdWidth = autoFitHorizontal ? rs.MeasuredWidth > maxWidth ? maxWidth : rs.MeasuredWidth + 20 : rectTransform.sizeDelta.x;
 			rs.MaxWidth = currentPreferdWidth;
 			rs.MaxHeight = autoFitVertical ? rs.MeasuredHeight : rectTransform.rect.height;
-
 			if (autoFitVertical) {
 				rectTransform.sizeDelta = autoFitHorizontal ? new Vector2(currentPreferdWidth, rs.MeasuredHeight ) : new Vector2(rectTransform.sizeDelta.x, rs.MeasuredHeight );
 			}
@@ -365,7 +367,12 @@ namespace SkiaSharp.Unity.HB {
 			surface = SKSurface.Create(info);
 			canvas = surface.Canvas;
 			TextureFormat format = (info.ColorType == SKColorType.Rgba8888) ? TextureFormat.RGBA32 : TextureFormat.BGRA32;
-			texture = new Texture2D(info.Width, info.Height, format, false);
+			if (texture == null) {
+				texture = new Texture2D(info.Width, info.Height, format, false);
+			} else {
+				texture.Resize(info.Width, info.Height, format, false);
+			}
+			
 			rs.Paint(canvas);
 			texture.hideFlags = HideFlags.HideAndDontSave;
 			texture.name = "HB_Text";
@@ -480,7 +487,9 @@ namespace SkiaSharp.Unity.HB {
 				#else
 				DestroyImmediate(texture);
 				#endif
+				texture = null;
 			}
+
 
 			if (skTypeface != null) {
 				skTypeface.Dispose();
@@ -494,6 +503,7 @@ namespace SkiaSharp.Unity.HB {
 		
 		private void OnDisable() {
 			Dispose();
+			/*
 			if (texture != null) {
 				#if !UNITY_EDITOR
 				Destroy(texture);
@@ -501,6 +511,7 @@ namespace SkiaSharp.Unity.HB {
 				DestroyImmediate(texture);
 				#endif
 			}
+			*/
 
 			if (skTypeface != null) {
 				skTypeface.Dispose();
