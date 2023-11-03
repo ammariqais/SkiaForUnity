@@ -1,11 +1,9 @@
 using System;
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
-using JetBrains.Annotations;
 using UnityEngine;
 using UnityEngine.UI;
 using Topten.RichTextKit;
-using UnityEditor;
 using TextAlignment = Topten.RichTextKit.TextAlignment;
 
 namespace SkiaSharp.Unity.HB {
@@ -38,16 +36,20 @@ namespace SkiaSharp.Unity.HB {
 		private TextAlignment textAlignment = TextAlignment.Left;
         
 		private SKCanvas canvas;
-		private SKImageInfo info;
+		private SKImageInfo info = new SKImageInfo();
 		private SKSurface surface;
 		private SKPixmap pixmap;
 		private RawImage rawImage;
 		private Texture2D texture;
 		private TextBlock rs;
 		private Dictionary<int, HBLinks> urls = new Dictionary<int, HBLinks>();
+		private Style styleBoldItalic = new Style();
+		string pattern = @"(https?://\S+|www\.\S+)";
+		private Regex regex;
 		SKTypeface skTypeface;
 		RectTransform rectTransform;
 		private float currentWidth, currentHeight, currentPreferdWidth = 0;
+		private static bool lowMemoryListen = false;
 
 		public TextBlock Info => rs;
 
@@ -81,6 +83,7 @@ namespace SkiaSharp.Unity.HB {
 			set {
 				if (value != fontColor) {
 					fontColor = value;
+					styleBoldItalic.TextColor = new SKColor(ColorToUint(fontColor));
 					ReUpdate();
 				}
 			}
@@ -265,6 +268,26 @@ namespace SkiaSharp.Unity.HB {
 				return;
 			}
 			
+			styleBoldItalic.FontFamily = "Segoe UI";
+			styleBoldItalic.FontSize = fontSize;
+			styleBoldItalic.TextColor = new SKColor(ColorToUint(fontColor));
+			styleBoldItalic.HaloWidth = haloWidth;
+			styleBoldItalic.HaloColor = haloWidth > 0 ? new SKColor(ColorToUint(haloColor)) : SKColor.Empty;
+			styleBoldItalic.FontItalic = italic;
+			styleBoldItalic.FontWeight = bold ? 700 : 400;
+			styleBoldItalic.LetterSpacing = letterSpacing;
+			styleBoldItalic.TextDirection = TextDirection.Auto;
+			styleBoldItalic.HaloBlur = haloBlur;
+			styleBoldItalic.BackgroundColor = backgroundColor.a > 0 ? new SKColor(ColorToUint(backgroundColor)) : SKColors.Empty;
+			styleBoldItalic.Underline = underlineStyle;
+			styleBoldItalic.LineHeight = lineHeight;
+			styleBoldItalic.StrikeThrough = strikeThroughStyle;
+			if (lowMemoryListen == false) {
+				Application.lowMemory += OnLoadMemory;
+				lowMemoryListen = true;
+			}
+
+			
 			if (rawImage) {
 				RenderText();
 			}
@@ -282,27 +305,13 @@ namespace SkiaSharp.Unity.HB {
 		}
 
 		private void RenderText() {
-			Style styleBoldItalic = new Style() {
-				FontFamily = "Segoe UI",
-				FontSize = fontSize,
-				TextColor = new SKColor(ColorToUint(fontColor)),
-				HaloWidth = haloWidth,
-				HaloColor = haloWidth > 0 ? new SKColor(ColorToUint(haloColor)) : SKColor.Empty,
-				FontItalic = italic,
-				FontWeight = bold ? 700 : 400,
-				LetterSpacing = letterSpacing,
-				TextDirection = TextDirection.Auto,
-				HaloBlur = haloBlur,
-				BackgroundColor = backgroundColor.a > 0 ? new SKColor(ColorToUint(backgroundColor)) : SKColors.Empty,
-				Underline = underlineStyle,
-				LineHeight = lineHeight,
-				StrikeThrough = strikeThroughStyle,
-			};
-			
-			
 			Dispose();
 			if (texture != null) {
+				#if !UNITY_EDITOR
 				Destroy(texture);
+				#else
+				DestroyImmediate(texture);
+    #endif
 				texture = null;
 			}
 			if (rs != null) {
@@ -346,14 +355,18 @@ namespace SkiaSharp.Unity.HB {
 				return;
 			}
 
-            
-			info = new SKImageInfo((int)rectTransform.rect.width,
-				(int)rectTransform.rect.height);
+			if (info.IsEmpty) {
+				info = new SKImageInfo((int)rectTransform.rect.width, (int)rectTransform.rect.height);
+			} else {
+				info.Width = (int)rectTransform.rect.width;
+				info.Height = (int)rectTransform.rect.height;
+			}
+			
 			surface = SKSurface.Create(info);
 			canvas = surface.Canvas;
-			rs.Paint(canvas);
 			TextureFormat format = (info.ColorType == SKColorType.Rgba8888) ? TextureFormat.RGBA32 : TextureFormat.BGRA32;
 			texture = new Texture2D(info.Width, info.Height, format, false);
+			rs.Paint(canvas);
 			texture.hideFlags = HideFlags.HideAndDontSave;
 			texture.name = "HB_Text";
 			texture.wrapMode = TextureWrapMode.Repeat;
@@ -384,7 +397,10 @@ namespace SkiaSharp.Unity.HB {
 		};
 			
 			string pattern = @"(https?://\S+|www\.\S+)";
-			Regex regex = new Regex(pattern);
+			if (regex == null) {
+				regex = new Regex(pattern);
+			}
+			
 			MatchCollection matches = regex.Matches(Text);
 				foreach (Match match in matches){
 					var length = match.Index + match.Length;
@@ -409,10 +425,36 @@ namespace SkiaSharp.Unity.HB {
 				rawImage = GetComponent<RawImage>();
 				rectTransform = transform as RectTransform;
 			}
+            
+			urls.Clear();
+			RenderText();
+		}
+		
+		#if UNITY_EDITOR
+		public void ReUpdateEditMode() {
+			if (rawImage == null) {
+				rawImage = GetComponent<RawImage>();
+				rectTransform = transform as RectTransform;
+			}
+			styleBoldItalic.FontFamily = "Segoe UI";
+			styleBoldItalic.FontSize = fontSize;
+			styleBoldItalic.TextColor = new SKColor(ColorToUint(fontColor));
+			styleBoldItalic.HaloWidth = haloWidth;
+			styleBoldItalic.HaloColor = haloWidth > 0 ? new SKColor(ColorToUint(haloColor)) : SKColor.Empty;
+			styleBoldItalic.FontItalic = italic;
+			styleBoldItalic.FontWeight = bold ? 700 : 400;
+			styleBoldItalic.LetterSpacing = letterSpacing;
+			styleBoldItalic.TextDirection = TextDirection.Auto;
+			styleBoldItalic.HaloBlur = haloBlur;
+			styleBoldItalic.BackgroundColor = backgroundColor.a > 0 ? new SKColor(ColorToUint(backgroundColor)) : SKColors.Empty;
+			styleBoldItalic.Underline = underlineStyle;
+			styleBoldItalic.LineHeight = lineHeight;
+			styleBoldItalic.StrikeThrough = strikeThroughStyle;
 
 			urls.Clear();
 			RenderText();
 		}
+		#endif
 
 		public string LinkPressed() {
 				RectTransform rawImageRect = GetComponent<RectTransform>();
@@ -433,25 +475,36 @@ namespace SkiaSharp.Unity.HB {
 		private void OnDestroy() {
 			Dispose();
 			if (texture != null) {
+				#if !UNITY_EDITOR
 				Destroy(texture);
+				#else
+				DestroyImmediate(texture);
+				#endif
 			}
 
 			if (skTypeface != null) {
 				skTypeface.Dispose();
+			}
+			
+			if (lowMemoryListen) {
+				Application.lowMemory -= OnLoadMemory;
+				lowMemoryListen = false;
 			}
 		}
 		
 		private void OnDisable() {
 			Dispose();
 			if (texture != null) {
+				#if !UNITY_EDITOR
 				Destroy(texture);
+				#else
+				DestroyImmediate(texture);
+				#endif
 			}
 
 			if (skTypeface != null) {
 				skTypeface.Dispose();
 			}
-
-			//Resources.UnloadUnusedAssets();
 		}
 
 		private void Dispose() {
@@ -468,6 +521,10 @@ namespace SkiaSharp.Unity.HB {
 				canvas.Dispose();
 				canvas = null;
 			}
+		}
+
+		static void OnLoadMemory() {
+			Resources.UnloadUnusedAssets();
 		}
 
 		
@@ -488,35 +545,17 @@ namespace SkiaSharp.Unity.HB {
 		}
 		public float flexibleWidth { get; }
 		public float minHeight { get; }
-		private TextBlock temp;
+		private TextBlock temp = new TextBlock();
 		public float preferredHeight {
 			get {
 				if (rs != null && textRendered) {
 					return rs.MeasuredHeight;
 				}
-
-				if (temp != null) {
-					return temp.MeasuredHeight;
-				}
                 
-				temp = new TextBlock();
-				Style styleBoldItalic = new Style() {
-					FontFamily = "Segoe UI",
-					FontSize = fontSize,
-					TextColor = new SKColor(ColorToUint(fontColor)),
-					HaloWidth = haloWidth,
-					HaloColor = haloWidth > 0 ? new SKColor(ColorToUint(haloColor)) : SKColor.Empty,
-					FontItalic = italic,
-					FontWeight = bold ? 700 : 400,
-					LetterSpacing = letterSpacing,
-					TextDirection = TextDirection.Auto,
-					HaloBlur = haloBlur,
-					BackgroundColor = backgroundColor.a > 0 ? new SKColor(ColorToUint(backgroundColor)) : SKColors.Empty,
-					Underline = underlineStyle,
-					LineHeight = lineHeight,
-					StrikeThrough = strikeThroughStyle,
-				};
 				temp.AddText(text,styleBoldItalic);
+				if (rectTransform == null) {
+					rectTransform = transform as RectTransform;
+				}
 				var currentPreferdWidth2 = autoFitHorizontal ? temp.MeasuredWidth > maxWidth ? maxWidth : temp.MeasuredWidth + 20 : rectTransform.sizeDelta.x;
 				temp.MaxWidth = currentPreferdWidth2;
 				temp.MaxHeight = autoFitVertical ? temp.MeasuredHeight : rectTransform.rect.height;

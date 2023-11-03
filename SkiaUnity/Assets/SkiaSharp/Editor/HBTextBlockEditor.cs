@@ -116,7 +116,7 @@ public class HBTextBlockEditor : Editor {
 
     serializedObject.ApplyModifiedProperties();
     if (!EditorApplication.isPlayingOrWillChangePlaymode) {
-      script.ReUpdate();
+      script.ReUpdateEditMode();
     }
   }
   
