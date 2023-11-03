@@ -551,7 +551,10 @@ namespace SkiaSharp.Unity.HB {
 				if (rs != null && textRendered) {
 					return rs.MeasuredHeight;
 				}
-                
+
+				styleBoldItalic.FontSize = fontSize;
+				styleBoldItalic.FontWeight = bold ? 700 : 400;
+
 				temp.AddText(text,styleBoldItalic);
 				if (rectTransform == null) {
 					rectTransform = transform as RectTransform;
