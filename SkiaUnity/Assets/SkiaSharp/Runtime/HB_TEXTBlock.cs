@@ -302,7 +302,7 @@ namespace SkiaSharp.Unity.HB {
 			
 			Dispose();
 			if (texture != null) {
-				DestroyImmediate(texture);
+				Destroy(texture);
 				texture = null;
 			}
 			if (rs != null) {
@@ -354,6 +354,7 @@ namespace SkiaSharp.Unity.HB {
 			rs.Paint(canvas);
 			TextureFormat format = (info.ColorType == SKColorType.Rgba8888) ? TextureFormat.RGBA32 : TextureFormat.BGRA32;
 			texture = new Texture2D(info.Width, info.Height, format, false);
+			texture.hideFlags = HideFlags.HideAndDontSave;
 			texture.name = "HB_Text";
 			texture.wrapMode = TextureWrapMode.Repeat;
 			pixmap = surface.PeekPixels();
@@ -432,7 +433,7 @@ namespace SkiaSharp.Unity.HB {
 		private void OnDestroy() {
 			Dispose();
 			if (texture != null) {
-				DestroyImmediate(texture);
+				Destroy(texture);
 			}
 
 			if (skTypeface != null) {
@@ -443,14 +444,14 @@ namespace SkiaSharp.Unity.HB {
 		private void OnDisable() {
 			Dispose();
 			if (texture != null) {
-				DestroyImmediate(texture);
+				Destroy(texture);
 			}
 
 			if (skTypeface != null) {
 				skTypeface.Dispose();
 			}
 
-			Resources.UnloadUnusedAssets();
+			//Resources.UnloadUnusedAssets();
 		}
 
 		private void Dispose() {
