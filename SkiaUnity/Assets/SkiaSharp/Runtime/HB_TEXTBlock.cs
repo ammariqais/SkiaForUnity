@@ -50,6 +50,7 @@ namespace SkiaSharp.Unity.HB {
 		RectTransform rectTransform;
 		private float currentWidth, currentHeight, currentPreferdWidth = 0;
 		private static bool lowMemoryListen = false;
+		private static bool currentHandleLowMemory = false;
 
 		public TextBlock Info => rs;
 
@@ -264,6 +265,13 @@ namespace SkiaSharp.Unity.HB {
 		void Awake() {
 			rawImage = GetComponent<RawImage>();
 			rectTransform = transform as RectTransform;
+			
+			if (lowMemoryListen == false) {
+				clearMemory();
+				lowMemoryListen = true;
+				currentHandleLowMemory = true;
+			}
+			
 			if (String.IsNullOrEmpty(Text)){
 				return;
 			}
@@ -282,10 +290,6 @@ namespace SkiaSharp.Unity.HB {
 			styleBoldItalic.Underline = underlineStyle;
 			styleBoldItalic.LineHeight = lineHeight;
 			styleBoldItalic.StrikeThrough = strikeThroughStyle;
-			if (lowMemoryListen == false) {
-				Application.lowMemory += OnLoadMemory;
-				lowMemoryListen = true;
-			}
 
 			
 			if (rawImage) {
@@ -495,8 +499,7 @@ namespace SkiaSharp.Unity.HB {
 				skTypeface.Dispose();
 			}
 			
-			if (lowMemoryListen) {
-				Application.lowMemory -= OnLoadMemory;
+			if (currentHandleLowMemory) {
 				lowMemoryListen = false;
 			}
 		}
@@ -534,8 +537,9 @@ namespace SkiaSharp.Unity.HB {
 			}
 		}
 
-		static void OnLoadMemory() {
+		private void clearMemory() {
 			Resources.UnloadUnusedAssets();
+			this?.Invoke(nameof(clearMemory), 5);
 		}
 
 		
