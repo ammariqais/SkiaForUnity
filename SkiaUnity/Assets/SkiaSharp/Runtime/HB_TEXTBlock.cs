@@ -418,13 +418,15 @@ namespace SkiaSharp.Unity.HB {
 					int differnce = 0;
 					if (length > rs.Length) {
 						differnce = length - rs.Length;
+						length = length - differnce;
 					}
 
 					rs.ApplyStyle(match.Index, match.Length - differnce,styleLink);
 					urls.Add(match.Index,new HBLinks() {
 						IndexStart = match.Index,
 						IndexEnd = length,
-						Length = match.Length
+						Length = match.Length,
+						link = match.Value
 					});
 				}
 		}
@@ -480,7 +482,7 @@ namespace SkiaSharp.Unity.HB {
 					var caretPos = rs.HitTest(rawImageRect.sizeDelta.x * normalizedX, rawImageRect.sizeDelta.y * normalizedY);
 					foreach (var url in urls) {
 						if (caretPos.ClosestCodePointIndex >= url.Value.IndexStart && caretPos.ClosestCodePointIndex <=  url.Value.IndexEnd) {
-							return rs.Copy(url.Key, url.Value.Length).ToString();
+							return url.Value.link;
 						}
 					}
 				}

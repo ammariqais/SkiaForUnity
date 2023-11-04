@@ -3,5 +3,6 @@ namespace SkiaSharp.Unity {
         public int IndexStart;
         public int IndexEnd;
         public int Length;
+        public string link;
     }
 }
