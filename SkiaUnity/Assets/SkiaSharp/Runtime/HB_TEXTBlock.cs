@@ -413,9 +413,14 @@ namespace SkiaSharp.Unity.HB {
 			}
 			
 			MatchCollection matches = regex.Matches(Text);
-				foreach (Match match in matches){
+				foreach (Match match in matches) {
 					var length = match.Index + match.Length;
-					rs.ApplyStyle(match.Index,match.Length,styleLink);
+					int differnce = 0;
+					if (length > rs.Length) {
+						differnce = length - rs.Length;
+					}
+
+					rs.ApplyStyle(match.Index, match.Length - differnce,styleLink);
 					urls.Add(match.Index,new HBLinks() {
 						IndexStart = match.Index,
 						IndexEnd = length,
