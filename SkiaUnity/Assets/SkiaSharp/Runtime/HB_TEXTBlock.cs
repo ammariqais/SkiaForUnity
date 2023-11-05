@@ -367,10 +367,12 @@ namespace SkiaSharp.Unity.HB {
 				info.Width = (int)rectTransform.rect.width;
 				info.Height = (int)rectTransform.rect.height;
 			}
+
+			info.ColorType = colorType == HBColorFormat.alpha8 ? SKColorType.Alpha8 : info.ColorType ;
 			
 			surface = SKSurface.Create(info);
 			canvas = surface.Canvas;
-			TextureFormat format = (info.ColorType == SKColorType.Rgba8888) ? TextureFormat.RGBA32 : TextureFormat.BGRA32;
+			TextureFormat format = (info.ColorType == SKColorType.Rgba8888) ? TextureFormat.RGBA32 : info.ColorType == SKColorType.Alpha8 ? TextureFormat.Alpha8 : TextureFormat.BGRA32;
 			if (texture == null) {
 				texture = new Texture2D(info.Width, info.Height, format, false);
 			} else {
