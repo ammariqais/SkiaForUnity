@@ -641,6 +641,7 @@ namespace Topten.RichTextKit
 
                 // Setup SKPaint
                 paint.Color = Style.TextColor;
+                paint.Shader = ctx.Shader;
 
                 if (Style.HaloColor != SKColor.Empty)
                 {

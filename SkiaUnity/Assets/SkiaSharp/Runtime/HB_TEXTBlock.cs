@@ -261,7 +261,7 @@ namespace SkiaSharp.Unity.HB {
 				}
 			}
 		}
-
+		private TextGradient blockGradient;
 		void Awake() {
 			rawImage = GetComponent<RawImage>();
 			rectTransform = transform as RectTransform;
@@ -290,6 +290,9 @@ namespace SkiaSharp.Unity.HB {
 			styleBoldItalic.Underline = underlineStyle;
 			styleBoldItalic.LineHeight = lineHeight;
 			styleBoldItalic.StrikeThrough = strikeThroughStyle;
+			blockGradient = null;
+			var outlineEffect = TextEffect.Outline(SKColors.Red, 44);
+			styleNormal.AddEffect(outlineEffect);
 
 			
 			if (rawImage) {
@@ -307,6 +310,7 @@ namespace SkiaSharp.Unity.HB {
 			uint blue = (uint)(color.b * 255);
 			return (alpha << 24) | (red << 16) | (green << 8) | blue;
 		}
+		Style styleNormal = new Style() { FontFamily = "FontAwesome", FontSize = 18 };
 
 		private void RenderText() {
 			Dispose();
@@ -331,6 +335,16 @@ namespace SkiaSharp.Unity.HB {
 				rawImage.color = Color.white;
 			}
 			rs.Alignment = textAlignment;
+			blockGradient = TextGradient.Linear(new SKColor[]
+			{
+				SKColor.Parse("ffffff"),
+				SKColor.Parse("ffffff"),
+			}, new float[] {0.5f,1}, 90);
+			var options = new TextPaintOptions()
+			{
+				SelectionColor = new SKColor(0x60FF0000),
+				TextGradient = blockGradient
+			};
 			rs.AddText(Text, styleBoldItalic);
 			
 			if (renderLinks) {
@@ -379,7 +393,7 @@ namespace SkiaSharp.Unity.HB {
 				texture.Resize(info.Width, info.Height, format, false);
 			}
 			
-			rs.Paint(canvas);
+			rs.Paint(canvas, options);
 			texture.hideFlags = HideFlags.HideAndDontSave;
 			texture.name = "HB_Text";
 			texture.wrapMode = TextureWrapMode.Repeat;

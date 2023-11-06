@@ -135,5 +135,14 @@ namespace Topten.RichTextKit
         /// a selection range.
         /// </summary>
         public static TextPaintOptions Default = new TextPaintOptions();
+        
+        /// <summary>
+        /// A gradient used when rendering text
+        /// </summary>
+        public TextGradient TextGradient
+        {
+            get;
+            set;
+        }
     }
 }
