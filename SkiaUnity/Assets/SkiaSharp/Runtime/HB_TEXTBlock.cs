@@ -513,7 +513,6 @@ namespace SkiaSharp.Unity.HB {
 		
 		private void OnDisable() {
 			Dispose();
-			/*
 			if (texture != null) {
 				#if !UNITY_EDITOR
 				Destroy(texture);
@@ -521,7 +520,6 @@ namespace SkiaSharp.Unity.HB {
 				DestroyImmediate(texture);
 				#endif
 			}
-			*/
 
 			if (skTypeface != null) {
 				skTypeface.Dispose();
@@ -546,7 +544,7 @@ namespace SkiaSharp.Unity.HB {
 
 		private void clearMemory() {
 			Resources.UnloadUnusedAssets();
-			this?.Invoke(nameof(clearMemory), 5);
+			this?.Invoke(nameof(clearMemory), 3);
 		}
 
 		
