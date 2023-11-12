@@ -380,7 +380,7 @@ namespace SkiaSharp.Unity.HB {
 			texture.wrapMode = TextureWrapMode.Repeat;
 			pixmap = surface.PeekPixels();
 			texture.LoadRawTextureData(pixmap.GetPixels(), pixmap.RowBytes * pixmap.Height);
-			texture.Compress(false);
+			//texture.Compress(false);
 			texture.Apply();
 			rawImage.texture = texture;
 			Dispose();
