@@ -276,7 +276,6 @@ namespace SkiaSharp.Unity.HB {
 				return;
 			}
 			
-			styleBoldItalic.FontFamily = "Segoe UI";
 			styleBoldItalic.FontSize = fontSize;
 			styleBoldItalic.TextColor = new SKColor(ColorToUint(fontColor));
 			styleBoldItalic.HaloWidth = haloWidth;
@@ -393,7 +392,6 @@ namespace SkiaSharp.Unity.HB {
 
 		private void RenderLinksCall() {
 			Style styleLink = new Style() {
-			FontFamily = "Arial",
 			FontSize = fontSize,
 			TextColor = SKColors.Blue,
 			Underline = UnderlineStyle.Solid,
@@ -422,8 +420,8 @@ namespace SkiaSharp.Unity.HB {
 						differnce = length - rs.Length;
 						length = length - differnce;
 					}
-
-					rs.ApplyStyle(match.Index, match.Length - differnce,styleLink);
+                    
+					rs.ApplyStyle(Mathf.Clamp(match.Index,0,rs.Length), Mathf.Clamp(match.Length - differnce,0,match.Length),styleLink);
 					urls.Add(match.Index,new HBLinks() {
 						IndexStart = match.Index,
 						IndexEnd = length,
@@ -456,7 +454,7 @@ namespace SkiaSharp.Unity.HB {
 				rawImage = GetComponent<RawImage>();
 				rectTransform = transform as RectTransform;
 			}
-			styleBoldItalic.FontFamily = "Segoe UI";
+
 			styleBoldItalic.FontSize = fontSize;
 			styleBoldItalic.TextColor = new SKColor(ColorToUint(fontColor));
 			styleBoldItalic.HaloWidth = haloWidth;
@@ -470,7 +468,6 @@ namespace SkiaSharp.Unity.HB {
 			styleBoldItalic.Underline = underlineStyle;
 			styleBoldItalic.LineHeight = lineHeight;
 			styleBoldItalic.StrikeThrough = strikeThroughStyle;
-
 			urls.Clear();
 			RenderText();
 		}

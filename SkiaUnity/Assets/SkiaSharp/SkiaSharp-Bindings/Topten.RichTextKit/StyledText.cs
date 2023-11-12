@@ -370,11 +370,10 @@ namespace Topten.RichTextKit
         /// <param name="position">The code point index of the start of the text</param>
         /// <param name="length">The length of the text</param>
         /// <param name="style">The new style to be applied</param>
-        public void ApplyStyle(int position, int length, IStyle style)
-        {
+        public void ApplyStyle(int position, int length, IStyle style) {
             // Check args
             if (position < 0 || position + length > this.Length)
-                throw new ArgumentException("Invalid range");
+                return;
             if (style == null)
                 throw new ArgumentNullException(nameof(style));
 
