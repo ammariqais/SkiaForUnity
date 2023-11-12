@@ -545,7 +545,7 @@ namespace SkiaSharp.Unity.HB {
 
 		private void clearMemory() {
 			Resources.UnloadUnusedAssets();
-			this?.Invoke(nameof(clearMemory), 5);
+			this?.Invoke(nameof(clearMemory), 2.5f);
 		}
 
 		
