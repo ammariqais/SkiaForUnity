@@ -309,14 +309,14 @@ namespace SkiaSharp.Unity.HB {
 
 		private void RenderText() {
 			Dispose();
-			/*if (texture != null) {
+			if (texture != null) {
 				#if !UNITY_EDITOR
 				Destroy(texture);
 				#else
 				DestroyImmediate(texture);
     #endif
 			}
-			*/
+			Resources.UnloadAsset(texture);
 			if (rs == null) {
 				rs = new TextBlock();
 			}
@@ -544,7 +544,7 @@ namespace SkiaSharp.Unity.HB {
 		}
 
 		private void clearMemory() {
-			Resources.UnloadUnusedAssets();
+			//Resources.UnloadUnusedAssets();
 			this?.Invoke(nameof(clearMemory), 5);
 		}
 
