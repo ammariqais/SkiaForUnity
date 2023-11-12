@@ -366,17 +366,13 @@ namespace SkiaSharp.Unity.HB {
 				info.Width = (int)rectTransform.rect.width;
 				info.Height = (int)rectTransform.rect.height;
 			}
-
+			
 			info.ColorType = colorType == HBColorFormat.alpha8 ? SKColorType.Alpha8 : info.ColorType ;
 			
 			surface = SKSurface.Create(info);
 			canvas = surface.Canvas;
-			TextureFormat format = (info.ColorType == SKColorType.Rgba8888) ? TextureFormat.RGBA32 : info.ColorType == SKColorType.Alpha8 ? TextureFormat.Alpha8 : TextureFormat.BGRA32;
-			if (texture == null) {
-				texture = new Texture2D(info.Width, info.Height, format, false);
-			} else {
-				texture.Resize(info.Width, info.Height, format, false);
-			}
+			TextureFormat format = (info.ColorType == SKColorType.Rgba8888) ? TextureFormat.RGBA32 : info.ColorType == SKColorType.Alpha8 ? TextureFormat.Alpha8 : TextureFormat.RGBA32;
+			texture = new Texture2D(info.Width, info.Height, format, false);
 			
 			rs.Paint(canvas);
 			texture.hideFlags = HideFlags.HideAndDontSave;
@@ -384,6 +380,7 @@ namespace SkiaSharp.Unity.HB {
 			texture.wrapMode = TextureWrapMode.Repeat;
 			pixmap = surface.PeekPixels();
 			texture.LoadRawTextureData(pixmap.GetPixels(), pixmap.RowBytes * pixmap.Height);
+			texture.Compress(false);
 			texture.Apply();
 			rawImage.texture = texture;
 			Dispose();
