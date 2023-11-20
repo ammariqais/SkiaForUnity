@@ -360,11 +360,14 @@ namespace SkiaSharp.Unity.HB {
 				return;
 			}
 
+			int roundedWidth = Mathf.CeilToInt(rectTransform.rect.width / 4) * 4;
+			int roundedHeight = Mathf.CeilToInt(rectTransform.rect.height / 4) * 4;
+			
 			if (info.IsEmpty) {
-				info = new SKImageInfo((int)rectTransform.rect.width, (int)rectTransform.rect.height);
+				info = new SKImageInfo(roundedWidth, roundedHeight);
 			} else {
-				info.Width = (int)rectTransform.rect.width;
-				info.Height = (int)rectTransform.rect.height;
+				info.Width = roundedWidth;
+				info.Height = roundedHeight;
 			}
 			
 			info.ColorType = colorType == HBColorFormat.alpha8 ? SKColorType.Alpha8 : info.ColorType ;
@@ -373,9 +376,9 @@ namespace SkiaSharp.Unity.HB {
 			canvas = surface.Canvas;
 			TextureFormat format = (info.ColorType == SKColorType.Rgba8888) ? TextureFormat.RGBA32 : info.ColorType == SKColorType.Alpha8 ? TextureFormat.Alpha8 : TextureFormat.RGBA32;
 			if (texture == null) {
-				texture = new Texture2D(info.Width, info.Height, format, false);
+				texture = new Texture2D(roundedWidth, roundedHeight, format, false);
 			} else {
-				texture.Resize(info.Width, info.Height, format, false);
+				texture.Resize(roundedWidth, roundedHeight, format, false);
 			}
 			
 			rs.Paint(canvas);
