@@ -94,6 +94,9 @@ namespace Topten.RichTextKit
             get => _underlineStyle;
             set { CheckNotSealed(); _underlineStyle = value; }
         }
+        public float UnderlineOffset { get; }
+        public float OverlineOffset { get; }
+        public float StrikeThroughOffset { get; }
 
         /// <summary>
         /// The strike through style for the text in this run (defaults to None).
@@ -121,7 +124,10 @@ namespace Topten.RichTextKit
             get => _textColor;
             set { CheckNotSealed(); _textColor = value; }
         }
-        
+        public SKColor? UnderlineColor { get; }
+        public float? StrokeThickness { get; }
+        public bool StrokeInkSkip { get; }
+
         /// <summary>
         /// The background color of this run (no background is painted by default).
         /// </summary>
@@ -207,6 +213,18 @@ namespace Topten.RichTextKit
             get => _replacementCharacter;
             set { CheckNotSealed(); _replacementCharacter = value; }
         }
+        public void AddEffect(TextEffect textEffect) {
+            if (_textEffects == null)
+                _textEffects = new List<TextEffect>();
+
+            _textEffects.Add(textEffect);
+        }
+
+        public void ClearEffects() {
+            _textEffects?.Clear();
+        }
+
+        public IEnumerable<TextEffect> TextEffects { get; }
 
 
         bool _sealed;
@@ -227,6 +245,7 @@ namespace Topten.RichTextKit
         FontVariant _fontVariant;
         TextDirection _textDirection = TextDirection.Auto;
         char _replacementCharacter = '\0';
+        List<TextEffect> _textEffects;
 
         /// <summary>
         /// Modifies this style with one or more attribute changes and returns a new style

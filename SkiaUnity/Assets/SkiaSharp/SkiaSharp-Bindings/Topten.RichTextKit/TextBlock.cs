@@ -410,6 +410,7 @@ namespace Topten.RichTextKit
                 Canvas = canvas,
                 Options = options,
             };
+            ctx.Shader = options.TextGradient?.CreateShader( MeasuredWidth, MeasuredHeight, MeasuredPadding.Left );
 
             // Prepare selection
             if (options.Selection.HasValue)
@@ -447,6 +448,7 @@ namespace Topten.RichTextKit
 
             // Clean up
             ctx.PaintSelectionBackground?.Dispose();
+            ctx.Shader?.Dispose();
         }
 
         /// <summary>

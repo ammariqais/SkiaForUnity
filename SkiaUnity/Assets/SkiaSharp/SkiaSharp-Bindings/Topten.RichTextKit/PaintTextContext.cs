@@ -49,5 +49,6 @@ namespace Topten.RichTextKit
         public SKPaint PaintSelectionHandle;
         public float SelectionHandleScale = 1.0f;
         public TextPaintOptions Options;
+        public SKShader Shader;
     }
 }

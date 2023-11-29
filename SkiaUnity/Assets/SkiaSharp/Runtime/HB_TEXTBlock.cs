@@ -24,17 +24,22 @@ namespace SkiaSharp.Unity.HB {
 		[SerializeField]
 		private Color fontColor = Color.black, haloColor = Color.black, backgroundColor = Color.clear;
 		[SerializeField]
-		private bool italic, bold, autoFitVertical = true, autoFitHorizontal, renderLinks;
+		private bool italic, bold, autoFitVertical = true, autoFitHorizontal, renderLinks, enableGradiant;
 		[SerializeField]
 		private UnderlineStyle underlineStyle;
 		[SerializeField]
 		private StrikeThroughStyle strikeThroughStyle;
 		[SerializeField]
-		private float lineHeight = 1.0f, maxWidth = 264;
+		private float lineHeight = 1.0f, maxWidth = 264, gradiantAngle = 90;
 		[SerializeField]
 		private HBColorFormat colorType = HBColorFormat.alpha8; 
 		[SerializeField] 
 		private TextAlignment textAlignment = TextAlignment.Left;
+		[SerializeField]
+		Color[] gradiantColors;
+		[SerializeField]
+		float[] gradiantPositions;
+
         
 		private SKCanvas canvas;
 		private SKImageInfo info = new SKImageInfo();
@@ -51,6 +56,7 @@ namespace SkiaSharp.Unity.HB {
 		RectTransform rectTransform;
 		private float currentWidth, currentHeight, currentPreferdWidth = 0;
 		private static HB_TEXTBlock master;
+		private TextGradient blockGradient;
 
 		public TextBlock Info => rs;
 
@@ -136,6 +142,16 @@ namespace SkiaSharp.Unity.HB {
 			}
 			set {
 				autoFitHorizontal = value;
+				ReUpdate();
+			}
+		}
+
+		public bool IsGradiantEnabled {
+			get {
+				return enableGradiant;
+			}
+			set {
+				enableGradiant = value;
 				ReUpdate();
 			}
 		}
@@ -307,6 +323,8 @@ namespace SkiaSharp.Unity.HB {
 			uint blue = (uint)(color.b * 255);
 			return (alpha << 24) | (red << 16) | (green << 8) | blue;
 		}
+		
+		
 
 		private void RenderText() {
 			Dispose();
@@ -331,6 +349,7 @@ namespace SkiaSharp.Unity.HB {
 				rawImage.color = Color.white;
 			}
 			rs.Alignment = textAlignment;
+			
 			rs.AddText(Text, styleBoldItalic);
 			
 			if (renderLinks) {
@@ -382,7 +401,20 @@ namespace SkiaSharp.Unity.HB {
 				texture.Resize(roundedWidth, roundedHeight, format, false);
 			}
 			
-			rs.Paint(canvas);
+			if (enableGradiant && gradiantColors != null) {
+				SKColor[] colors = new SKColor[gradiantColors.Length];
+				for (int i = 0; i < gradiantColors.Length; i++) {
+					colors[i] = new SKColor(ColorToUint(gradiantColors[i]));
+				}
+				blockGradient = TextGradient.Linear(colors, gradiantPositions, gradiantAngle);
+				var options = new TextPaintOptions() {
+					TextGradient = blockGradient
+				};
+				rs.Paint(canvas,options);
+			} else {
+				rs.Paint(canvas);
+			}
+			
 			texture.hideFlags = HideFlags.HideAndDontSave;
 			texture.name = "HB_Text";
 			texture.wrapMode = TextureWrapMode.Repeat;
