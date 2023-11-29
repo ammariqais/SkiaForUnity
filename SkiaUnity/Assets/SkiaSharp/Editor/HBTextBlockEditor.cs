@@ -14,7 +14,8 @@ public class HBTextBlockEditor : Editor {
     italicProperty, boldProperty, haloColorProperty, haloWidthProperty, 
     letterSpacingProperty, autoFitVerticalProperty, renderLinksProperty, 
     haloBlurProperty, backgroundColorProperty, underlineStyleProperty, lineHeightProperty,
-    strikeThroughStyleProperty,textProperty, textAligmentProperty,colorTypeProperty, autoFitHorizontalProperty, maxWidthProperty ;
+    strikeThroughStyleProperty,textProperty, textAligmentProperty,colorTypeProperty, autoFitHorizontalProperty, maxWidthProperty, gradiantColorsProperty
+    ,gradiantPositionsProperty, enableGradiantProperty, gradiantAngleProperty;
   bool showHaloSettings = false;
   bool showMoreSettings = false;
 
@@ -46,6 +47,10 @@ public class HBTextBlockEditor : Editor {
     textProperty = serializedObject.FindProperty("Text");
     textAligmentProperty = serializedObject.FindProperty("textAlignment");
     colorTypeProperty = serializedObject.FindProperty("colorType");
+    gradiantColorsProperty = serializedObject.FindProperty("gradiantColors");
+    gradiantPositionsProperty = serializedObject.FindProperty("gradiantPositions");
+    enableGradiantProperty = serializedObject.FindProperty("enableGradiant");
+    gradiantAngleProperty = serializedObject.FindProperty("gradiantAngle");
   }
   public override void OnInspectorGUI(){
     HB_TEXTBlock script = (HB_TEXTBlock)target;
@@ -86,6 +91,12 @@ public class HBTextBlockEditor : Editor {
     EditorGUILayout.PropertyField(autoFitHorizontalProperty);
     if (script.AutoFitHorizontal) {
       EditorGUILayout.PropertyField(maxWidthProperty);
+    }
+    EditorGUILayout.PropertyField(enableGradiantProperty);
+    if (script.IsGradiantEnabled) {
+      EditorGUILayout.PropertyField(gradiantColorsProperty);
+      EditorGUILayout.PropertyField(gradiantPositionsProperty);
+      EditorGUILayout.PropertyField(gradiantAngleProperty);
     }
     EditorGUILayout.PropertyField(renderLinksProperty);
     
