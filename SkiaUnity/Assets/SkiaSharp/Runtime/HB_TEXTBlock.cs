@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
 using UnityEngine;
@@ -49,8 +50,7 @@ namespace SkiaSharp.Unity.HB {
 		SKTypeface skTypeface;
 		RectTransform rectTransform;
 		private float currentWidth, currentHeight, currentPreferdWidth = 0;
-		private static bool lowMemoryListen = false;
-		private static bool currentHandleLowMemory = false;
+		private static HB_TEXTBlock master;
 
 		public TextBlock Info => rs;
 
@@ -266,12 +266,6 @@ namespace SkiaSharp.Unity.HB {
 			rawImage = GetComponent<RawImage>();
 			rectTransform = transform as RectTransform;
 			
-			if (lowMemoryListen == false) {
-				clearMemory();
-				lowMemoryListen = true;
-				currentHandleLowMemory = true;
-			}
-			
 			if (String.IsNullOrEmpty(Text)){
 				return;
 			}
@@ -293,6 +287,13 @@ namespace SkiaSharp.Unity.HB {
 			
 			if (rawImage) {
 				RenderText();
+			}
+		}
+
+		void OnEnable() {
+			if (master == null) {
+				master = this;
+				clearMemory();
 			}
 		}
 		private bool textRendered;
@@ -508,10 +509,6 @@ namespace SkiaSharp.Unity.HB {
 			if (skTypeface != null) {
 				skTypeface.Dispose();
 			}
-			
-			if (currentHandleLowMemory) {
-				lowMemoryListen = false;
-			}
 		}
 		
 		private void OnDisable() {
@@ -526,6 +523,11 @@ namespace SkiaSharp.Unity.HB {
 
 			if (skTypeface != null) {
 				skTypeface.Dispose();
+			}
+			
+			if (master == this) {
+				StopCoroutine(ClearMemoryCoroutine());
+				master = null;
 			}
 		}
 
@@ -546,10 +548,15 @@ namespace SkiaSharp.Unity.HB {
 		}
 
 		private void clearMemory() {
-			Resources.UnloadUnusedAssets();
-			this?.Invoke(nameof(clearMemory), 3);
+			StartCoroutine(ClearMemoryCoroutine());
 		}
 
+		private IEnumerator ClearMemoryCoroutine() {
+			while (true) {
+				yield return new WaitForSeconds(5f);
+				Resources.UnloadUnusedAssets();
+			}
+		}
 		
 		public void CalculateLayoutInputHorizontal() {}
 
