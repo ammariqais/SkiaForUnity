@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
 using UnityEngine;
@@ -49,8 +50,7 @@ namespace SkiaSharp.Unity.HB {
 		SKTypeface skTypeface;
 		RectTransform rectTransform;
 		private float currentWidth, currentHeight, currentPreferdWidth = 0;
-		private static bool lowMemoryListen = false;
-		private static bool currentHandleLowMemory = false;
+		private static HB_TEXTBlock master;
 
 		public TextBlock Info => rs;
 
@@ -266,17 +266,10 @@ namespace SkiaSharp.Unity.HB {
 			rawImage = GetComponent<RawImage>();
 			rectTransform = transform as RectTransform;
 			
-			if (lowMemoryListen == false) {
-				clearMemory();
-				lowMemoryListen = true;
-				currentHandleLowMemory = true;
-			}
-			
 			if (String.IsNullOrEmpty(Text)){
 				return;
 			}
 			
-			styleBoldItalic.FontFamily = "Segoe UI";
 			styleBoldItalic.FontSize = fontSize;
 			styleBoldItalic.TextColor = new SKColor(ColorToUint(fontColor));
 			styleBoldItalic.HaloWidth = haloWidth;
@@ -297,6 +290,13 @@ namespace SkiaSharp.Unity.HB {
 			
 			if (rawImage) {
 				RenderText();
+			}
+		}
+
+		void OnEnable() {
+			if (master == null) {
+				master = this;
+				clearMemory();
 			}
 		}
 		private bool textRendered;
@@ -375,22 +375,25 @@ namespace SkiaSharp.Unity.HB {
 				return;
 			}
 
+			int roundedWidth = Mathf.CeilToInt(rectTransform.rect.width / 4) * 4;
+			int roundedHeight = Mathf.CeilToInt(rectTransform.rect.height / 4) * 4;
+			
 			if (info.IsEmpty) {
-				info = new SKImageInfo((int)rectTransform.rect.width, (int)rectTransform.rect.height);
+				info = new SKImageInfo(roundedWidth, roundedHeight);
 			} else {
-				info.Width = (int)rectTransform.rect.width;
-				info.Height = (int)rectTransform.rect.height;
+				info.Width = roundedWidth;
+				info.Height = roundedHeight;
 			}
-
+			
 			info.ColorType = colorType == HBColorFormat.alpha8 ? SKColorType.Alpha8 : info.ColorType ;
 			
 			surface = SKSurface.Create(info);
 			canvas = surface.Canvas;
-			TextureFormat format = (info.ColorType == SKColorType.Rgba8888) ? TextureFormat.RGBA32 : info.ColorType == SKColorType.Alpha8 ? TextureFormat.Alpha8 : TextureFormat.BGRA32;
+			TextureFormat format = (info.ColorType == SKColorType.Rgba8888) ? TextureFormat.RGBA32 : info.ColorType == SKColorType.Alpha8 ? TextureFormat.Alpha8 : TextureFormat.RGBA32;
 			if (texture == null) {
-				texture = new Texture2D(info.Width, info.Height, format, false);
+				texture = new Texture2D(roundedWidth, roundedHeight, format, false);
 			} else {
-				texture.Resize(info.Width, info.Height, format, false);
+				texture.Resize(roundedWidth, roundedHeight, format, false);
 			}
 			
 			rs.Paint(canvas, options);
@@ -399,6 +402,7 @@ namespace SkiaSharp.Unity.HB {
 			texture.wrapMode = TextureWrapMode.Repeat;
 			pixmap = surface.PeekPixels();
 			texture.LoadRawTextureData(pixmap.GetPixels(), pixmap.RowBytes * pixmap.Height);
+			texture.Compress(false);
 			texture.Apply();
 			rawImage.texture = texture;
 			Dispose();
@@ -407,7 +411,6 @@ namespace SkiaSharp.Unity.HB {
 
 		private void RenderLinksCall() {
 			Style styleLink = new Style() {
-			FontFamily = "Arial",
 			FontSize = fontSize,
 			TextColor = SKColors.Blue,
 			Underline = UnderlineStyle.Solid,
@@ -436,8 +439,8 @@ namespace SkiaSharp.Unity.HB {
 						differnce = length - rs.Length;
 						length = length - differnce;
 					}
-
-					rs.ApplyStyle(match.Index, match.Length - differnce,styleLink);
+                    
+					rs.ApplyStyle(Mathf.Clamp(match.Index,0,rs.Length), Mathf.Clamp(match.Length - differnce,0,match.Length),styleLink);
 					urls.Add(match.Index,new HBLinks() {
 						IndexStart = match.Index,
 						IndexEnd = length,
@@ -470,7 +473,7 @@ namespace SkiaSharp.Unity.HB {
 				rawImage = GetComponent<RawImage>();
 				rectTransform = transform as RectTransform;
 			}
-			styleBoldItalic.FontFamily = "Segoe UI";
+
 			styleBoldItalic.FontSize = fontSize;
 			styleBoldItalic.TextColor = new SKColor(ColorToUint(fontColor));
 			styleBoldItalic.HaloWidth = haloWidth;
@@ -484,7 +487,6 @@ namespace SkiaSharp.Unity.HB {
 			styleBoldItalic.Underline = underlineStyle;
 			styleBoldItalic.LineHeight = lineHeight;
 			styleBoldItalic.StrikeThrough = strikeThroughStyle;
-
 			urls.Clear();
 			RenderText();
 		}
@@ -521,15 +523,10 @@ namespace SkiaSharp.Unity.HB {
 			if (skTypeface != null) {
 				skTypeface.Dispose();
 			}
-			
-			if (currentHandleLowMemory) {
-				lowMemoryListen = false;
-			}
 		}
 		
 		private void OnDisable() {
 			Dispose();
-			/*
 			if (texture != null) {
 				#if !UNITY_EDITOR
 				Destroy(texture);
@@ -537,10 +534,14 @@ namespace SkiaSharp.Unity.HB {
 				DestroyImmediate(texture);
 				#endif
 			}
-			*/
 
 			if (skTypeface != null) {
 				skTypeface.Dispose();
+			}
+			
+			if (master == this) {
+				StopCoroutine(ClearMemoryCoroutine());
+				master = null;
 			}
 		}
 
@@ -561,10 +562,15 @@ namespace SkiaSharp.Unity.HB {
 		}
 
 		private void clearMemory() {
-			Resources.UnloadUnusedAssets();
-			this?.Invoke(nameof(clearMemory), 5);
+			StartCoroutine(ClearMemoryCoroutine());
 		}
 
+		private IEnumerator ClearMemoryCoroutine() {
+			while (true) {
+				yield return new WaitForSeconds(5f);
+				Resources.UnloadUnusedAssets();
+			}
+		}
 		
 		public void CalculateLayoutInputHorizontal() {}
 
