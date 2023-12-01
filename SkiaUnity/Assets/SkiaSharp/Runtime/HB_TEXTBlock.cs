@@ -331,14 +331,14 @@ namespace SkiaSharp.Unity.HB {
 		private void RenderText() {
 			Dispose();
 			#if !UNITY_EDITOR
-				Destroy(rawImage.texture);
+				DestroyImmediate(rawImage.texture);
 			#else
 			DestroyImmediate(rawImage.texture);
 			#endif
 			
 			if (texture != null) {
 				#if !UNITY_EDITOR
-				Destroy(texture);
+				DestroyImmediate(texture);
 				#else
 				DestroyImmediate(texture);
 				#endif
@@ -537,7 +537,7 @@ namespace SkiaSharp.Unity.HB {
 			Dispose();
 			if (texture != null) {
 				#if !UNITY_EDITOR
-				Destroy(texture);
+				DestroyImmediate(texture);
 				#else
 				DestroyImmediate(texture);
 				#endif
@@ -553,14 +553,14 @@ namespace SkiaSharp.Unity.HB {
 		private void OnDisable() {
 			Dispose();
 			#if !UNITY_EDITOR
-				Destroy(rawImage.texture);
+				DestroyImmediate(rawImage.texture);
 			#else
 			DestroyImmediate(rawImage.texture);
 			#endif
 			
 			if (texture != null) {
 				#if !UNITY_EDITOR
-				Destroy(texture);
+				DestroyImmediate(texture);
 				#else
 				DestroyImmediate(texture);
 				#endif
