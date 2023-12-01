@@ -55,7 +55,6 @@ namespace SkiaSharp.Unity.HB {
 		SKTypeface skTypeface;
 		RectTransform rectTransform;
 		private float currentWidth, currentHeight, currentPreferdWidth = 0;
-		private static HB_TEXTBlock master;
 		private TextGradient blockGradient;
 
 		public TextBlock Info => rs;
@@ -301,17 +300,20 @@ namespace SkiaSharp.Unity.HB {
 			styleBoldItalic.StrikeThrough = strikeThroughStyle;
 
 			
+			
+		}
+
+		private void OnEnable() {
+			if (String.IsNullOrEmpty(Text)){
+				return;
+			}
+			
 			if (rawImage) {
+				urls.Clear();
 				RenderText();
 			}
 		}
 
-		void OnEnable() {
-			if (master == null) {
-				master = this;
-				clearMemory();
-			}
-		}
 		private bool textRendered;
         
 		
@@ -328,14 +330,20 @@ namespace SkiaSharp.Unity.HB {
 
 		private void RenderText() {
 			Dispose();
-			/*if (texture != null) {
+			#if !UNITY_EDITOR
+				Destroy(rawImage.texture);
+			#else
+			DestroyImmediate(rawImage.texture);
+			#endif
+			
+			if (texture != null) {
 				#if !UNITY_EDITOR
 				Destroy(texture);
 				#else
 				DestroyImmediate(texture);
-    #endif
+				#endif
 			}
-			*/
+			
 			if (rs == null) {
 				rs = new TextBlock();
 			}
@@ -415,7 +423,6 @@ namespace SkiaSharp.Unity.HB {
 				rs.Paint(canvas);
 			}
 			
-			texture.hideFlags = HideFlags.HideAndDontSave;
 			texture.name = "HB_Text";
 			texture.wrapMode = TextureWrapMode.Repeat;
 			pixmap = surface.PeekPixels();
@@ -545,6 +552,12 @@ namespace SkiaSharp.Unity.HB {
 		
 		private void OnDisable() {
 			Dispose();
+			#if !UNITY_EDITOR
+				Destroy(rawImage.texture);
+			#else
+			DestroyImmediate(rawImage.texture);
+			#endif
+			
 			if (texture != null) {
 				#if !UNITY_EDITOR
 				Destroy(texture);
@@ -555,11 +568,6 @@ namespace SkiaSharp.Unity.HB {
 
 			if (skTypeface != null) {
 				skTypeface.Dispose();
-			}
-			
-			if (master == this) {
-				StopCoroutine(ClearMemoryCoroutine());
-				master = null;
 			}
 		}
 
@@ -576,17 +584,6 @@ namespace SkiaSharp.Unity.HB {
 			if (canvas != null) {
 				canvas.Dispose();
 				canvas = null;
-			}
-		}
-
-		private void clearMemory() {
-			StartCoroutine(ClearMemoryCoroutine());
-		}
-
-		private IEnumerator ClearMemoryCoroutine() {
-			while (true) {
-				yield return new WaitForSeconds(5f);
-				Resources.UnloadUnusedAssets();
 			}
 		}
 		
