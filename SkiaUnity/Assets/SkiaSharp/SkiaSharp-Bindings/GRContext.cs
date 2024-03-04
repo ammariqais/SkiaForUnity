@@ -63,7 +63,7 @@ namespace SkiaSharp
 			}
 		}
 
-#if __IOS__ || __MACOS__
+#if __MACOS__
 
 		// CreateMetal
 

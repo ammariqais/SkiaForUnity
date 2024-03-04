@@ -25,7 +25,7 @@ namespace SkiaSharp
 			CreateVulkan (width, height, vkInfo);
 		}
 
-#if __IOS__ || __MACOS__
+#if __MACOS__
 
 		public GRBackendTexture (int width, int height, bool mipmapped, GRMtlTextureInfo mtlInfo)
 			: this (IntPtr.Zero, true)
