@@ -1,4 +1,6 @@
-﻿using System;
+﻿#nullable disable
+
+using System;
 using System.Runtime.InteropServices;
 using System.Threading;
 
@@ -114,12 +116,16 @@ namespace SkiaSharp.Internals
 
 			void Enter ()
 			{
-				EnterCriticalSection (_cs);
+				if (_cs != IntPtr.Zero) {
+					EnterCriticalSection(_cs);
+				}
 			}
 
 			void Leave ()
 			{
-				LeaveCriticalSection (_cs);
+				if (_cs != IntPtr.Zero) {
+					LeaveCriticalSection(_cs);
+				}
 			}
 
 			public void EnterReadLock () { Enter (); }

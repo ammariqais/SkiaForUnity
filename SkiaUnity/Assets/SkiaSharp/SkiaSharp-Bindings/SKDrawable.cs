@@ -1,7 +1,8 @@
-﻿using System;
+﻿#nullable disable
+
+using System;
 using System.Runtime.InteropServices;
 using System.Threading;
-using AOT;
 
 namespace SkiaSharp
 {
@@ -16,7 +17,8 @@ namespace SkiaSharp
 			delegates = new SKManagedDrawableDelegates {
 				fDraw = DrawInternal,
 				fGetBounds = GetBoundsInternal,
-				fNewPictureSnapshot = NewPictureSnapshotInternal,
+				fApproximateBytesUsed = ApproximateBytesUsedInternal,
+				fMakePictureSnapshot = MakePictureSnapshotInternal,
 				fDestroy = DestroyInternal,
 			};
 
@@ -63,17 +65,16 @@ namespace SkiaSharp
 			}
 		}
 
-		public void Draw (SKCanvas canvas, ref SKMatrix matrix)
+		public void Draw (SKCanvas canvas, in SKMatrix matrix)
 		{
-			fixed (SKMatrix* m = &matrix) {
+			fixed (SKMatrix* m = &matrix)
 				SkiaApi.sk_drawable_draw (Handle, canvas.Handle, m);
-			}
 		}
 
 		public void Draw (SKCanvas canvas, float x, float y)
 		{
 			var matrix = SKMatrix.CreateTranslation (x, y);
-			Draw (canvas, ref matrix);
+			Draw (canvas, matrix);
 		}
 
 		// do not unref as this is a plain pointer return, not a reference counted pointer
@@ -87,15 +88,16 @@ namespace SkiaSharp
 		{
 		}
 
+		protected virtual int OnGetApproximateBytesUsed () => 0;
+
 		protected virtual SKRect OnGetBounds () => SKRect.Empty;
 
 		protected virtual SKPicture OnSnapshot ()
 		{
-			using (var recorder = new SKPictureRecorder ()) {
-				var canvas = recorder.BeginRecording (Bounds);
-				Draw (canvas, 0, 0);
-				return recorder.EndRecording ();
-			}
+			using var recorder = new SKPictureRecorder ();
+			var canvas = recorder.BeginRecording (Bounds);
+			Draw (canvas, 0, 0);
+			return recorder.EndRecording ();
 		}
 
 		[MonoPInvokeCallback (typeof (SKManagedDrawableDrawProxyDelegate))]
@@ -113,8 +115,15 @@ namespace SkiaSharp
 			*rect = bounds;
 		}
 
-		[MonoPInvokeCallback (typeof (SKManagedDrawableNewPictureSnapshotProxyDelegate))]
-		private static IntPtr NewPictureSnapshotInternal (IntPtr d, void* context)
+		[MonoPInvokeCallback (typeof (SKManagedDrawableApproximateBytesUsedProxyDelegate))]
+		private static IntPtr ApproximateBytesUsedInternal (IntPtr d, void* context)
+		{
+			var drawable = DelegateProxies.GetUserData<SKDrawable> ((IntPtr)context, out _);
+			return (IntPtr)drawable.OnGetApproximateBytesUsed ();
+		}
+
+		[MonoPInvokeCallback (typeof (SKManagedDrawableMakePictureSnapshotProxyDelegate))]
+		private static IntPtr MakePictureSnapshotInternal (IntPtr d, void* context)
 		{
 			var drawable = DelegateProxies.GetUserData<SKDrawable> ((IntPtr)context, out _);
 			return drawable.OnSnapshot ()?.Handle ?? IntPtr.Zero;

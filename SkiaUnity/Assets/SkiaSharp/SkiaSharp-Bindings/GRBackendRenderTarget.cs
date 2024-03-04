@@ -1,4 +1,6 @@
-﻿using System;
+﻿#nullable disable
+
+using System;
 using System.ComponentModel;
 
 namespace SkiaSharp
@@ -8,27 +10,6 @@ namespace SkiaSharp
 		internal GRBackendRenderTarget (IntPtr handle, bool owns)
 			: base (handle, owns)
 		{
-		}
-
-		[EditorBrowsable (EditorBrowsableState.Never)]
-		[Obsolete ("Use GRBackendRenderTarget(int, int, int, int, GRGlFramebufferInfo) instead.")]
-		public GRBackendRenderTarget (GRBackend backend, GRBackendRenderTargetDesc desc)
-			: this (IntPtr.Zero, true)
-		{
-			switch (backend) {
-				case GRBackend.Metal:
-					throw new NotSupportedException ();
-				case GRBackend.OpenGL:
-					var glInfo = new GRGlFramebufferInfo ((uint)desc.RenderTargetHandle, desc.Config.ToGlSizedFormat ());
-					CreateGl (desc.Width, desc.Height, desc.SampleCount, desc.StencilBits, glInfo);
-					break;
-				case GRBackend.Vulkan:
-					throw new NotSupportedException ();
-				case GRBackend.Dawn:
-					throw new NotSupportedException ();
-				default:
-					throw new ArgumentOutOfRangeException (nameof (backend));
-			}
 		}
 
 		public GRBackendRenderTarget (int width, int height, int sampleCount, int stencilBits, GRGlFramebufferInfo glInfo)
@@ -43,7 +24,7 @@ namespace SkiaSharp
 			CreateVulkan (width, height, sampleCount, vkImageInfo);
 		}
 
-#if  __MACOS__
+#if __IOS__ || __MACOS__
 
 		public GRBackendRenderTarget (int width, int height, int sampleCount, GRMtlTextureInfo mtlInfo)
 			: this (IntPtr.Zero, true)

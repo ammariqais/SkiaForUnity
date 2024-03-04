@@ -1,7 +1,8 @@
-﻿using System;
+﻿#nullable disable
+
+using System;
 using System.ComponentModel;
 using System.Runtime.InteropServices;
-using AOT;
 
 namespace SkiaSharp
 {
@@ -16,10 +17,6 @@ namespace SkiaSharp
 	public delegate void SKImageTextureReleaseDelegate (object context);
 
 	public delegate void SKSurfaceReleaseDelegate (IntPtr address, object context);
-
-	[EditorBrowsable (EditorBrowsableState.Never)]
-	[Obsolete ("Use GRGlGetProcedureAddressDelegate instead.")]
-	public delegate IntPtr GRGlGetProcDelegate (object context, string name);
 
 	public delegate IntPtr GRGlGetProcedureAddressDelegate (string name);
 

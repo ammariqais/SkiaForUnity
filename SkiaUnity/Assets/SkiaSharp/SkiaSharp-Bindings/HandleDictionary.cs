@@ -1,4 +1,6 @@
-﻿using System;
+﻿#nullable disable
+
+using System;
 using System.Collections.Generic;
 using System.Threading;
 using System.Runtime.InteropServices;
@@ -17,6 +19,10 @@ namespace SkiaSharp
 		internal static readonly ConcurrentBag<Exception> exceptions = new ConcurrentBag<Exception> ();
 #endif
 		internal static readonly Dictionary<IntPtr, WeakReference> instances = new Dictionary<IntPtr, WeakReference> ();
+
+#if DEBUG
+		internal static readonly Dictionary<IntPtr, string> stackTraces = new Dictionary<IntPtr, string> ();
+#endif
 
 		internal static readonly IPlatformLock instancesLock = PlatformLock.Create ();
 
@@ -153,6 +159,9 @@ namespace SkiaSharp
 				}
 
 				instances[handle] = new WeakReference (instance);
+#if DEBUG
+				stackTraces[handle] = Environment.StackTrace;
+#endif
 			} finally {
 				instancesLock.ExitWriteLock ();
 			}
@@ -177,6 +186,9 @@ namespace SkiaSharp
 				var existed = instances.TryGetValue (handle, out var weak);
 				if (existed && (!weak.IsAlive || weak.Target == instance)) {
 					instances.Remove (handle);
+#if DEBUG
+					stackTraces.Remove (handle);
+#endif
 				} else {
 #if THROW_OBJECT_EXCEPTIONS
 					InvalidOperationException ex = null;

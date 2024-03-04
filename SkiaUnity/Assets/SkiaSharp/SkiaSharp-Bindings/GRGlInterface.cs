@@ -1,6 +1,9 @@
-﻿using System;
+﻿#nullable disable
+
+using System;
 using System.ComponentModel;
 using System.Runtime.InteropServices;
+using SkiaSharp.Internals;
 
 #if __TIZEN__
 using System.Reflection;
@@ -93,68 +96,6 @@ namespace SkiaSharp
 			return null;
 #endif
 		}
-
-		// OBSOLETE CREATION
-
-		[EditorBrowsable (EditorBrowsableState.Never)]
-		[Obsolete ("Use Create() instead.")]
-		public static GRGlInterface CreateDefaultInterface () =>
-			Create ();
-
-		[EditorBrowsable (EditorBrowsableState.Never)]
-		[Obsolete ("Use Create() instead.")]
-		public static GRGlInterface CreateNativeGlInterface () =>
-			CreateGl ();
-
-		[EditorBrowsable (EditorBrowsableState.Never)]
-		[Obsolete ("Use Create() instead.")]
-		public static GRGlInterface CreateNativeAngleInterface () =>
-			CreateAngle ();
-
-		[EditorBrowsable (EditorBrowsableState.Never)]
-		[Obsolete ("Use CreateEvas(IntPtr) instead.")]
-		public static GRGlInterface CreateNativeEvasInterface (IntPtr evas) =>
-			CreateEvas (evas);
-
-		[EditorBrowsable (EditorBrowsableState.Never)]
-		[Obsolete ("Use Create(GRGlGetProcedureAddressDelegate) instead.")]
-		public static GRGlInterface AssembleInterface (GRGlGetProcDelegate get) =>
-			Create (name => get (null, name));
-
-		[EditorBrowsable (EditorBrowsableState.Never)]
-		[Obsolete ("Use Create(GRGlGetProcedureAddressDelegate) instead.")]
-		public static GRGlInterface AssembleInterface (object context, GRGlGetProcDelegate get) =>
-			Create (name => get (context, name));
-
-		[EditorBrowsable (EditorBrowsableState.Never)]
-		[Obsolete ("Use CreateAngle(GRGlGetProcedureAddressDelegate) instead.")]
-		public static GRGlInterface AssembleAngleInterface (GRGlGetProcDelegate get) =>
-			CreateAngle (name => get (null, name));
-
-		[EditorBrowsable (EditorBrowsableState.Never)]
-		[Obsolete ("Use CreateAngle(GRGlGetProcedureAddressDelegate) instead.")]
-		public static GRGlInterface AssembleAngleInterface (object context, GRGlGetProcDelegate get) =>
-			CreateAngle (name => get (context, name));
-
-		[EditorBrowsable (EditorBrowsableState.Never)]
-		[Obsolete ("Use CreateOpenGl(GRGlGetProcedureAddressDelegate) instead.")]
-		public static GRGlInterface AssembleGlInterface (GRGlGetProcDelegate get) =>
-			CreateOpenGl (name => get (null, name));
-
-		[EditorBrowsable (EditorBrowsableState.Never)]
-		[Obsolete ("Use CreateOpenGl(GRGlGetProcedureAddressDelegate) instead.")]
-		public static GRGlInterface AssembleGlInterface (object context, GRGlGetProcDelegate get) =>
-			CreateOpenGl (name => get (context, name));
-
-		[EditorBrowsable (EditorBrowsableState.Never)]
-		[Obsolete ("Use CreateGles(GRGlGetProcedureAddressDelegate) instead.")]
-		public static GRGlInterface AssembleGlesInterface (GRGlGetProcDelegate get) =>
-			CreateGles (name => get (null, name));
-
-		[EditorBrowsable (EditorBrowsableState.Never)]
-		[Obsolete ("Use CreateGles(GRGlGetProcedureAddressDelegate) instead.")]
-		public static GRGlInterface AssembleGlesInterface (object context, GRGlGetProcDelegate get) =>
-			CreateGles (name => get (context, name));
 
 		//
 
