@@ -1,4 +1,6 @@
-﻿using System;
+﻿#nullable disable
+
+using System;
 using System.ComponentModel;
 using System.IO;
 using System.Runtime.InteropServices;
@@ -82,11 +84,6 @@ namespace SkiaSharp
 			return GetObject (SkiaApi.sk_image_new_raster_copy (&nInfo, (void*)pixels, (IntPtr)rowBytes));
 		}
 
-		[EditorBrowsable (EditorBrowsableState.Never)]
-		[Obsolete ("The Index8 color type and color table is no longer supported. Use FromPixelCopy(SKImageInfo, IntPtr, int) instead.")]
-		public static SKImage FromPixelCopy (SKImageInfo info, IntPtr pixels, int rowBytes, SKColorTable ctable) =>
-			FromPixelCopy (info, pixels, rowBytes);
-
 		public static SKImage FromPixelCopy (SKPixmap pixmap)
 		{
 			if (pixmap == null)
@@ -107,16 +104,6 @@ namespace SkiaSharp
 		}
 
 		// create a new image around existing pixel data
-
-		[EditorBrowsable (EditorBrowsableState.Never)]
-		[Obsolete ("Use FromPixels (SKImageInfo, SKData, int) instead.")]
-		public static SKImage FromPixelData (SKImageInfo info, SKData data, int rowBytes)
-		{
-			if (data == null)
-				throw new ArgumentNullException (nameof (data));
-			var cinfo = SKImageInfoNative.FromManaged (ref info);
-			return GetObject (SkiaApi.sk_image_new_raster_data (&cinfo, data.Handle, (IntPtr)rowBytes));
-		}
 
 		public static SKImage FromPixels (SKImageInfo info, SKData data) =>
 			FromPixels (info, data, info.RowBytes);
@@ -258,67 +245,6 @@ namespace SkiaSharp
 
 		// create a new image from a GPU texture
 
-		[EditorBrowsable (EditorBrowsableState.Never)]
-		[Obsolete ("Use FromTexture(GRContext, GRBackendTexture, GRSurfaceOrigin, SKColorType) instead.")]
-		public static SKImage FromTexture (GRContext context, GRBackendTextureDesc desc)
-		{
-			return FromTexture (context, desc, SKAlphaType.Premul, null, null);
-		}
-
-		[EditorBrowsable (EditorBrowsableState.Never)]
-		[Obsolete ("Use FromTexture(GRContext, GRBackendTexture, GRSurfaceOrigin, SKColorType, SKAlphaType) instead.")]
-		public static SKImage FromTexture (GRContext context, GRBackendTextureDesc desc, SKAlphaType alpha)
-		{
-			return FromTexture (context, desc, alpha, null, null);
-		}
-
-		[EditorBrowsable (EditorBrowsableState.Never)]
-		[Obsolete ("Use FromTexture(GRContext, GRBackendTexture, GRSurfaceOrigin, SKColorType, SKAlphaType, SKColorSpace, SKImageTextureReleaseDelegate) instead.")]
-		public static SKImage FromTexture (GRContext context, GRBackendTextureDesc desc, SKAlphaType alpha, SKImageTextureReleaseDelegate releaseProc)
-		{
-			return FromTexture (context, desc, alpha, releaseProc, null);
-		}
-
-		[EditorBrowsable (EditorBrowsableState.Never)]
-		[Obsolete ("Use FromTexture(GRContext, GRBackendTexture, GRSurfaceOrigin, SKColorType, SKAlphaType, SKColorSpace, SKImageTextureReleaseDelegate, object) instead.")]
-		public static SKImage FromTexture (GRContext context, GRBackendTextureDesc desc, SKAlphaType alpha, SKImageTextureReleaseDelegate releaseProc, object releaseContext)
-		{
-			if (context == null)
-				throw new ArgumentNullException (nameof (context));
-
-			var texture = new GRBackendTexture (desc);
-			return FromTexture (context, texture, desc.Origin, desc.Config.ToColorType (), alpha, null, releaseProc, releaseContext);
-		}
-
-		[EditorBrowsable (EditorBrowsableState.Never)]
-		[Obsolete ("Use FromTexture(GRContext, GRBackendTexture, GRSurfaceOrigin, SKColorType) instead.")]
-		public static SKImage FromTexture (GRContext context, GRGlBackendTextureDesc desc)
-		{
-			return FromTexture (context, desc, SKAlphaType.Premul, null, null);
-		}
-
-		[EditorBrowsable (EditorBrowsableState.Never)]
-		[Obsolete ("Use FromTexture(GRContext, GRBackendTexture, GRSurfaceOrigin, SKColorType, SKAlphaType) instead.")]
-		public static SKImage FromTexture (GRContext context, GRGlBackendTextureDesc desc, SKAlphaType alpha)
-		{
-			return FromTexture (context, desc, alpha, null, null);
-		}
-
-		[EditorBrowsable (EditorBrowsableState.Never)]
-		[Obsolete ("Use FromTexture(GRContext, GRBackendTexture, GRSurfaceOrigin, SKColorType, SKAlphaType, SKColorSpace, SKImageTextureReleaseDelegate) instead.")]
-		public static SKImage FromTexture (GRContext context, GRGlBackendTextureDesc desc, SKAlphaType alpha, SKImageTextureReleaseDelegate releaseProc)
-		{
-			return FromTexture (context, desc, alpha, releaseProc, null);
-		}
-
-		[EditorBrowsable (EditorBrowsableState.Never)]
-		[Obsolete ("Use FromTexture(GRContext, GRBackendTexture, GRSurfaceOrigin, SKColorType, SKAlphaType, SKColorSpace, SKImageTextureReleaseDelegate, object) instead.")]
-		public static SKImage FromTexture (GRContext context, GRGlBackendTextureDesc desc, SKAlphaType alpha, SKImageTextureReleaseDelegate releaseProc, object releaseContext)
-		{
-			var texture = new GRBackendTexture (desc);
-			return FromTexture (context, texture, desc.Origin, desc.Config.ToColorType (), alpha, null, releaseProc, releaseContext);
-		}
-
 		public static SKImage FromTexture (GRContext context, GRBackendTexture texture, SKColorType colorType) =>
 			FromTexture ((GRRecordingContext)context, texture, colorType);
 
@@ -367,36 +293,6 @@ namespace SkiaSharp
 			return GetObject (SkiaApi.sk_image_new_from_texture (context.Handle, texture.Handle, origin, colorType.ToNative (), alpha, cs, proxy, (void*)ctx));
 		}
 
-		[EditorBrowsable (EditorBrowsableState.Never)]
-		[Obsolete ("Use FromAdoptedTexture(GRContext, GRBackendTexture, GRSurfaceOrigin, SKColorType) instead.")]
-		public static SKImage FromAdoptedTexture (GRContext context, GRBackendTextureDesc desc)
-		{
-			return FromAdoptedTexture (context, desc, SKAlphaType.Premul);
-		}
-
-		[EditorBrowsable (EditorBrowsableState.Never)]
-		[Obsolete ("Use FromAdoptedTexture(GRContext, GRBackendTexture, GRSurfaceOrigin, SKColorType, SKAlphaType) instead.")]
-		public static SKImage FromAdoptedTexture (GRContext context, GRBackendTextureDesc desc, SKAlphaType alpha)
-		{
-			var texture = new GRBackendTexture (desc);
-			return FromAdoptedTexture (context, texture, desc.Origin, desc.Config.ToColorType (), alpha, null);
-		}
-
-		[EditorBrowsable (EditorBrowsableState.Never)]
-		[Obsolete ("Use FromAdoptedTexture(GRContext, GRBackendTexture, GRSurfaceOrigin, SKColorType) instead.")]
-		public static SKImage FromAdoptedTexture (GRContext context, GRGlBackendTextureDesc desc)
-		{
-			return FromAdoptedTexture (context, desc, SKAlphaType.Premul);
-		}
-
-		[EditorBrowsable (EditorBrowsableState.Never)]
-		[Obsolete ("Use FromAdoptedTexture(GRContext, GRBackendTexture, GRSurfaceOrigin, SKColorType, SKAlphaType) instead.")]
-		public static SKImage FromAdoptedTexture (GRContext context, GRGlBackendTextureDesc desc, SKAlphaType alpha)
-		{
-			var texture = new GRBackendTexture (desc);
-			return FromAdoptedTexture (context, texture, desc.Origin, desc.Config.ToColorType (), alpha, null);
-		}
-
 		public static SKImage FromAdoptedTexture (GRContext context, GRBackendTexture texture, SKColorType colorType) =>
 			FromAdoptedTexture ((GRRecordingContext)context, texture, colorType);
 
@@ -432,73 +328,44 @@ namespace SkiaSharp
 		// create a new image from a picture
 
 		public static SKImage FromPicture (SKPicture picture, SKSizeI dimensions) =>
-			FromPicture (picture, dimensions, null, null);
+			FromPicture (picture, dimensions, null, null, false, null, null);
 
 		public static SKImage FromPicture (SKPicture picture, SKSizeI dimensions, SKMatrix matrix) =>
-			FromPicture (picture, dimensions, &matrix, null);
+			FromPicture (picture, dimensions, &matrix, null, false, null, null);
 
 		public static SKImage FromPicture (SKPicture picture, SKSizeI dimensions, SKPaint paint) =>
-			FromPicture (picture, dimensions, null, paint);
+			FromPicture (picture, dimensions, null, paint, false, null, null);
 
 		public static SKImage FromPicture (SKPicture picture, SKSizeI dimensions, SKMatrix matrix, SKPaint paint) =>
-			FromPicture (picture, dimensions, &matrix, paint);
+			FromPicture (picture, dimensions, &matrix, paint, false, null, null);
 
-		private static SKImage FromPicture (SKPicture picture, SKSizeI dimensions, SKMatrix* matrix, SKPaint paint)
+		private static SKImage FromPicture (SKPicture picture, SKSizeI dimensions, SKMatrix* matrix, SKPaint paint, bool useFloatingPointBitDepth, SKColorSpace colorspace, SKSurfaceProperties props)
 		{
 			if (picture == null)
 				throw new ArgumentNullException (nameof (picture));
 
 			var p = paint?.Handle ?? IntPtr.Zero;
-			return GetObject (SkiaApi.sk_image_new_from_picture (picture.Handle, &dimensions, matrix, p));
+			return GetObject (SkiaApi.sk_image_new_from_picture (picture.Handle, &dimensions, matrix, p, useFloatingPointBitDepth, colorspace?.Handle ?? IntPtr.Zero, props?.Handle ?? IntPtr.Zero));
 		}
 
-		public SKData Encode () =>
-			SKData.GetObject (SkiaApi.sk_image_encode (Handle));
-
-		[EditorBrowsable (EditorBrowsableState.Never)]
-		[Obsolete]
-		public SKData Encode (SKPixelSerializer serializer)
+		public SKData Encode ()
 		{
-			if (serializer == null)
-				throw new ArgumentNullException (nameof (serializer));
+			if (EncodedData is not null)
+				return EncodedData;
 
-			// try old data
-			var encoded = EncodedData;
-			if (encoded != null) {
-				if (serializer.UseEncodedData (encoded.Data, (ulong)encoded.Size)) {
-					return encoded;
-				} else {
-					encoded.Dispose ();
-					encoded = null;
-				}
-			}
-
-			// get new data (raster)
-			if (!IsTextureBacked) {
-				using (var pixmap = PeekPixels ()) {
-					return serializer.Encode (pixmap);
-				}
-			}
-
-			// get new data (texture / gpu)
-			// this involves a copy from gpu to cpu first
-			if (IsTextureBacked) {
-				var info = new SKImageInfo (Width, Height, ColorType, AlphaType, ColorSpace);
-				using (var temp = new SKBitmap (info))
-				using (var pixmap = temp.PeekPixels ()) {
-					if (pixmap != null && ReadPixels (pixmap, 0, 0)) {
-						return serializer.Encode (pixmap);
-					}
-				}
-			}
-
-			// some error
-			return null;
+			return Encode (SKEncodedImageFormat.Png, 100);
 		}
 
 		public SKData Encode (SKEncodedImageFormat format, int quality)
 		{
-			return SKData.GetObject (SkiaApi.sk_image_encode_specific (Handle, format, quality));
+			var raster = ToRasterImage (true);
+			try {
+				using var pixmap = raster.PeekPixels ();
+				return pixmap?.Encode (format, quality);
+			} finally {
+				if (this != raster)
+					raster.Dispose ();
+			}
 		}
 
 		public int Width =>
@@ -531,13 +398,42 @@ namespace SkiaSharp
 		// ToShader
 
 		public SKShader ToShader () =>
-			ToShader (SKShaderTileMode.Clamp, SKShaderTileMode.Clamp);
+			ToShader (SKShaderTileMode.Clamp, SKShaderTileMode.Clamp, SKSamplingOptions.Default, null);
 
 		public SKShader ToShader (SKShaderTileMode tileX, SKShaderTileMode tileY) =>
-			SKShader.GetObject (SkiaApi.sk_image_make_shader (Handle, tileX, tileY, null));
+			ToShader (tileX, tileY, SKSamplingOptions.Default, null);
 
 		public SKShader ToShader (SKShaderTileMode tileX, SKShaderTileMode tileY, SKMatrix localMatrix) =>
-			SKShader.GetObject (SkiaApi.sk_image_make_shader (Handle, tileX, tileY, &localMatrix));
+			ToShader (tileX, tileY, SKSamplingOptions.Default, &localMatrix);
+
+		public SKShader ToShader (SKShaderTileMode tileX, SKShaderTileMode tileY, SKSamplingOptions sampling) =>
+			ToShader (tileX, tileY, sampling, null);
+
+		public SKShader ToShader (SKShaderTileMode tileX, SKShaderTileMode tileY, SKSamplingOptions sampling, SKMatrix localMatrix) =>
+			ToShader (tileX, tileY, sampling, &localMatrix);
+
+		private SKShader ToShader (SKShaderTileMode tileX, SKShaderTileMode tileY, SKSamplingOptions sampling, SKMatrix* localMatrix) =>
+			SKShader.GetObject (SkiaApi.sk_image_make_shader (Handle, tileX, tileY, &sampling, localMatrix));
+
+		// ToRawShader
+
+		public SKShader ToRawShader () =>
+			ToRawShader (SKShaderTileMode.Clamp, SKShaderTileMode.Clamp, SKSamplingOptions.Default, null);
+
+		public SKShader ToRawShader (SKShaderTileMode tileX, SKShaderTileMode tileY) =>
+			ToRawShader (tileX, tileY, SKSamplingOptions.Default, null);
+
+		public SKShader ToRawShader (SKShaderTileMode tileX, SKShaderTileMode tileY, SKMatrix localMatrix) =>
+			ToRawShader (tileX, tileY, SKSamplingOptions.Default, &localMatrix);
+
+		public SKShader ToRawShader (SKShaderTileMode tileX, SKShaderTileMode tileY, SKSamplingOptions sampling) =>
+			ToRawShader (tileX, tileY, sampling, null);
+
+		public SKShader ToRawShader (SKShaderTileMode tileX, SKShaderTileMode tileY, SKSamplingOptions sampling, SKMatrix localMatrix) =>
+			ToRawShader (tileX, tileY, sampling, &localMatrix);
+
+		private SKShader ToRawShader (SKShaderTileMode tileX, SKShaderTileMode tileY, SKSamplingOptions sampling, SKMatrix* localMatrix) =>
+			SKShader.GetObject (SkiaApi.sk_image_make_raw_shader (Handle, tileX, tileY, &sampling, localMatrix));
 
 		// PeekPixels
 
@@ -611,23 +507,36 @@ namespace SkiaSharp
 
 		// ScalePixels
 
-		public bool ScalePixels (SKPixmap dst, SKFilterQuality quality)
+		[Obsolete("Use ScalePixels(SKPixmap dst, SKSamplingOptions sampling) instead.")]
+		public bool ScalePixels (SKPixmap dst, SKFilterQuality quality) =>
+			ScalePixels (dst, quality.ToSamplingOptions ());
+
+		[Obsolete("Use ScalePixels(SKPixmap dst, SKSamplingOptions sampling, SKImageCachingHint cachingHint) instead.")]
+		public bool ScalePixels (SKPixmap dst, SKFilterQuality quality, SKImageCachingHint cachingHint) =>
+			ScalePixels (dst, quality.ToSamplingOptions (), cachingHint);
+
+		public bool ScalePixels (SKPixmap dst, SKSamplingOptions sampling)
 		{
-			return ScalePixels (dst, quality, SKImageCachingHint.Allow);
+			return ScalePixels (dst, sampling, SKImageCachingHint.Allow);
 		}
 
-		public bool ScalePixels (SKPixmap dst, SKFilterQuality quality, SKImageCachingHint cachingHint)
+		public bool ScalePixels (SKPixmap dst, SKSamplingOptions sampling, SKImageCachingHint cachingHint)
 		{
 			if (dst == null)
 				throw new ArgumentNullException (nameof (dst));
-			return SkiaApi.sk_image_scale_pixels (Handle, dst.Handle, quality, cachingHint);
+			return SkiaApi.sk_image_scale_pixels (Handle, dst.Handle, &sampling, cachingHint);
 		}
 
 		// Subset
 
 		public SKImage Subset (SKRectI subset)
 		{
-			return GetObject (SkiaApi.sk_image_make_subset (Handle, &subset));
+			return GetObject (SkiaApi.sk_image_make_subset_raster (Handle, &subset));
+		}
+
+		public SKImage Subset (GRRecordingContext context, SKRectI subset)
+		{
+			return GetObject (SkiaApi.sk_image_make_subset (Handle, context?.Handle ?? IntPtr.Zero, &subset));
 		}
 
 		// ToRasterImage
@@ -643,19 +552,17 @@ namespace SkiaSharp
 		// ToTextureImage
 
 		public SKImage ToTextureImage (GRContext context) =>
-			ToTextureImage (context, false);
+			ToTextureImage (context, false, true);
 
-		[EditorBrowsable (EditorBrowsableState.Never)]
-		[Obsolete ("Use ToTextureImage(GRContext) instead.")]
-		public SKImage ToTextureImage (GRContext context, SKColorSpace colorspace) =>
-			ToTextureImage (context, false);
+		public SKImage ToTextureImage (GRContext context, bool mipmapped) =>
+			ToTextureImage (context, mipmapped, true);
 
-		public SKImage ToTextureImage (GRContext context, bool mipmapped)
+		public SKImage ToTextureImage (GRContext context, bool mipmapped, bool budgeted)
 		{
 			if (context == null)
 				throw new ArgumentNullException (nameof (context));
 
-			return GetObject (SkiaApi.sk_image_make_texture_image (Handle, context.Handle, mipmapped));
+			return GetObject (SkiaApi.sk_image_make_texture_image (Handle, context.Handle, mipmapped, budgeted));
 		}
 
 		// ApplyImageFilter
@@ -674,7 +581,7 @@ namespace SkiaSharp
 
 			fixed (SKRectI* os = &outSubset)
 			fixed (SKPointI* oo = &outOffset) {
-				return GetObject (SkiaApi.sk_image_make_with_filter_legacy (Handle, filter.Handle, &subset, &clipBounds, os, oo));
+				return GetObject (SkiaApi.sk_image_make_with_filter_raster (Handle, filter.Handle, &subset, &clipBounds, os, oo));
 			}
 		}
 

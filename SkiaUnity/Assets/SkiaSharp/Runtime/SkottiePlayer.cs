@@ -1,3 +1,4 @@
+using System;
 using Newtonsoft.Json;
 using UnityEngine;
 using UnityEngine.Events;
@@ -24,6 +25,8 @@ namespace SkiaSharp.Unity {
   /// }
   /// </code>
   /// </example>
+  
+  [Obsolete ("Recommended using SkottiePlayerV2")]
   public class SkottiePlayer : MonoBehaviour {
   [SerializeField]
   private TextAsset lottieFile;
@@ -43,7 +46,7 @@ namespace SkiaSharp.Unity {
   private Animation currentAnimation;
   private SKCanvas canvas;
   private SKRect rect;
-  private double timer = 0, animationFps, animationDuration, animationStateDuration;
+  private double timer = 0, animationFps, animationStateDuration;
   private SKImageInfo info;
   private SKSurface surface;
   private RawImage rawImage;
@@ -52,6 +55,8 @@ namespace SkiaSharp.Unity {
   private bool playAniamtion = false;
   private SkottieMarkers states;
   private SkottieMarkers.state currentState;
+  private TimeSpan animationDuration;
+
   
   private void Start() {
     if (lottieFile == null) {
@@ -161,7 +166,7 @@ namespace SkiaSharp.Unity {
   /// </summary>
   /// <returns>The total duration of the loaded animation in seconds.</returns>
     public double GetDurations() {
-      return animationDuration;
+      return animationDuration.Seconds;
     }
 
   /// <summary>
@@ -186,7 +191,7 @@ namespace SkiaSharp.Unity {
             : animationStateDuration;
           playAniamtion = loop;
           OnAnimationFinished?.Invoke(currentState?.cm);
-        } else if (timer >= animationDuration) {
+        } else if (timer >= animationDuration.Seconds) {
           timer = resetAfterFinished || loop ? 0 : timer;
           playAniamtion = loop;
           OnAnimationFinished?.Invoke(currentState?.cm);

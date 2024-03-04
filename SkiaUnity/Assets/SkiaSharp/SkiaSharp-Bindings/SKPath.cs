@@ -1,4 +1,6 @@
-﻿using System;
+﻿#nullable disable
+
+using System;
 using System.ComponentModel;
 
 namespace SkiaSharp
@@ -44,13 +46,9 @@ namespace SkiaSharp
 			set => SkiaApi.sk_path_set_filltype (Handle, value);
 		}
 
-		public SKPathConvexity Convexity {
-			get => IsConvex ? SKPathConvexity.Convex : SKPathConvexity.Concave;
-			[Obsolete]
-			set { }
-		}
+		public SKPathConvexity Convexity => IsConvex ? SKPathConvexity.Convex : SKPathConvexity.Concave;
 
-		public bool IsConvex => SkiaApi.sk_path_is_convex(Handle);
+		public bool IsConvex => SkiaApi.sk_path_is_convex (Handle);
 
 		public bool IsConcave => !IsConvex;
 
@@ -327,15 +325,19 @@ namespace SkiaSharp
 			return rect;
 		}
 
-		public void Transform (SKMatrix matrix) =>
-			SkiaApi.sk_path_transform (Handle, &matrix);
+		public void Transform (in SKMatrix matrix)
+		{
+			fixed (SKMatrix* m = &matrix)
+				SkiaApi.sk_path_transform (Handle, m);
+		}
 
-		public void Transform (SKMatrix matrix, SKPath destination)
+		public void Transform (in SKMatrix matrix, SKPath destination)
 		{
 			if (destination == null)
 				throw new ArgumentNullException (nameof (destination));
 
-			SkiaApi.sk_path_transform_to_dest (Handle, &matrix, destination.Handle);
+			fixed (SKMatrix* m = &matrix)
+				SkiaApi.sk_path_transform_to_dest (Handle, m, destination.Handle);
 		}
 
 		public void AddPath (SKPath other, float dx, float dy, SKPathAddMode mode = SKPathAddMode.Append)
@@ -346,14 +348,13 @@ namespace SkiaSharp
 			SkiaApi.sk_path_add_path_offset (Handle, other.Handle, dx, dy, mode);
 		}
 
-		public void AddPath (SKPath other, ref SKMatrix matrix, SKPathAddMode mode = SKPathAddMode.Append)
+		public void AddPath (SKPath other, in SKMatrix matrix, SKPathAddMode mode = SKPathAddMode.Append)
 		{
 			if (other == null)
 				throw new ArgumentNullException (nameof (other));
 
-			fixed (SKMatrix* m = &matrix) {
+			fixed (SKMatrix* m = &matrix)
 				SkiaApi.sk_path_add_path_matrix (Handle, other.Handle, m, mode);
-			}
 		}
 
 		public void AddPath (SKPath other, SKPathAddMode mode = SKPathAddMode.Append)
@@ -374,11 +375,6 @@ namespace SkiaSharp
 
 		public void AddRoundRect (SKRect rect, float rx, float ry, SKPathDirection dir = SKPathDirection.Clockwise) =>
 			SkiaApi.sk_path_add_rounded_rect (Handle, &rect, rx, ry, dir);
-
-		[EditorBrowsable (EditorBrowsableState.Never)]
-		[Obsolete ("Use AddRoundRect instead.")]
-		public void AddRoundedRect (SKRect rect, float rx, float ry, SKPathDirection dir = SKPathDirection.Clockwise) =>
-			AddRoundRect (rect, rx, ry, dir);
 
 		public void AddCircle (float x, float y, float radius, SKPathDirection dir = SKPathDirection.Clockwise) =>
 			SkiaApi.sk_path_add_circle (Handle, x, y, radius, dir);
@@ -466,10 +462,9 @@ namespace SkiaSharp
 
 		public string ToSvgPathData ()
 		{
-			using (var str = new SKString ()) {
-				SkiaApi.sk_path_to_svg_string (Handle, str.Handle);
-				return (string)str;
-			}
+			using var str = new SKString ();
+			SkiaApi.sk_path_to_svg_string (Handle, str.Handle);
+			return (string)str;
 		}
 
 		public static SKPath ParseSvgPathData (string svgPath)
@@ -528,11 +523,6 @@ namespace SkiaSharp
 
 			protected override void DisposeNative () =>
 				SkiaApi.sk_path_iter_destroy (Handle);
-
-			[EditorBrowsable (EditorBrowsableState.Never)]
-			[Obsolete ("Use Next(SKPoint[]) instead.")]
-			public SKPathVerb Next (SKPoint[] points, bool doConsumeDegenerates, bool exact) =>
-				Next (points);
 
 			public SKPathVerb Next (SKPoint[] points) =>
 				Next (new Span<SKPoint> (points));

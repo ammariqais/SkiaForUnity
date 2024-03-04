@@ -1,4 +1,6 @@
-﻿using System;
+﻿#nullable disable
+
+using System;
 using System.ComponentModel;
 
 namespace SkiaSharp
@@ -7,13 +9,6 @@ namespace SkiaSharp
 	{
 		internal SKSurfaceProperties (IntPtr h, bool owns)
 			: base (h, owns)
-		{
-		}
-
-		[EditorBrowsable (EditorBrowsableState.Never)]
-		[Obsolete]
-		public SKSurfaceProperties (SKSurfaceProps props)
-			: this (props.Flags, props.PixelGeometry)
 		{
 		}
 

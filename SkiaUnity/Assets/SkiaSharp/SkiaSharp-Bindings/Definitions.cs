@@ -1,31 +1,10 @@
-﻿using System;
+﻿#nullable disable
+
+using System;
 using System.ComponentModel;
 
 namespace SkiaSharp
 {
-	[EditorBrowsable (EditorBrowsableState.Never)]
-	[Obsolete ("Use SKEncodedOrigin instead.")]
-	public enum SKCodecOrigin
-	{
-		TopLeft = 1,
-		TopRight = 2,
-		BottomRight = 3,
-		BottomLeft = 4,
-		LeftTop = 5,
-		RightTop = 6,
-		RightBottom = 7,
-		LeftBottom = 8,
-	}
-
-	[EditorBrowsable (EditorBrowsableState.Never)]
-	[Obsolete ("Use SKTextEncoding instead.")]
-	public enum SKEncoding
-	{
-		Utf8 = 0,
-		Utf16 = 1,
-		Utf32 = 2,
-	}
-
 	public enum SKFontStyleWeight
 	{
 		Invisible = 0,
@@ -77,6 +56,9 @@ namespace SkiaSharp
 		Rgba16161616 = 18,
 		Bgra1010102 = 19,
 		Bgr101010x = 20,
+		Bgr101010xXR = 21,
+		Srgba8888 = 22,
+		R8Unorm = 23,
 	}
 
 	public static partial class SkiaExtensions
@@ -93,37 +75,15 @@ namespace SkiaSharp
 		public static bool IsHorizontal (this SKPixelGeometry pg) =>
 			pg == SKPixelGeometry.BgrHorizontal || pg == SKPixelGeometry.RgbHorizontal;
 
-		[EditorBrowsable (EditorBrowsableState.Never)]
-		[Obsolete]
-		public static SKTextEncoding ToTextEncoding (this SKEncoding encoding) =>
-			encoding switch
-			{
-				SKEncoding.Utf8 => SKTextEncoding.Utf8,
-				SKEncoding.Utf16 => SKTextEncoding.Utf16,
-				SKEncoding.Utf32 => SKTextEncoding.Utf32,
-				_ => throw new ArgumentOutOfRangeException (nameof (encoding)),
-			};
-
-		[EditorBrowsable (EditorBrowsableState.Never)]
-		[Obsolete]
-		internal static SKEncoding ToEncoding (this SKTextEncoding encoding) =>
-			encoding switch
-			{
-				SKTextEncoding.Utf8 => SKEncoding.Utf8,
-				SKTextEncoding.Utf16 => SKEncoding.Utf16,
-				SKTextEncoding.Utf32 => SKEncoding.Utf32,
-				_ => throw new ArgumentOutOfRangeException (nameof (encoding)),
-			};
-
 		// SkImageInfo.cpp - SkColorTypeBytesPerPixel
 		public static int GetBytesPerPixel (this SKColorType colorType) =>
-			colorType switch
-			{
+			colorType switch {
 				// 0
 				SKColorType.Unknown => 0,
 				// 1
 				SKColorType.Alpha8 => 1,
 				SKColorType.Gray8 => 1,
+				SKColorType.R8Unorm => 1,
 				// 2
 				SKColorType.Rgb565 => 2,
 				SKColorType.Argb4444 => 2,
@@ -134,12 +94,14 @@ namespace SkiaSharp
 				SKColorType.Bgra8888 => 4,
 				SKColorType.Bgra1010102 => 4,
 				SKColorType.Bgr101010x => 4,
+				SKColorType.Bgr101010xXR => 4,
 				SKColorType.Rgba8888 => 4,
 				SKColorType.Rgb888x => 4,
 				SKColorType.Rgba1010102 => 4,
 				SKColorType.Rgb101010x => 4,
 				SKColorType.Rg1616 => 4,
 				SKColorType.RgF16 => 4,
+				SKColorType.Srgba8888 => 4,
 				// 8
 				SKColorType.RgbaF16Clamped => 8,
 				SKColorType.RgbaF16 => 8,
@@ -147,7 +109,44 @@ namespace SkiaSharp
 				// 16
 				SKColorType.RgbaF32 => 16,
 				//
-				_ => throw new ArgumentOutOfRangeException (nameof (colorType)),
+				_ => throw new ArgumentOutOfRangeException (nameof (colorType), $"Unknown color type: '{colorType}'"),
+			};
+
+		// SkImageInfoPriv.h - SkColorTypeShiftPerPixel
+		public static int GetBitShiftPerPixel (this SKColorType colorType) =>
+			colorType switch {
+				// 0
+				SKColorType.Unknown => 0,
+				// 0
+				SKColorType.Alpha8 => 0,
+				SKColorType.Gray8 => 0,
+				SKColorType.R8Unorm => 0,
+				// 1
+				SKColorType.Rgb565 => 1,
+				SKColorType.Argb4444 => 1,
+				SKColorType.Rg88 => 1,
+				SKColorType.Alpha16 => 1,
+				SKColorType.AlphaF16 => 1,
+				// 2
+				SKColorType.Bgra8888 => 2,
+				SKColorType.Bgra1010102 => 2,
+				SKColorType.Bgr101010x => 2,
+				SKColorType.Bgr101010xXR => 2,
+				SKColorType.Rgba8888 => 2,
+				SKColorType.Rgb888x => 2,
+				SKColorType.Rgba1010102 => 2,
+				SKColorType.Rgb101010x => 2,
+				SKColorType.Rg1616 => 2,
+				SKColorType.RgF16 => 2,
+				SKColorType.Srgba8888 => 2,
+				// 3
+				SKColorType.RgbaF16Clamped => 3,
+				SKColorType.RgbaF16 => 3,
+				SKColorType.Rgba16161616 => 3,
+				// 4
+				SKColorType.RgbaF32 => 4,
+				//
+				_ => throw new ArgumentOutOfRangeException (nameof (colorType), $"Unknown color type: '{colorType}'"),
 			};
 
 		// SkImageInfo.cpp - SkColorTypeValidateAlphaType
@@ -171,6 +170,7 @@ namespace SkiaSharp
 				case SKColorType.Argb4444:
 				case SKColorType.Rgba8888:
 				case SKColorType.Bgra8888:
+				case SKColorType.Srgba8888:
 				case SKColorType.Rgba1010102:
 				case SKColorType.Bgra1010102:
 				case SKColorType.RgbaF16Clamped:
@@ -188,43 +188,16 @@ namespace SkiaSharp
 				case SKColorType.Rgb888x:
 				case SKColorType.Rgb101010x:
 				case SKColorType.Bgr101010x:
+				case SKColorType.Bgr101010xXR:
+				case SKColorType.R8Unorm:
 					alphaType = SKAlphaType.Opaque;
 					break;
 
 				default:
-					throw new ArgumentOutOfRangeException (nameof (colorType));
+					throw new ArgumentOutOfRangeException (nameof (colorType), $"Unknown color type: '{colorType}'");
 			}
 
 			return alphaType;
-		}
-	}
-
-	[EditorBrowsable (EditorBrowsableState.Never)]
-	[Obsolete ("Use SKSurfaceProperties instead.")]
-	public struct SKSurfaceProps : IEquatable<SKSurfaceProps>
-	{
-		public SKPixelGeometry PixelGeometry { readonly get; set; }
-		public SKSurfacePropsFlags Flags { readonly get; set; }
-
-		public readonly bool Equals (SKSurfaceProps obj) =>
-			PixelGeometry == obj.PixelGeometry &&
-			Flags == obj.Flags;
-
-		public readonly override bool Equals (object obj) =>
-			obj is SKSurfaceProps f && Equals (f);
-
-		public static bool operator == (SKSurfaceProps left, SKSurfaceProps right) =>
-			left.Equals (right);
-
-		public static bool operator != (SKSurfaceProps left, SKSurfaceProps right) =>
-			!left.Equals (right);
-
-		public readonly override int GetHashCode ()
-		{
-			var hash = new HashCode ();
-			hash.Add (PixelGeometry);
-			hash.Add (Flags);
-			return hash.ToHashCode ();
 		}
 	}
 
@@ -278,13 +251,6 @@ namespace SkiaSharp
 		public readonly bool HasSubset => Subset != null;
 		public int FrameIndex { readonly get; set; }
 		public int PriorFrame { readonly get; set; }
-
-		[EditorBrowsable (EditorBrowsableState.Never)]
-		[Obsolete]
-		public SKTransferFunctionBehavior PremulBehavior {
-			readonly get => SKTransferFunctionBehavior.Respect;
-			set { }
-		}
 
 		public readonly bool Equals (SKCodecOptions obj) =>
 			ZeroInitialized == obj.ZeroInitialized &&
@@ -517,23 +483,6 @@ namespace SkiaSharp
 		}
 	}
 
-	[EditorBrowsable (EditorBrowsableState.Never)]
-	[Obsolete]
-	[Flags]
-	public enum SKColorSpaceFlags
-	{
-		None = 0,
-		NonLinearBlending = 0x1,
-	}
-
-	[EditorBrowsable (EditorBrowsableState.Never)]
-	[Obsolete]
-	public enum SKTransferFunctionBehavior
-	{
-		Ignore = 1,
-		Respect = 0,
-	}
-
 	public partial struct SKHighContrastConfig
 	{
 		public static readonly SKHighContrastConfig Default;
@@ -568,38 +517,20 @@ namespace SkiaSharp
 
 		public SKPngEncoderOptions (SKPngEncoderFilterFlags filterFlags, int zLibLevel)
 		{
+			fICCProfile = default;
+			fICCProfileDescription = default;
+
 			fFilterFlags = filterFlags;
 			fZLibLevel = zLibLevel;
 			fComments = null;
 		}
 
-		[EditorBrowsable (EditorBrowsableState.Never)]
-		[Obsolete ("Using SKPngEncoderOptions(SKPngEncoderFilterFlags, int) instead.")]
-		public SKPngEncoderOptions (SKPngEncoderFilterFlags filterFlags, int zLibLevel, SKTransferFunctionBehavior unpremulBehavior)
-		{
-			fFilterFlags = filterFlags;
-			fZLibLevel = zLibLevel;
-			fComments = null;
-		}
+		public SKPngEncoderFilterFlags FilterFlags => fFilterFlags;
 
-		public SKPngEncoderFilterFlags FilterFlags {
-			readonly get => fFilterFlags;
-			set => fFilterFlags = value;
-		}
-		public int ZLibLevel {
-			readonly get => fZLibLevel;
-			set => fZLibLevel = value;
-		}
-
-		[EditorBrowsable (EditorBrowsableState.Never)]
-		[Obsolete]
-		public SKTransferFunctionBehavior UnpremulBehavior {
-			readonly get => SKTransferFunctionBehavior.Respect;
-			set { }
-		}
+		public int ZLibLevel => fZLibLevel;
 	}
 
-	public partial struct SKJpegEncoderOptions
+	public unsafe partial struct SKJpegEncoderOptions
 	{
 		public static readonly SKJpegEncoderOptions Default;
 
@@ -608,31 +539,36 @@ namespace SkiaSharp
 			Default = new SKJpegEncoderOptions (100, SKJpegEncoderDownsample.Downsample420, SKJpegEncoderAlphaOption.Ignore);
 		}
 
+		public SKJpegEncoderOptions (int quality)
+		{
+			fICCProfile = default;
+			fICCProfileDescription = default;
+			xmpMetadata = default;
+
+			fQuality = quality;
+			fDownsample = SKJpegEncoderDownsample.Downsample420;
+			fAlphaOption = SKJpegEncoderAlphaOption.Ignore;
+		}
+
 		public SKJpegEncoderOptions (int quality, SKJpegEncoderDownsample downsample, SKJpegEncoderAlphaOption alphaOption)
 		{
+			fICCProfile = default;
+			fICCProfileDescription = default;
+			xmpMetadata = default;
+
 			fQuality = quality;
 			fDownsample = downsample;
 			fAlphaOption = alphaOption;
 		}
 
-		[EditorBrowsable (EditorBrowsableState.Never)]
-		[Obsolete ("Use SKJpegEncoderOptions(int, SKJpegEncoderDownsample, SKJpegEncoderAlphaOption) instead.")]
-		public SKJpegEncoderOptions (int quality, SKJpegEncoderDownsample downsample, SKJpegEncoderAlphaOption alphaOption, SKTransferFunctionBehavior blendBehavior)
-		{
-			fQuality = quality;
-			fDownsample = downsample;
-			fAlphaOption = alphaOption;
-		}
+		public SKJpegEncoderAlphaOption AlphaOption => fAlphaOption;
 
-		[EditorBrowsable (EditorBrowsableState.Never)]
-		[Obsolete]
-		public SKTransferFunctionBehavior BlendBehavior {
-			readonly get => SKTransferFunctionBehavior.Respect;
-			set { }
-		}
+		public SKJpegEncoderDownsample Downsample => fDownsample;
+
+		public int Quality => fQuality;
 	}
 
-	public partial struct SKWebpEncoderOptions
+	public unsafe partial struct SKWebpEncoderOptions
 	{
 		public static readonly SKWebpEncoderOptions Default;
 
@@ -643,23 +579,75 @@ namespace SkiaSharp
 
 		public SKWebpEncoderOptions (SKWebpEncoderCompression compression, float quality)
 		{
+			fICCProfile = default;
+			fICCProfileDescription = default;
+
 			fCompression = compression;
 			fQuality = quality;
 		}
 
-		[EditorBrowsable (EditorBrowsableState.Never)]
-		[Obsolete ("Use SKWebpEncoderOptions(SKWebpEncoderCompression, float) instead.")]
-		public SKWebpEncoderOptions (SKWebpEncoderCompression compression, float quality, SKTransferFunctionBehavior unpremulBehavior)
+		public SKWebpEncoderCompression Compression => fCompression;
+
+		public float Quality => fQuality;
+	}
+
+	public partial struct SKCubicResampler
+	{
+		public static readonly SKCubicResampler Mitchell = new (1 / 3.0f, 1 / 3.0f);
+
+		public static readonly SKCubicResampler CatmullRom = new (0.0f, 1 / 2.0f);
+
+		public SKCubicResampler (float b, float c)
 		{
-			fCompression = compression;
-			fQuality = quality;
+			fB = b;
+			fC = c;
+		}
+	}
+
+	public partial struct SKSamplingOptions
+	{
+		public static readonly SKSamplingOptions Default = new ();
+
+		public SKSamplingOptions (SKFilterMode filter, SKMipmapMode mipmap)
+		{
+			fUseCubic = default;
+			fCubic = default;
+			fMaxAniso = default;
+
+			fFilter = filter;
+			fMipmap = mipmap;
 		}
 
-		[EditorBrowsable (EditorBrowsableState.Never)]
-		[Obsolete]
-		public SKTransferFunctionBehavior UnpremulBehavior {
-			readonly get => SKTransferFunctionBehavior.Respect;
-			set { }
+		public SKSamplingOptions (SKFilterMode filter)
+		{
+			fUseCubic = default;
+			fCubic = default;
+			fMaxAniso = default;
+
+			fFilter = filter;
+			fMipmap = SKMipmapMode.None;
 		}
+
+		public SKSamplingOptions (SKCubicResampler resampler)
+		{
+			fMaxAniso = default;
+			fFilter = default;
+			fMipmap = default;
+
+			fUseCubic = 1;
+			fCubic = resampler;
+		}
+
+		public SKSamplingOptions (int maxAniso)
+		{
+			fUseCubic = default;
+			fCubic = default;
+			fFilter = default;
+			fMipmap = default;
+
+			fMaxAniso = Math.Max (1, maxAniso);
+		}
+
+		public bool IsAniso => MaxAniso != 0;
 	}
 }

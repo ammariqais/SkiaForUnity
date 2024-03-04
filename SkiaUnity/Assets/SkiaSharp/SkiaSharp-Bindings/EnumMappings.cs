@@ -1,4 +1,6 @@
-﻿using System;
+﻿#nullable disable
+
+using System;
 using System.ComponentModel;
 
 namespace SkiaSharp
@@ -12,47 +14,6 @@ namespace SkiaSharp
 		Direct3D = 4,
 	}
 
-	[EditorBrowsable (EditorBrowsableState.Never)]
-	[Obsolete ("Use SKColorType instead.")]
-	public enum GRPixelConfig
-	{
-		Unknown = 0,
-		Alpha8 = 1,
-		Gray8 = 2,
-		Rgb565 = 3,
-		Rgba4444 = 4,
-		Rgba8888 = 5,
-		Rgb888 = 6,
-		Bgra8888 = 7,
-		Srgba8888 = 8,
-		[EditorBrowsable (EditorBrowsableState.Never)]
-		[Obsolete ("The pixel configuration 'sBGRA 8888' is no longer supported in the native library.", true)]
-		Sbgra8888 = 9,
-		Rgba1010102 = 10,
-		[EditorBrowsable (EditorBrowsableState.Never)]
-		[Obsolete ("The pixel configuration 'floating-point RGBA' is no longer supported in the native library.", true)]
-		RgbaFloat = 11,
-		[EditorBrowsable (EditorBrowsableState.Never)]
-		[Obsolete ("The pixel configuration 'floating-point RG' is no longer supported in the native library.", true)]
-		RgFloat = 12,
-		AlphaHalf = 13,
-		RgbaHalf = 14,
-		Alpha8AsAlpha = 15,
-		Alpha8AsRed = 16,
-		AlphaHalfAsLum = 17,
-		AlphaHalfAsRed = 18,
-		Gray8AsLum = 19,
-		Gray8AsRed = 20,
-		RgbaHalfClamped = 21,
-		Alpha16 = 22,
-		Rg1616 = 23,
-		Rgba16161616 = 24,
-		RgHalf = 25,
-		Rg88 = 26,
-		Rgb888x = 27,
-		RgbEtc1 = 28,
-	}
-
 	public static partial class SkiaExtensions
 	{
 		internal static GRBackendNative ToNative (this GRBackend backend) =>
@@ -63,7 +24,7 @@ namespace SkiaSharp
 				GRBackend.Vulkan => GRBackendNative.Vulkan,
 				GRBackend.Dawn => GRBackendNative.Dawn,
 				GRBackend.Direct3D => GRBackendNative.Direct3D,
-				_ => throw new ArgumentOutOfRangeException (nameof (backend)),
+				_ => throw new ArgumentOutOfRangeException (nameof (backend), $"Unknown backend: '{backend}'"),
 			};
 
 		internal static GRBackend FromNative (this GRBackendNative backend) =>
@@ -74,7 +35,7 @@ namespace SkiaSharp
 				GRBackendNative.Vulkan => GRBackend.Vulkan,
 				GRBackendNative.Dawn => GRBackend.Dawn,
 				GRBackendNative.Direct3D => GRBackend.Direct3D,
-				_ => throw new ArgumentOutOfRangeException (nameof (backend)),
+				_ => throw new ArgumentOutOfRangeException (nameof (backend), $"Unknown backend: '{backend}'"),
 			};
 
 		internal static SKColorTypeNative ToNative (this SKColorType colorType) =>
@@ -101,7 +62,10 @@ namespace SkiaSharp
 				SKColorType.Rgba16161616 => SKColorTypeNative.R16g16b16a16Unorm,
 				SKColorType.Bgra1010102 => SKColorTypeNative.Bgra1010102,
 				SKColorType.Bgr101010x => SKColorTypeNative.Bgr101010x,
-				_ => throw new ArgumentOutOfRangeException (nameof (colorType)),
+				SKColorType.Bgr101010xXR => SKColorTypeNative.Bgr101010xXr,
+				SKColorType.Srgba8888 => SKColorTypeNative.Srgba8888,
+				SKColorType.R8Unorm => SKColorTypeNative.R8Unorm,
+				_ => throw new ArgumentOutOfRangeException (nameof (colorType), $"Unknown color type: '{colorType}'"),
 			};
 
 		internal static SKColorType FromNative (this SKColorTypeNative colorType) =>
@@ -128,7 +92,10 @@ namespace SkiaSharp
 				SKColorTypeNative.R16g16b16a16Unorm => SKColorType.Rgba16161616,
 				SKColorTypeNative.Bgra1010102 => SKColorType.Bgra1010102,
 				SKColorTypeNative.Bgr101010x => SKColorType.Bgr101010x,
-				_ => throw new ArgumentOutOfRangeException (nameof (colorType)),
+				SKColorTypeNative.Bgr101010xXr => SKColorType.Bgr101010xXR,
+				SKColorTypeNative.Srgba8888 => SKColorType.Srgba8888,
+				SKColorTypeNative.R8Unorm => SKColorType.R8Unorm,
+				_ => throw new ArgumentOutOfRangeException (nameof (colorType), $"Unknown color type: '{colorType}'"),
 			};
 	}
 }
