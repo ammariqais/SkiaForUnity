@@ -7,8 +7,8 @@ using UnityEditor.SceneManagement;
 using UnityEngine.SceneManagement;
 
 namespace SkiaSharp.UnityEditor {
-  [CustomEditor(typeof(SkottiePlayer))]
-  public class SlottiePlayerEditor : Editor {
+  [CustomEditor(typeof(SkottiePlayerV2))]
+  public class SlottiePlayerV2Editor : Editor {
   private MethodInfo UpdateAnimation;
   private MethodInfo PlayAnimation;
   private static bool isEditorUpdateActive = false;
@@ -30,7 +30,7 @@ namespace SkiaSharp.UnityEditor {
   }
   
   private void UpdateEditor() {
-    SkottiePlayer myScript = (SkottiePlayer)target;
+    SkottiePlayerV2 myScript = (SkottiePlayerV2)target;
     if (!(bool)playAniamtionField.GetValue(myScript)) {
       isEditorUpdateActive = false;
       EditorApplication.update -= UpdateEditor;
@@ -54,7 +54,7 @@ namespace SkiaSharp.UnityEditor {
       return;
     }
 
-    SkottiePlayer myScript = (SkottiePlayer)target;
+    SkottiePlayerV2 myScript = (SkottiePlayerV2)target;
 
     
     GUILayout.Space(20);
@@ -81,7 +81,7 @@ namespace SkiaSharp.UnityEditor {
 
   private void CallUpdateAnimation() {
     // Get the target script
-    SkottiePlayer myScript = (SkottiePlayer)target;
+    SkottiePlayerV2 myScript = (SkottiePlayerV2)target;
     if (target == null) {
       return;
     }
@@ -92,7 +92,7 @@ namespace SkiaSharp.UnityEditor {
   
   private void CallPlayAnimation() {
     // Get the target script
-    SkottiePlayer myScript = (SkottiePlayer)target;
+    SkottiePlayerV2 myScript = (SkottiePlayerV2)target;
 
     // Use reflection to call the private method
     PlayAnimation?.Invoke(myScript, null);
@@ -134,7 +134,7 @@ public class EditorOpenCallback {
      foreach (Object obj in objects) {
        GameObject gameObj = obj as GameObject;
        if (gameObj != null){
-         SkottiePlayer myComponent = gameObj.GetComponent<SkottiePlayer>();
+         SkottiePlayerV2 myComponent = gameObj.GetComponent<SkottiePlayerV2>();
          if (myComponent != null)
          {
            UpdateAnimation = myComponent.GetType().GetMethod("Start", System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic);

@@ -28,7 +28,7 @@ namespace SkiaSharp.Unity {
   /// }
   /// </code>
   /// </example>
-  public class SkottiePlayer : MonoBehaviour {
+  public class SkottiePlayerV2 : MonoBehaviour {
   [SerializeField]
   private TextAsset lottieFile;
   [SerializeField]
@@ -115,7 +115,6 @@ namespace SkiaSharp.Unity {
   public void LoadAnimation(string json) {
     var bytes = Encoding.UTF8.GetBytes(json);
     var datadata = SKData.CreateCopy(bytes);
-    Debug.LogError("rwdsmfk");
     currentAnimation = Animation
       .CreateBuilder()
       .SetResourceProvider(new DataUriResourceProvider())
