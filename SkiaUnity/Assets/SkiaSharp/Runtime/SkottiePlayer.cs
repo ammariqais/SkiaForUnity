@@ -1,4 +1,8 @@
+using System;
+using System.IO;
+using System.Text;
 using Newtonsoft.Json;
+using SkiaSharp.Resources;
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.UI;
@@ -43,8 +47,9 @@ namespace SkiaSharp.Unity {
   private Animation currentAnimation;
   private SKCanvas canvas;
   private SKRect rect;
-  private double timer = 0, animationFps, animationDuration, animationStateDuration;
-  private SKImageInfo info;
+  private double timer = 0, animationFps, animationStateDuration;
+  //private SKImageInfo info;
+  private SKBitmap bmp;
   private SKSurface surface;
   private RawImage rawImage;
   private SpriteRenderer spriteRenderer;
@@ -52,6 +57,7 @@ namespace SkiaSharp.Unity {
   private bool playAniamtion = false;
   private SkottieMarkers states;
   private SkottieMarkers.state currentState;
+  private TimeSpan animationDuration;
   
   private void Start() {
     if (lottieFile == null) {
@@ -82,18 +88,28 @@ namespace SkiaSharp.Unity {
     if (rawImage == null) {
       spriteRenderer = GetComponent<SpriteRenderer>();
     }
-    info = new SKImageInfo(resWidth, resWidth);
-    surface = SKSurface.Create(info);
-    rect = SKRect.Create(resWidth, resHeight);
-    canvas = surface.Canvas;
-    currentAnimation.SeekFrame(currentState?.tm ?? 0);
-    currentAnimation.Render(canvas,rect);
+      
+    bmp = new SKBitmap((int)currentAnimation.Size.Width, (int)currentAnimation.Size.Height);
+    bmp.Erase(SKColors.Red);
+    var beforePixels = bmp.Pixels;
 
-    TextureFormat format = (info.ColorType == SKColorType.Rgba8888) ? TextureFormat.RGBA32 : TextureFormat.BGRA32;
-    texture = new Texture2D(info.Width, info.Height, format, false);
+    
+    //info = new SKImageInfo(resWidth, resWidth);
+    surface = SKSurface.Create(bmp.Info);
+   // rect = SKRect.Create(resWidth, resHeight);
+    canvas = new SKCanvas(bmp);
+    rect = bmp.Info.Rect;
+    //canvas = surface.Canvas;
+    currentAnimation.SeekFrame(currentState?.tm ?? 0);
+    currentAnimation.Render(canvas,bmp.Info.Rect);
+    var afterPixels = bmp.Pixels;
+   // Debug.LogError(beforePixels.Equals(afterPixels));
+
+    TextureFormat format = (bmp.Info.ColorType == SKColorType.Rgba8888) ? TextureFormat.RGBA32 : TextureFormat.BGRA32;
+    texture = new Texture2D(bmp.Info.Width, bmp.Info.Height, format, false);
     texture.wrapMode = TextureWrapMode.Repeat;
     var pixmap = surface.PeekPixels();
-    texture.LoadRawTextureData(pixmap.GetPixels(), pixmap.RowBytes * pixmap.Height);
+    texture.LoadRawTextureData(bmp.GetPixels(), pixmap.RowBytes * pixmap.Height);
     texture.Apply();
     if (rawImage) {
       rawImage.texture = texture;
@@ -107,10 +123,19 @@ namespace SkiaSharp.Unity {
   /// </summary>
   /// <param name="json">The JSON string containing the animation data.</param>
   public void LoadAnimation(string json) {
-    if (!Animation.TryParse(json, out currentAnimation)) {
+    var bytes = Encoding.UTF8.GetBytes(json);
+    var datadata = SKData.CreateCopy(bytes);
+    
+    currentAnimation = Animation
+      .CreateBuilder()
+      .SetResourceProvider(new DataUriResourceProvider())
+      .Build(datadata);
+
+      /*if (!Animation.TryCreate(datadata.AsStream(), out currentAnimation)) {
       Debug.LogError("[SkottiePlayer] - wrong json file");
       return;
-    }
+    }*/
+
     LoadTexture();
   }
 
@@ -129,7 +154,7 @@ namespace SkiaSharp.Unity {
           currentAnimation.SeekFrameTime(timer); 
           currentAnimation.Render(canvas,rect); 
           var pixmap = surface.PeekPixels(); 
-          texture.LoadRawTextureData(pixmap.GetPixels(), pixmap.RowBytes * pixmap.Height); 
+          texture.LoadRawTextureData(bmp.GetPixels(), pixmap.RowBytes * pixmap.Height); 
           texture.Apply(); 
         } else {
           Debug.LogError($"[SkottiePlayer] - SetState({name}), state not found!");
@@ -161,7 +186,7 @@ namespace SkiaSharp.Unity {
   /// </summary>
   /// <returns>The total duration of the loaded animation in seconds.</returns>
     public double GetDurations() {
-      return animationDuration;
+      return animationDuration.Seconds;
     }
 
   /// <summary>
@@ -186,7 +211,7 @@ namespace SkiaSharp.Unity {
             : animationStateDuration;
           playAniamtion = loop;
           OnAnimationFinished?.Invoke(currentState?.cm);
-        } else if (timer >= animationDuration) {
+        } else if (timer >= animationDuration.Seconds) {
           timer = resetAfterFinished || loop ? 0 : timer;
           playAniamtion = loop;
           OnAnimationFinished?.Invoke(currentState?.cm);
@@ -196,7 +221,7 @@ namespace SkiaSharp.Unity {
         currentAnimation.SeekFrameTime(timer);
         currentAnimation.Render(canvas, rect);
         var pixmap = surface.PeekPixels();
-        texture.LoadRawTextureData(pixmap.GetPixels(), pixmap.RowBytes * pixmap.Height);
+        texture.LoadRawTextureData(bmp.GetPixels(), pixmap.RowBytes * pixmap.Height);
         texture.Apply();
     }
 
