@@ -406,7 +406,7 @@ namespace SkiaSharp.Unity.HB {
 			if (texture == null) {
 				texture = new Texture2D(roundedWidth, roundedHeight, format, false);
 			} else {
-				texture.Resize(roundedWidth, roundedHeight, format, false);
+				texture.Reinitialize(roundedWidth, roundedHeight, format, false);
 			}
 			
 			if (enableGradiant && gradiantColors != null) {

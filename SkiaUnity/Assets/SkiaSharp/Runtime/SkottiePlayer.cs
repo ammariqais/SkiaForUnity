@@ -48,7 +48,6 @@ namespace SkiaSharp.Unity {
   private SKCanvas canvas;
   private SKRect rect;
   private double timer = 0, animationFps, animationStateDuration;
-  //private SKImageInfo info;
   private SKBitmap bmp;
   private SKSurface surface;
   private RawImage rawImage;
@@ -90,20 +89,11 @@ namespace SkiaSharp.Unity {
     }
       
     bmp = new SKBitmap((int)currentAnimation.Size.Width, (int)currentAnimation.Size.Height);
-    bmp.Erase(SKColors.Red);
-    var beforePixels = bmp.Pixels;
-
-    
-    //info = new SKImageInfo(resWidth, resWidth);
     surface = SKSurface.Create(bmp.Info);
-   // rect = SKRect.Create(resWidth, resHeight);
     canvas = new SKCanvas(bmp);
     rect = bmp.Info.Rect;
-    //canvas = surface.Canvas;
     currentAnimation.SeekFrame(currentState?.tm ?? 0);
     currentAnimation.Render(canvas,bmp.Info.Rect);
-    var afterPixels = bmp.Pixels;
-   // Debug.LogError(beforePixels.Equals(afterPixels));
 
     TextureFormat format = (bmp.Info.ColorType == SKColorType.Rgba8888) ? TextureFormat.RGBA32 : TextureFormat.BGRA32;
     texture = new Texture2D(bmp.Info.Width, bmp.Info.Height, format, false);
@@ -125,7 +115,7 @@ namespace SkiaSharp.Unity {
   public void LoadAnimation(string json) {
     var bytes = Encoding.UTF8.GetBytes(json);
     var datadata = SKData.CreateCopy(bytes);
-    
+    Debug.LogError("rwdsmfk");
     currentAnimation = Animation
       .CreateBuilder()
       .SetResourceProvider(new DataUriResourceProvider())

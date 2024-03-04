@@ -33,7 +33,7 @@ namespace SkiaSharp.Skottie
 				? animation
 				: null;
 
-		public static bool TryParse (string json, out Animation? animation)
+		public static bool TryParse (string json, [System.Diagnostics.CodeAnalysis.NotNullWhen (true)] out Animation? animation)
 		{
 			_ = json ?? throw new ArgumentNullException (nameof (json));
 
@@ -48,7 +48,7 @@ namespace SkiaSharp.Skottie
 				? animation
 				: null;
 
-		public static bool TryCreate (Stream stream, out Animation? animation)
+		public static bool TryCreate (Stream stream, [System.Diagnostics.CodeAnalysis.NotNullWhen (true)] out Animation? animation)
 		{
 			_ = stream ?? throw new ArgumentNullException (nameof (stream));
 
@@ -61,7 +61,7 @@ namespace SkiaSharp.Skottie
 				? animation
 				: null;
 
-		public static bool TryCreate (SKStream stream, out Animation? animation)
+		public static bool TryCreate (SKStream stream, [System.Diagnostics.CodeAnalysis.NotNullWhen (true)] out Animation? animation)
 		{
 			_ = stream ?? throw new ArgumentNullException (nameof (stream));
 
@@ -74,7 +74,7 @@ namespace SkiaSharp.Skottie
 				? animation
 				: null;
 
-		public static bool TryCreate (SKData data, out Animation? animation)
+		public static bool TryCreate (SKData data, [System.Diagnostics.CodeAnalysis.NotNullWhen (true)] out Animation? animation)
 		{
 			_ = data ?? throw new ArgumentNullException (nameof (data));
 
@@ -83,6 +83,7 @@ namespace SkiaSharp.Skottie
 
 			fixed (byte* ptr = span) {
 				animation = GetObject (SkottieApi.skottie_animation_make_from_data (ptr, (IntPtr)span.Length));
+				GC.KeepAlive(data);
 				return animation != null;
 			}
 		}
@@ -92,7 +93,7 @@ namespace SkiaSharp.Skottie
 				? animation
 				: null;
 
-		public static bool TryCreate (string path, out Animation? animation)
+		public static bool TryCreate (string path, [System.Diagnostics.CodeAnalysis.NotNullWhen (true)] out Animation? animation)
 		{
 			_ = path ?? throw new ArgumentNullException (nameof (path));
 
