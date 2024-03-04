@@ -24,7 +24,7 @@ namespace SkiaSharp
 			CreateVulkan (width, height, sampleCount, vkImageInfo);
 		}
 
-#if __IOS__ || __MACOS__
+#if __MACOS__
 
 		public GRBackendRenderTarget (int width, int height, int sampleCount, GRMtlTextureInfo mtlInfo)
 			: this (IntPtr.Zero, true)
