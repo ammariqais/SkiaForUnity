@@ -175,7 +175,7 @@ namespace SkiaSharp.Unity {
   /// </summary>
   /// <returns>The total duration of the loaded animation in seconds.</returns>
     public double GetDurations() {
-      return animationDuration.Seconds;
+      return animationDuration.TotalSeconds;
     }
 
   /// <summary>
@@ -200,7 +200,7 @@ namespace SkiaSharp.Unity {
             : animationStateDuration;
           playAniamtion = loop;
           OnAnimationFinished?.Invoke(currentState?.cm);
-        } else if (timer >= animationDuration.Seconds) {
+        } else if (timer >= animationDuration.TotalSeconds) {
           timer = resetAfterFinished || loop ? 0 : timer;
           playAniamtion = loop;
           OnAnimationFinished?.Invoke(currentState?.cm);
