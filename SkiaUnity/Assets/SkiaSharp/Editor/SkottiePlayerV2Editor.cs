@@ -107,9 +107,9 @@ namespace SkiaSharp.UnityEditor {
 }
 
 [InitializeOnLoad]
-public class EditorOpenCallback {
+public class EditorOpenCallback2 {
   private static MethodInfo UpdateAnimation;
-  static EditorOpenCallback() {
+  static EditorOpenCallback2() {
     EditorApplication.playModeStateChanged += OnPlayModeStateChanged;
     EditorSceneManager.sceneOpened += OnSceneOpened;
 
