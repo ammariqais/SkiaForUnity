@@ -4,6 +4,15 @@ SkiaSharp for Unity is a powerful plugin that leverages the SkiaSharp 2D graphic
 
 SkiaSharp is a .NET binding to the Skia library, which is utilized by popular platforms like Google Chrome, Android, and Flutter. By integrating SkiaSharp into Unity, you gain access to a wide range of APIs for rendering vector graphics, text, and images. The inclusion of HarfBuzz further improves text rendering, making it ideal for internationalization and multilingual projects.
 
+## Added support for SVG.Skia:
+
+SkiaForUnity now supports rendering SVG graphics using SVG.Skia. This allows you to leverage the power of SVG for creating scalable vector graphics within your Unity projects.
+
+Benefits of SVG.Skia:
+
+    Scalability: SVG graphics can be scaled to any size without losing quality.
+    Cross-platform compatibility: SVG is a widely supported format that works across different platforms.
+
 ## Features
 
 - **High-performance graphics:** SkiaSharp for Unity utilizes Skia's hardware-accelerated rendering capabilities to deliver fast and smooth graphics performance.
