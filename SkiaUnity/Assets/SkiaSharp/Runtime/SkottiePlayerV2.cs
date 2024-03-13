@@ -36,13 +36,14 @@ namespace SkiaSharp.Unity {
   [SerializeField] 
   private string stateName;
   [SerializeField] 
-  private bool resetAfterFinished = false;
+  public bool resetAfterFinished = false;
   [SerializeField] 
-  private bool autoPlay = false;
+  public bool autoPlay = false;
   [SerializeField] 
-  private bool loop = false;
+  public bool loop = false;
 
   public UnityAction<string> OnAnimationFinished;
+  public UnityAction OnAnimationInit;
 
   private Animation currentAnimation;
   private SKCanvas canvas;
@@ -106,6 +107,7 @@ namespace SkiaSharp.Unity {
     } else {
       spriteRenderer.sprite = Sprite.Create(texture,new Rect(0,0,texture.width,texture.height),Vector2.one*0.5f,100f,0);
     }
+    OnAnimationInit?.Invoke();
   }
 
   /// <summary>
