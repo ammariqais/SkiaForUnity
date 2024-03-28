@@ -24,7 +24,7 @@ namespace SkiaSharp.Unity.HB {
 		[SerializeField]
 		private Color fontColor = Color.black, haloColor = Color.black, backgroundColor = Color.clear;
 		[SerializeField]
-		private bool italic, bold, autoFitVertical = true, autoFitHorizontal, renderLinks, enableGradiant;
+		private bool italic, bold, autoFitVertical = true, autoFitHorizontal, renderLinks, enableGradiant, enableEllipsis = true;
 		[SerializeField]
 		private UnderlineStyle underlineStyle;
 		[SerializeField]
@@ -357,7 +357,8 @@ namespace SkiaSharp.Unity.HB {
 				rawImage.color = Color.white;
 			}
 			rs.Alignment = textAlignment;
-			
+			rs.EllipsisEnabled = enableEllipsis;            
+
 			rs.AddText(Text, styleBoldItalic);
 			
 			if (renderLinks) {
@@ -464,7 +465,7 @@ namespace SkiaSharp.Unity.HB {
 						differnce = length - rs.Length;
 						length = length - differnce;
 					}
-                    
+
 					rs.ApplyStyle(Mathf.Clamp(match.Index,0,rs.Length), Mathf.Clamp(match.Length - differnce,0,match.Length),styleLink);
 					urls.Add(match.Index,new HBLinks() {
 						IndexStart = match.Index,

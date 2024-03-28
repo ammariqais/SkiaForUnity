@@ -15,7 +15,7 @@ public class HBTextBlockEditor : Editor {
     letterSpacingProperty, autoFitVerticalProperty, renderLinksProperty, 
     haloBlurProperty, backgroundColorProperty, underlineStyleProperty, lineHeightProperty,
     strikeThroughStyleProperty,textProperty, textAligmentProperty,colorTypeProperty, autoFitHorizontalProperty, maxWidthProperty, gradiantColorsProperty
-    ,gradiantPositionsProperty, enableGradiantProperty, gradiantAngleProperty;
+    ,gradiantPositionsProperty, enableGradiantProperty, gradiantAngleProperty, ellipsisProperty;
   bool showHaloSettings = false;
   bool showMoreSettings = false;
 
@@ -46,6 +46,7 @@ public class HBTextBlockEditor : Editor {
     strikeThroughStyleProperty = serializedObject.FindProperty("strikeThroughStyle");
     textProperty = serializedObject.FindProperty("Text");
     textAligmentProperty = serializedObject.FindProperty("textAlignment");
+    ellipsisProperty = serializedObject.FindProperty("enableEllipsis");
     colorTypeProperty = serializedObject.FindProperty("colorType");
     gradiantColorsProperty = serializedObject.FindProperty("gradiantColors");
     gradiantPositionsProperty = serializedObject.FindProperty("gradiantPositions");
@@ -85,6 +86,8 @@ public class HBTextBlockEditor : Editor {
 
     GUILayout.Label("Text Alignment:",largeLabelStyle);
     EditorGUILayout.PropertyField(textAligmentProperty);
+    GUILayout.Label("Enable Ellipsis :",largeLabelStyle);
+    EditorGUILayout.PropertyField(ellipsisProperty);
 
     EditorGUILayout.PropertyField(letterSpacingProperty);
     EditorGUILayout.PropertyField(autoFitVerticalProperty);
