@@ -30,7 +30,7 @@ namespace SkiaSharp.Unity.HB {
 		[SerializeField]
 		private StrikeThroughStyle strikeThroughStyle;
 		[SerializeField]
-		private float lineHeight = 1.0f, maxWidth = 264, gradiantAngle = 90;
+		private float lineHeight = 1.0f, maxWidth = 264, maxHeight = -1 , gradiantAngle = 90;
 		[SerializeField]
 		private HBColorFormat colorType = HBColorFormat.alpha8; 
 		[SerializeField] 
@@ -63,6 +63,21 @@ namespace SkiaSharp.Unity.HB {
 			get => maxWidth;
 			set {
 				maxWidth = value;
+				if (rawImage == null) {
+					rawImage = GetComponent<RawImage>();
+					rectTransform = transform as RectTransform;
+				}
+				if (rawImage) {
+					urls.Clear();
+					RenderText();
+				}
+			}
+		}
+		
+		public float MaxHeight {
+			get => maxHeight;
+			set {
+				maxHeight = value;
 				if (rawImage == null) {
 					rawImage = GetComponent<RawImage>();
 					rectTransform = transform as RectTransform;
@@ -377,9 +392,11 @@ namespace SkiaSharp.Unity.HB {
 
 			currentPreferdWidth = autoFitHorizontal ? rs.MeasuredWidth > maxWidth ? maxWidth : rs.MeasuredWidth + 20 : rectTransform.sizeDelta.x;
 			rs.MaxWidth = currentPreferdWidth;
-			rs.MaxHeight = autoFitVertical ? rs.MeasuredHeight : rectTransform.rect.height;
+			rs.MaxHeight = autoFitVertical ? maxHeight > -1  && rs.MeasuredHeight > maxHeight ? maxHeight : rs.MeasuredHeight + 20 : rectTransform.rect.height;
 			if (autoFitVertical) {
 				rectTransform.sizeDelta = autoFitHorizontal ? new Vector2(currentPreferdWidth, rs.MeasuredHeight ) : new Vector2(rectTransform.sizeDelta.x, rs.MeasuredHeight );
+			} else {
+				rectTransform.sizeDelta = autoFitHorizontal ? new Vector2(currentPreferdWidth, rectTransform.rect.height ) : new Vector2(rectTransform.sizeDelta.x, rectTransform.rect.height );
 			}
 
 			

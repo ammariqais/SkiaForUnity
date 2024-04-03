@@ -14,7 +14,7 @@ public class HBTextBlockEditor : Editor {
     italicProperty, boldProperty, haloColorProperty, haloWidthProperty, 
     letterSpacingProperty, autoFitVerticalProperty, renderLinksProperty, 
     haloBlurProperty, backgroundColorProperty, underlineStyleProperty, lineHeightProperty,
-    strikeThroughStyleProperty,textProperty, textAligmentProperty,colorTypeProperty, autoFitHorizontalProperty, maxWidthProperty, gradiantColorsProperty
+    strikeThroughStyleProperty,textProperty, textAligmentProperty,colorTypeProperty, autoFitHorizontalProperty, maxWidthProperty, maxHeightProperty, gradiantColorsProperty
     ,gradiantPositionsProperty, enableGradiantProperty, gradiantAngleProperty, ellipsisProperty;
   bool showHaloSettings = false;
   bool showMoreSettings = false;
@@ -38,6 +38,7 @@ public class HBTextBlockEditor : Editor {
     autoFitVerticalProperty = serializedObject.FindProperty("autoFitVertical");
     autoFitHorizontalProperty = serializedObject.FindProperty("autoFitHorizontal");
     maxWidthProperty = serializedObject.FindProperty("maxWidth");
+    maxHeightProperty = serializedObject.FindProperty("maxHeight");
     renderLinksProperty = serializedObject.FindProperty("renderLinks");
     haloBlurProperty =  serializedObject.FindProperty("haloBlur");
     backgroundColorProperty = serializedObject.FindProperty("backgroundColor");
@@ -91,10 +92,15 @@ public class HBTextBlockEditor : Editor {
 
     EditorGUILayout.PropertyField(letterSpacingProperty);
     EditorGUILayout.PropertyField(autoFitVerticalProperty);
+    if (script.AutoFitVertical) {
+      GUILayout.Label("keep it -1 for no limitation!",largeLabelStyle);
+      EditorGUILayout.PropertyField(maxHeightProperty);
+    }
     EditorGUILayout.PropertyField(autoFitHorizontalProperty);
     if (script.AutoFitHorizontal) {
       EditorGUILayout.PropertyField(maxWidthProperty);
     }
+    
     EditorGUILayout.PropertyField(enableGradiantProperty);
     if (script.IsGradiantEnabled) {
       EditorGUILayout.PropertyField(gradiantColorsProperty);
