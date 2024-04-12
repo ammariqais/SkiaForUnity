@@ -54,7 +54,7 @@ namespace SkiaSharp.Unity.HB {
 		private Regex regex;
 		SKTypeface skTypeface;
 		RectTransform rectTransform;
-		private float currentWidth, currentHeight, currentPreferdWidth = 0;
+		private float currentWidth, currentHeight, currentPreferdWidth = 0, currentPreferdHeight;
 		private TextGradient blockGradient;
 
 		public TextBlock Info => rs;
@@ -296,10 +296,6 @@ namespace SkiaSharp.Unity.HB {
 			rawImage = GetComponent<RawImage>();
 			rectTransform = transform as RectTransform;
 			
-			if (String.IsNullOrEmpty(Text)){
-				return;
-			}
-			
 			styleBoldItalic.FontSize = fontSize;
 			styleBoldItalic.TextColor = new SKColor(ColorToUint(fontColor));
 			styleBoldItalic.HaloWidth = haloWidth;
@@ -313,9 +309,6 @@ namespace SkiaSharp.Unity.HB {
 			styleBoldItalic.Underline = underlineStyle;
 			styleBoldItalic.LineHeight = lineHeight;
 			styleBoldItalic.StrikeThrough = strikeThroughStyle;
-
-			
-			
 		}
 
 		private void OnEnable() {
@@ -390,13 +383,14 @@ namespace SkiaSharp.Unity.HB {
 				rs.FontMapper = new FontMapper(skTypeface);
 			}
 
-			currentPreferdWidth = autoFitHorizontal ? rs.MeasuredWidth > maxWidth ? maxWidth : rs.MeasuredWidth + 20 : rectTransform.sizeDelta.x;
+			currentPreferdWidth = autoFitHorizontal ? rs.MeasuredWidth > maxWidth ? maxWidth : rs.MeasuredWidth : rectTransform.sizeDelta.x;
 			rs.MaxWidth = currentPreferdWidth;
-			rs.MaxHeight = autoFitVertical ? maxHeight > -1  && rs.MeasuredHeight > maxHeight ? maxHeight : rs.MeasuredHeight + 20 : rectTransform.rect.height;
+			currentPreferdHeight = autoFitVertical ? maxHeight > -1  && rs.MeasuredHeight > maxHeight ? maxHeight : rs.MeasuredHeight : rectTransform.sizeDelta.y;
+			rs.MaxHeight = currentPreferdHeight;
 			if (autoFitVertical) {
 				rectTransform.sizeDelta = autoFitHorizontal ? new Vector2(currentPreferdWidth, rs.MeasuredHeight ) : new Vector2(rectTransform.sizeDelta.x, rs.MeasuredHeight );
 			} else {
-				rectTransform.sizeDelta = autoFitHorizontal ? new Vector2(currentPreferdWidth, rectTransform.rect.height ) : new Vector2(rectTransform.sizeDelta.x, rectTransform.rect.height );
+				rectTransform.sizeDelta = autoFitHorizontal ? new Vector2(currentPreferdWidth, autoFitVertical ? currentPreferdHeight : rectTransform.sizeDelta.y ) : new Vector2(rectTransform.sizeDelta.x, rectTransform.sizeDelta.y );
 			}
 
 			
@@ -417,7 +411,7 @@ namespace SkiaSharp.Unity.HB {
 			}
 			
 			info.ColorType = colorType == HBColorFormat.alpha8 ? SKColorType.Alpha8 : info.ColorType ;
-			
+
 			surface = SKSurface.Create(info);
 			canvas = surface.Canvas;
 			TextureFormat format = (info.ColorType == SKColorType.Rgba8888) ? TextureFormat.RGBA32 : info.ColorType == SKColorType.Alpha8 ? TextureFormat.Alpha8 : TextureFormat.RGBA32;
@@ -494,7 +488,7 @@ namespace SkiaSharp.Unity.HB {
 		}
         
 		private void FixedUpdate() {
-			if (currentWidth != rectTransform.rect.width || rectTransform.rect.height != currentHeight) {
+			if (currentPreferdWidth != rectTransform.rect.width || rectTransform.rect.height != currentPreferdHeight) {
 				urls.Clear();
 				RenderText();
 			}
@@ -505,7 +499,6 @@ namespace SkiaSharp.Unity.HB {
 				rawImage = GetComponent<RawImage>();
 				rectTransform = transform as RectTransform;
 			}
-            
 			urls.Clear();
 			RenderText();
 		}
@@ -615,7 +608,7 @@ namespace SkiaSharp.Unity.HB {
 		public float preferredWidth {
 			get {
 				if (rs != null) {
-					return rs.MeasuredWidth;
+					return currentPreferdWidth;
 				}
 				return currentWidth;
 			}
@@ -626,7 +619,7 @@ namespace SkiaSharp.Unity.HB {
 		public float preferredHeight {
 			get {
 				if (rs != null && textRendered) {
-					return rs.MeasuredHeight;
+					return currentPreferdHeight;
 				}
 
 				styleBoldItalic.FontSize = fontSize;
