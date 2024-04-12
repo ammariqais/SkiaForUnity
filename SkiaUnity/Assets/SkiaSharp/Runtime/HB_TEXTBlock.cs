@@ -20,7 +20,7 @@ namespace SkiaSharp.Unity.HB {
 		[SerializeField]
 		public TextAsset font;
 		[SerializeField]
-		private int fontSize = 12, haloWidth, letterSpacing, haloBlur;
+		private int fontSize = 12, haloWidth, letterSpacing, haloBlur, maxLines;
 		[SerializeField]
 		private Color fontColor = Color.black, haloColor = Color.black, backgroundColor = Color.clear;
 		[SerializeField]
@@ -56,6 +56,7 @@ namespace SkiaSharp.Unity.HB {
 		RectTransform rectTransform;
 		private float currentWidth, currentHeight, currentPreferdWidth = 0, currentPreferdHeight;
 		private TextGradient blockGradient;
+		private bool widthPreferred, heightPreferred;
 
 		public TextBlock Info => rs;
 
@@ -358,7 +359,7 @@ namespace SkiaSharp.Unity.HB {
 			rs.Clear();
 			rs.MaxHeight = null;
 			rs.MaxWidth = null;
-
+			rs.MaxLines = maxLines == 0 ? null : maxLines;
 			if (colorType == HBColorFormat.alpha8) {
 				rawImage.color = fontColor;
 			} else {
@@ -366,7 +367,6 @@ namespace SkiaSharp.Unity.HB {
 			}
 			rs.Alignment = textAlignment;
 			rs.EllipsisEnabled = enableEllipsis;            
-
 			rs.AddText(Text, styleBoldItalic);
 			
 			if (renderLinks) {
@@ -383,19 +383,35 @@ namespace SkiaSharp.Unity.HB {
 				rs.FontMapper = new FontMapper(skTypeface);
 			}
 
-			currentPreferdWidth = autoFitHorizontal ? rs.MeasuredWidth > maxWidth ? maxWidth : rs.MeasuredWidth : rectTransform.sizeDelta.x;
-			rs.MaxWidth = currentPreferdWidth;
-			currentPreferdHeight = autoFitVertical ? maxHeight > -1  && rs.MeasuredHeight > maxHeight ? maxHeight : rs.MeasuredHeight : rectTransform.sizeDelta.y;
-			rs.MaxHeight = currentPreferdHeight;
-			if (autoFitVertical) {
-				rectTransform.sizeDelta = autoFitHorizontal ? new Vector2(currentPreferdWidth, rs.MeasuredHeight ) : new Vector2(rectTransform.sizeDelta.x, rs.MeasuredHeight );
-			} else {
-				rectTransform.sizeDelta = autoFitHorizontal ? new Vector2(currentPreferdWidth, autoFitVertical ? currentPreferdHeight : rectTransform.sizeDelta.y ) : new Vector2(rectTransform.sizeDelta.x, rectTransform.sizeDelta.y );
+			if ( (!autoFitHorizontal && rectTransform.rect.width == 0)) {
+				return;
 			}
+			
+			currentPreferdWidth = autoFitHorizontal ? rs.MeasuredWidth > maxWidth ? maxWidth : rs.MeasuredWidth : rectTransform.rect.width;
+			rs.MaxWidth = currentPreferdWidth;
+		//	rs.MaxWidth = currentPreferdWidth = rs.MeasuredWidth;
+			currentPreferdHeight = autoFitVertical ? maxHeight > -1  && rs.MeasuredHeight > maxHeight ? maxHeight : rs.MeasuredHeight : rectTransform.rect.height;
 
+			rs.MaxHeight = currentPreferdHeight;
+			//rs.MaxHeight = currentPreferdHeight = rs.MeasuredHeight;
+
+
+			if (autoFitVertical) {
+				var size= autoFitHorizontal ? new Vector2(currentPreferdWidth, heightPreferred == true ? rectTransform.sizeDelta.y : rs.MeasuredHeight ) : new Vector2(rectTransform.rect.width, heightPreferred == true ? rs.MeasuredHeight : rs.MeasuredHeight );
+				if (size.x == 0) {
+					return;
+				}
+
+				rectTransform.sizeDelta = size;
+			} else {
+				var size= autoFitHorizontal ? new Vector2(currentPreferdWidth, !heightPreferred ? currentPreferdHeight : rectTransform.rect.height) : new Vector2(rectTransform.rect.width, rectTransform.rect.height );
+				rectTransform.sizeDelta = size;
+			}
 			
 			currentWidth = rectTransform.rect.width;
 			currentHeight = rectTransform.rect.height;
+			LayoutRebuilder.MarkLayoutForRebuild(rectTransform);
+
 			if (currentWidth == 0 || currentHeight == 0) {
 				return;
 			}
@@ -409,7 +425,7 @@ namespace SkiaSharp.Unity.HB {
 				info.Width = roundedWidth;
 				info.Height = roundedHeight;
 			}
-			
+
 			info.ColorType = colorType == HBColorFormat.alpha8 ? SKColorType.Alpha8 : info.ColorType ;
 
 			surface = SKSurface.Create(info);
@@ -488,7 +504,7 @@ namespace SkiaSharp.Unity.HB {
 		}
         
 		private void FixedUpdate() {
-			if (currentPreferdWidth != rectTransform.rect.width || rectTransform.rect.height != currentPreferdHeight) {
+			if (currentWidth != rectTransform.rect.width || currentHeight != currentPreferdHeight) {
 				urls.Clear();
 				RenderText();
 			}
@@ -607,6 +623,7 @@ namespace SkiaSharp.Unity.HB {
 		public float minWidth { get; }
 		public float preferredWidth {
 			get {
+				widthPreferred = true;
 				if (rs != null) {
 					return currentPreferdWidth;
 				}
@@ -618,10 +635,10 @@ namespace SkiaSharp.Unity.HB {
 		private TextBlock temp = new TextBlock();
 		public float preferredHeight {
 			get {
+				heightPreferred = true;
 				if (rs != null && textRendered) {
 					return currentPreferdHeight;
 				}
-
 				styleBoldItalic.FontSize = fontSize;
 				styleBoldItalic.FontWeight = bold ? 700 : 400;
 
@@ -632,6 +649,7 @@ namespace SkiaSharp.Unity.HB {
 				var currentPreferdWidth2 = autoFitHorizontal ? temp.MeasuredWidth > maxWidth ? maxWidth : temp.MeasuredWidth + 20 : rectTransform.sizeDelta.x;
 				temp.MaxWidth = currentPreferdWidth2;
 				temp.MaxHeight = autoFitVertical ? temp.MeasuredHeight : rectTransform.rect.height;
+
 				return temp.MeasuredHeight;
 			}
 		}

@@ -12,10 +12,10 @@ public class HBTextBlockEditor : Editor {
   private GUIStyle selectedStyle;
   private SerializedProperty fontSizeProperty, fontColorProperty, fontProperty,
     italicProperty, boldProperty, haloColorProperty, haloWidthProperty, 
-    letterSpacingProperty, autoFitVerticalProperty, renderLinksProperty, 
+    letterSpacingProperty, autoFitVerticalProperty, renderLinksProperty,
     haloBlurProperty, backgroundColorProperty, underlineStyleProperty, lineHeightProperty,
     strikeThroughStyleProperty,textProperty, textAligmentProperty,colorTypeProperty, autoFitHorizontalProperty, maxWidthProperty, maxHeightProperty, gradiantColorsProperty
-    ,gradiantPositionsProperty, enableGradiantProperty, gradiantAngleProperty, ellipsisProperty;
+    ,gradiantPositionsProperty, enableGradiantProperty, gradiantAngleProperty, ellipsisProperty, maxLines;
   bool showHaloSettings = false;
   bool showMoreSettings = false;
 
@@ -53,6 +53,7 @@ public class HBTextBlockEditor : Editor {
     gradiantPositionsProperty = serializedObject.FindProperty("gradiantPositions");
     enableGradiantProperty = serializedObject.FindProperty("enableGradiant");
     gradiantAngleProperty = serializedObject.FindProperty("gradiantAngle");
+    maxLines = serializedObject.FindProperty("maxLines");
   }
   public override void OnInspectorGUI(){
     HB_TEXTBlock script = (HB_TEXTBlock)target;
@@ -84,7 +85,8 @@ public class HBTextBlockEditor : Editor {
     boldProperty.boolValue = EditorGUI.Toggle(position, boldProperty.boolValue);
 
     EditorGUILayout.EndHorizontal();
-
+    GUILayout.Label("Max Lines (0 for no limitation!):",largeLabelStyle);
+    EditorGUILayout.PropertyField(maxLines);
     GUILayout.Label("Text Alignment:",largeLabelStyle);
     EditorGUILayout.PropertyField(textAligmentProperty);
     GUILayout.Label("Enable Ellipsis :",largeLabelStyle);
