@@ -295,6 +295,9 @@ namespace SkiaSharp.Unity.HB {
 
 		void Awake() {
 			rawImage = GetComponent<RawImage>();
+			if (rawImage && String.IsNullOrEmpty(text)) {
+				rawImage.enabled = false;
+			}
 			rectTransform = transform as RectTransform;
 			
 			styleBoldItalic.FontSize = fontSize;
@@ -310,6 +313,7 @@ namespace SkiaSharp.Unity.HB {
 			styleBoldItalic.Underline = underlineStyle;
 			styleBoldItalic.LineHeight = lineHeight;
 			styleBoldItalic.StrikeThrough = strikeThroughStyle;
+		
 		}
 
 		private void OnEnable() {
@@ -338,6 +342,9 @@ namespace SkiaSharp.Unity.HB {
 		
 
 		private void RenderText() {
+			if (rawImage && String.IsNullOrEmpty(text)) {
+				rawImage.enabled = false;
+			}
 			Dispose();
 			#if !UNITY_EDITOR
 				DestroyImmediate(rawImage.texture);
@@ -458,6 +465,9 @@ namespace SkiaSharp.Unity.HB {
 			texture.Compress(false);
 			texture.Apply();
 			rawImage.texture = texture;
+			if (!rawImage.enabled) {
+				rawImage.enabled = true;
+			}
 			Dispose();
 			textRendered = true;
 		}
