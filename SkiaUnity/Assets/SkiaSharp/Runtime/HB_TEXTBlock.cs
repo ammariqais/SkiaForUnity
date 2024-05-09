@@ -295,7 +295,7 @@ namespace SkiaSharp.Unity.HB {
 
 		void Awake() {
 			rawImage = GetComponent<RawImage>();
-			if (rawImage && String.IsNullOrEmpty(text)) {
+			if (rawImage) {
 				rawImage.enabled = false;
 			}
 			rectTransform = transform as RectTransform;
