@@ -15,7 +15,7 @@ public class HBTextBlockEditor : Editor {
     letterSpacingProperty, autoFitVerticalProperty, renderLinksProperty,
     haloBlurProperty, backgroundColorProperty, underlineStyleProperty, lineHeightProperty,
     strikeThroughStyleProperty,textProperty, textAligmentProperty,colorTypeProperty, autoFitHorizontalProperty, maxWidthProperty, maxHeightProperty, gradiantColorsProperty
-    ,gradiantPositionsProperty, enableGradiantProperty, gradiantAngleProperty, ellipsisProperty, maxLines;
+    ,gradiantPositionsProperty, enableGradiantProperty, gradiantAngleProperty, ellipsisProperty, maxLines, linkColorProperty;
   bool showHaloSettings = false;
   bool showMoreSettings = false;
 
@@ -54,6 +54,7 @@ public class HBTextBlockEditor : Editor {
     enableGradiantProperty = serializedObject.FindProperty("enableGradiant");
     gradiantAngleProperty = serializedObject.FindProperty("gradiantAngle");
     maxLines = serializedObject.FindProperty("maxLines");
+    linkColorProperty = serializedObject.FindProperty("linkColor");
   }
   public override void OnInspectorGUI(){
     HB_TEXTBlock script = (HB_TEXTBlock)target;
@@ -109,9 +110,13 @@ public class HBTextBlockEditor : Editor {
       EditorGUILayout.PropertyField(gradiantPositionsProperty);
       EditorGUILayout.PropertyField(gradiantAngleProperty);
     }
-    EditorGUILayout.PropertyField(renderLinksProperty);
     
+    EditorGUILayout.PropertyField(renderLinksProperty);
 
+    if (script.RenderLinks) {
+      EditorGUILayout.PropertyField(linkColorProperty);
+    }
+    
     
     showHaloSettings = EditorGUILayout.Foldout(showHaloSettings, "Halo Settings", CreateTitleStyle());
 
