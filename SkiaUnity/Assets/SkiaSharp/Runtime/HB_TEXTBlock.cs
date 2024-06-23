@@ -22,7 +22,7 @@ namespace SkiaSharp.Unity.HB {
 		[SerializeField]
 		private int fontSize = 12, haloWidth, letterSpacing, haloBlur, maxLines;
 		[SerializeField]
-		private Color fontColor = Color.black, haloColor = Color.black, backgroundColor = Color.clear;
+		private Color fontColor = Color.black, haloColor = Color.black, backgroundColor = Color.clear,linkColor = Color.blue;
 		[SerializeField]
 		private bool italic, bold, autoFitVertical = true, autoFitHorizontal, renderLinks, enableGradiant, enableEllipsis = true;
 		[SerializeField]
@@ -475,7 +475,7 @@ namespace SkiaSharp.Unity.HB {
 		private void RenderLinksCall() {
 			Style styleLink = new Style() {
 			FontSize = fontSize,
-			TextColor = SKColors.Blue,
+			TextColor = new SKColor(ColorToUint(linkColor)),
 			Underline = UnderlineStyle.Solid,
 			HaloWidth = haloWidth,
 			HaloColor = haloWidth > 0 ? new SKColor(ColorToUint(haloColor)) : SKColor.Empty,
