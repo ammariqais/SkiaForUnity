@@ -602,10 +602,6 @@ namespace SkiaSharp.Unity.HB {
 				DestroyImmediate(texture);
 				#endif
 			}
-
-			if (skTypeface != null) {
-				skTypeface.Dispose();
-			}
 		}
 
 		private void Dispose() {
