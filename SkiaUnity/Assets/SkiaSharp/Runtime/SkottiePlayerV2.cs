@@ -32,6 +32,8 @@ namespace SkiaSharp.Unity {
   [SerializeField]
   private TextAsset lottieFile;
   [SerializeField]
+  public bool customResolution;
+  [SerializeField]
   int resWidth = 250, resHeight = 250;
   [SerializeField] 
   private string stateName;
@@ -88,8 +90,8 @@ namespace SkiaSharp.Unity {
     if (rawImage == null) {
       spriteRenderer = GetComponent<SpriteRenderer>();
     }
-      
-    bmp = new SKBitmap((int)currentAnimation.Size.Width, (int)currentAnimation.Size.Height);
+    
+    bmp = new SKBitmap(customResolution && resWidth > 0 ? resWidth :(int)currentAnimation.Size.Width, customResolution && resHeight > 0 ? resHeight : (int)currentAnimation.Size.Height);
     surface = SKSurface.Create(bmp.Info);
     canvas = new SKCanvas(bmp);
     rect = bmp.Info.Rect;
