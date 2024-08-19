@@ -15,6 +15,15 @@ namespace SkiaSharp.UnityEditor {
   private FieldInfo timerField;
   private FieldInfo playAniamtionField;
   private GUIStyle labelStyle;
+
+  private SerializedProperty lottieFile,
+    customResolution,
+    resWidth,
+    resHeight,
+    stateName,
+    resetAfterFinished,
+    autoPlay,
+    loop;
   private void OnEnable() {
     UpdateAnimation = target.GetType().GetMethod("Start", System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic);
     PlayAnimation = target.GetType().GetMethod("Update", System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic);
@@ -27,6 +36,15 @@ namespace SkiaSharp.UnityEditor {
       },
       fontSize = 12 // Set the font size
     };
+    
+    lottieFile = serializedObject.FindProperty("lottieFile");
+    customResolution = serializedObject.FindProperty("customResolution");
+    resWidth = serializedObject.FindProperty("resWidth");
+    resHeight = serializedObject.FindProperty("resHeight");
+    stateName = serializedObject.FindProperty("stateName");
+    resetAfterFinished = serializedObject.FindProperty("resetAfterFinished");
+    autoPlay = serializedObject.FindProperty("autoPlay");
+    loop = serializedObject.FindProperty("loop");
   }
   
   private void UpdateEditor() {
@@ -45,17 +63,27 @@ namespace SkiaSharp.UnityEditor {
   }
 
   public override void OnInspectorGUI() {
+    SkottiePlayerV2 myScript = (SkottiePlayerV2)target;
 
-    base.OnInspectorGUI();
+    EditorGUILayout.PropertyField(lottieFile);
+    EditorGUILayout.PropertyField(customResolution);
+    if (myScript.customResolution) {
+      EditorGUILayout.PropertyField(resWidth);
+      EditorGUILayout.PropertyField(resHeight);
+    }
+    EditorGUILayout.PropertyField(stateName);
+    EditorGUILayout.PropertyField(resetAfterFinished);
+    EditorGUILayout.PropertyField(autoPlay);
+    EditorGUILayout.PropertyField(loop);
+
+    
+    //base.OnInspectorGUI();
     if (EditorApplication.isPlaying) {
       isEditorUpdateActive = false;
       EditorApplication.update -= UpdateEditor;
 
       return;
     }
-
-    SkottiePlayerV2 myScript = (SkottiePlayerV2)target;
-
     
     GUILayout.Space(20);
     EditorGUILayout.LabelField("SkottiePlayer Editor",labelStyle);
@@ -77,6 +105,9 @@ namespace SkiaSharp.UnityEditor {
         EditorApplication.update += UpdateEditor;
       }
     }
+    
+    serializedObject.ApplyModifiedProperties();
+
   }
 
   private void CallUpdateAnimation() {
