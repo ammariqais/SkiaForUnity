@@ -17,7 +17,7 @@ Benefits of SVG.Skia:
 
 - **High-performance graphics:** SkiaSharp for Unity utilizes Skia's hardware-accelerated rendering capabilities to deliver fast and smooth graphics performance.
 
-- **Cross-platform support:** SkiaSharp supports multiple platforms, including Windows, macOS, iOS, Android, allowing you to create graphics that work seamlessly across different devices.
+- **Cross-platform support:** SkiaSharp supports multiple platforms, including Windows, macOS, Linux, iOS, Android, allowing you to create graphics that work seamlessly across different devices.
 
 - **Extensive API:** SkiaSharp provides a rich set of APIs for drawing paths, shapes, text, and images, enabling you to create visually stunning graphics and user interfaces.
 
