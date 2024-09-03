@@ -1,4 +1,6 @@
-﻿using System;
+﻿#nullable disable
+
+using System;
 using System.Collections;
 using System.Collections.Generic;
 
@@ -25,11 +27,10 @@ namespace SkiaSharp
 
 		public string GetStyleName (int index)
 		{
-			using (var str = new SKString ()) {
-				SkiaApi.sk_fontstyleset_get_style (Handle, index, IntPtr.Zero, str.Handle);
-				GC.KeepAlive(this);
-				return (string)str;
-			}
+			using var str = new SKString ();
+			SkiaApi.sk_fontstyleset_get_style (Handle, index, IntPtr.Zero, str.Handle);
+			GC.KeepAlive (this);
+			return (string)str;
 		}
 
 		public SKTypeface CreateTypeface (int index)
@@ -39,7 +40,7 @@ namespace SkiaSharp
 
 			var tf = SKTypeface.GetObject (SkiaApi.sk_fontstyleset_create_typeface (Handle, index));
 			tf?.PreventPublicDisposal ();
-			GC.KeepAlive(this);
+			GC.KeepAlive (this);
 			return tf;
 		}
 
@@ -50,7 +51,7 @@ namespace SkiaSharp
 
 			var tf = SKTypeface.GetObject (SkiaApi.sk_fontstyleset_match_style (Handle, style.Handle));
 			tf?.PreventPublicDisposal ();
-			GC.KeepAlive(this);
+			GC.KeepAlive (this);
 			return tf;
 		}
 

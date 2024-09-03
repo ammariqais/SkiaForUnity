@@ -1,5 +1,6 @@
-﻿using System;
-using System.ComponentModel;
+﻿#nullable disable
+
+using System;
 
 namespace SkiaSharp
 {
@@ -11,10 +12,30 @@ namespace SkiaSharp
 		Full = 3,
 	}
 
+	public enum SKFilterQuality
+	{
+		None = 0,
+		Low = 1,
+		Medium = 2,
+		High = 3,
+	}
+
+	public static partial class SkiaExtensions
+	{
+		public static SKSamplingOptions ToSamplingOptions (this SKFilterQuality quality) =>
+			quality switch {
+				SKFilterQuality.None => new SKSamplingOptions (SKFilterMode.Nearest, SKMipmapMode.None),
+				SKFilterQuality.Low => new SKSamplingOptions (SKFilterMode.Linear, SKMipmapMode.None),
+				SKFilterQuality.Medium => new SKSamplingOptions (SKFilterMode.Linear, SKMipmapMode.Linear),
+				SKFilterQuality.High => new SKSamplingOptions (SKCubicResampler.Mitchell),
+				_ => throw new ArgumentOutOfRangeException (nameof (quality), $"Unknown filter quality: '{quality}'"),
+			};
+	}
+
 	public unsafe class SKPaint : SKObject, ISKSkipObjectRegistration
 	{
+		[Obsolete]
 		private SKFont font;
-		private bool lcdRenderText;
 
 		internal SKPaint (IntPtr handle, bool owns)
 			: base (handle, owns)
@@ -39,8 +60,6 @@ namespace SkiaSharp
 
 			if (Handle == IntPtr.Zero)
 				throw new InvalidOperationException ("Unable to create a new SKPaint instance.");
-
-			LcdRenderText = font.Edging == SKFontEdging.SubpixelAntialias;
 		}
 
 		protected override void Dispose (bool disposing) =>
@@ -58,22 +77,12 @@ namespace SkiaSharp
 
 		public bool IsAntialias {
 			get => SkiaApi.sk_paint_is_antialias (Handle);
-			set {
-				SkiaApi.sk_paint_set_antialias (Handle, value);
-				UpdateFontEdging (value);
-			}
+			set => SkiaApi.sk_compatpaint_set_is_antialias (Handle, value);
 		}
 
 		public bool IsDither {
 			get => SkiaApi.sk_paint_is_dither (Handle);
 			set => SkiaApi.sk_paint_set_dither (Handle, value);
-		}
-
-		[EditorBrowsable (EditorBrowsableState.Never)]
-		[Obsolete]
-		public bool IsVerticalText {
-			get => false;
-			set { }
 		}
 
 		public bool IsLinearText {
@@ -87,11 +96,8 @@ namespace SkiaSharp
 		}
 
 		public bool LcdRenderText {
-			get => lcdRenderText;
-			set {
-				lcdRenderText = value;
-				UpdateFontEdging (IsAntialias);
-			}
+			get => SkiaApi.sk_compatpaint_get_lcd_render_text (Handle);
+			set => SkiaApi.sk_compatpaint_set_lcd_render_text (Handle, value);
 		}
 
 		public bool IsEmbeddedBitmapText {
@@ -112,13 +118,6 @@ namespace SkiaSharp
 		public bool FakeBoldText {
 			get => GetFont ().Embolden;
 			set => GetFont ().Embolden = value;
-		}
-
-		[EditorBrowsable (EditorBrowsableState.Never)]
-		[Obsolete]
-		public bool DeviceKerningEnabled {
-			get => false;
-			set { }
 		}
 
 		public bool IsStroke {
@@ -194,8 +193,8 @@ namespace SkiaSharp
 		}
 
 		public SKFilterQuality FilterQuality {
-			get => SkiaApi.sk_paint_get_filter_quality (Handle);
-			set => SkiaApi.sk_paint_set_filter_quality (Handle, value);
+			get => (SKFilterQuality)SkiaApi.sk_compatpaint_get_filter_quality (Handle);
+			set => SkiaApi.sk_compatpaint_set_filter_quality (Handle, (int)value);
 		}
 
 		public SKTypeface Typeface {
@@ -249,15 +248,10 @@ namespace SkiaSharp
 		public float GetFontMetrics (out SKFontMetrics metrics) =>
 			GetFont ().GetFontMetrics (out metrics);
 
-		[EditorBrowsable (EditorBrowsableState.Never)]
-		[Obsolete ("Use GetFontMetrics (out SKFontMetrics) instead.")]
-		public float GetFontMetrics (out SKFontMetrics metrics, float scale) =>
-			GetFontMetrics (out metrics);
-
 		// Clone
 
 		public SKPaint Clone () =>
-			GetObject (SkiaApi.sk_compatpaint_clone (Handle));
+			GetObject (SkiaApi.sk_paint_clone (Handle))!;
 
 		// MeasureText
 
@@ -397,28 +391,27 @@ namespace SkiaSharp
 		// GetFillPath
 
 		public SKPath GetFillPath (SKPath src)
-			=> GetFillPath (src, 1f);
+			=> GetFillPath (src, (SKRect*)null, SKMatrix.Identity);
 
 		public SKPath GetFillPath (SKPath src, float resScale)
-		{
-			var dst = new SKPath ();
+			=> GetFillPath (src, (SKRect*)null, SKMatrix.CreateScale (resScale, resScale));
 
-			if (GetFillPath (src, dst, resScale)) {
-				return dst;
-			} else {
-				dst.Dispose ();
-				return null;
-			}
-		}
+		public SKPath GetFillPath (SKPath src, SKMatrix matrix)
+			=> GetFillPath (src, (SKRect*)null, matrix);
 
 		public SKPath GetFillPath (SKPath src, SKRect cullRect)
-			=> GetFillPath (src, cullRect, 1f);
+			=> GetFillPath (src, &cullRect, SKMatrix.Identity);
 
 		public SKPath GetFillPath (SKPath src, SKRect cullRect, float resScale)
+			=> GetFillPath (src, &cullRect, SKMatrix.CreateScale (resScale, resScale));
+
+		public SKPath GetFillPath (SKPath src, SKRect cullRect, SKMatrix matrix)
+			=> GetFillPath (src, &cullRect, matrix);
+
+		private SKPath GetFillPath (SKPath src, SKRect* cullRect, SKMatrix matrix)
 		{
 			var dst = new SKPath ();
-
-			if (GetFillPath (src, dst, cullRect, resScale)) {
+			if (GetFillPath (src, dst, cullRect, matrix)) {
 				return dst;
 			} else {
 				dst.Dispose ();
@@ -427,29 +420,29 @@ namespace SkiaSharp
 		}
 
 		public bool GetFillPath (SKPath src, SKPath dst)
-			=> GetFillPath (src, dst, 1f);
+			=> GetFillPath (src, dst, (SKRect*)null, SKMatrix.Identity);
 
 		public bool GetFillPath (SKPath src, SKPath dst, float resScale)
-		{
-			if (src == null)
-				throw new ArgumentNullException (nameof (src));
-			if (dst == null)
-				throw new ArgumentNullException (nameof (dst));
+			=> GetFillPath (src, dst, (SKRect*)null, SKMatrix.CreateScale (resScale, resScale));
 
-			return SkiaApi.sk_paint_get_fill_path (Handle, src.Handle, dst.Handle, null, resScale);
-		}
+		public bool GetFillPath (SKPath src, SKPath dst, SKMatrix matrix)
+			=> GetFillPath (src, dst, (SKRect*)null, matrix);
 
 		public bool GetFillPath (SKPath src, SKPath dst, SKRect cullRect)
-			=> GetFillPath (src, dst, cullRect, 1f);
+			=> GetFillPath (src, dst, &cullRect, SKMatrix.Identity);
 
 		public bool GetFillPath (SKPath src, SKPath dst, SKRect cullRect, float resScale)
-		{
-			if (src == null)
-				throw new ArgumentNullException (nameof (src));
-			if (dst == null)
-				throw new ArgumentNullException (nameof (dst));
+			=> GetFillPath (src, dst, &cullRect, SKMatrix.CreateScale (resScale, resScale));
 
-			return SkiaApi.sk_paint_get_fill_path (Handle, src.Handle, dst.Handle, &cullRect, resScale);
+		public bool GetFillPath (SKPath src, SKPath dst, SKRect cullRect, SKMatrix matrix)
+			=> GetFillPath (src, dst, &cullRect, matrix);
+
+		private bool GetFillPath (SKPath src, SKPath dst, SKRect* cullRect, SKMatrix matrix)
+		{
+			_ = src ?? throw new ArgumentNullException (nameof (src));
+			_ = dst ?? throw new ArgumentNullException (nameof (dst));
+
+			return SkiaApi.sk_paint_get_fill_path (Handle, src.Handle, dst.Handle, cullRect, &matrix);
 		}
 
 		// CountGlyphs
@@ -709,17 +702,6 @@ namespace SkiaSharp
 
 		internal SKFont GetFont () =>
 			font ??= OwnedBy (SKFont.GetObject (SkiaApi.sk_compatpaint_get_font (Handle), false), this);
-
-		private void UpdateFontEdging (bool antialias)
-		{
-			var edging = SKFontEdging.Alias;
-			if (antialias) {
-				edging = lcdRenderText
-					? SKFontEdging.SubpixelAntialias
-					: SKFontEdging.Antialias;
-			}
-			GetFont ().Edging = edging;
-		}
 
 		//
 

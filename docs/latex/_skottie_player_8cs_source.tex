@@ -1,0 +1,184 @@
+\doxysection{Skottie\+Player.\+cs}
+\hypertarget{_skottie_player_8cs_source}{}\label{_skottie_player_8cs_source}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{\Hypertarget{_skottie_player_8cs_source_l00001}00001\ \textcolor{keyword}{using\ }System;}
+\DoxyCodeLine{\Hypertarget{_skottie_player_8cs_source_l00002}00002\ \textcolor{keyword}{using\ }Newtonsoft.Json;}
+\DoxyCodeLine{\Hypertarget{_skottie_player_8cs_source_l00003}00003\ \textcolor{keyword}{using\ }UnityEngine;}
+\DoxyCodeLine{\Hypertarget{_skottie_player_8cs_source_l00004}00004\ \textcolor{keyword}{using\ }UnityEngine.Events;}
+\DoxyCodeLine{\Hypertarget{_skottie_player_8cs_source_l00005}00005\ \textcolor{keyword}{using\ }UnityEngine.UI;}
+\DoxyCodeLine{\Hypertarget{_skottie_player_8cs_source_l00006}00006\ \textcolor{keyword}{using\ }Animation\ =\ \mbox{\hyperlink{namespace_skia_sharp}{SkiaSharp}}.Skottie.Animation;}
+\DoxyCodeLine{\Hypertarget{_skottie_player_8cs_source_l00007}00007\ }
+\DoxyCodeLine{\Hypertarget{_skottie_player_8cs_source_l00008}00008\ \textcolor{keyword}{namespace\ }\mbox{\hyperlink{namespace_skia_sharp_1_1_unity}{SkiaSharp.Unity}}\ \{}
+\DoxyCodeLine{\Hypertarget{_skottie_player_8cs_source_l00028}\mbox{\hyperlink{class_skia_sharp_1_1_unity_1_1_skottie_player}{00028}}\ \ \ \textcolor{keyword}{public}\ \textcolor{keyword}{class\ }\mbox{\hyperlink{class_skia_sharp_1_1_unity_1_1_skottie_player}{SkottiePlayer}}\ :\ MonoBehaviour\ \{}
+\DoxyCodeLine{\Hypertarget{_skottie_player_8cs_source_l00029}00029\ \ \ [SerializeField]}
+\DoxyCodeLine{\Hypertarget{_skottie_player_8cs_source_l00030}00030\ \ \ \textcolor{keyword}{private}\ TextAsset\ lottieFile;}
+\DoxyCodeLine{\Hypertarget{_skottie_player_8cs_source_l00031}00031\ \ \ [SerializeField]}
+\DoxyCodeLine{\Hypertarget{_skottie_player_8cs_source_l00032}00032\ \ \ \textcolor{keywordtype}{int}\ resWidth\ =\ 250,\ resHeight\ =\ 250;}
+\DoxyCodeLine{\Hypertarget{_skottie_player_8cs_source_l00033}00033\ \ \ [SerializeField]\ }
+\DoxyCodeLine{\Hypertarget{_skottie_player_8cs_source_l00034}00034\ \ \ \textcolor{keyword}{private}\ \textcolor{keywordtype}{string}\ stateName;}
+\DoxyCodeLine{\Hypertarget{_skottie_player_8cs_source_l00035}00035\ \ \ [SerializeField]\ }
+\DoxyCodeLine{\Hypertarget{_skottie_player_8cs_source_l00036}00036\ \ \ \textcolor{keyword}{private}\ \textcolor{keywordtype}{bool}\ resetAfterFinished\ =\ \textcolor{keyword}{false};}
+\DoxyCodeLine{\Hypertarget{_skottie_player_8cs_source_l00037}00037\ \ \ [SerializeField]\ }
+\DoxyCodeLine{\Hypertarget{_skottie_player_8cs_source_l00038}00038\ \ \ \textcolor{keyword}{private}\ \textcolor{keywordtype}{bool}\ autoPlay\ =\ \textcolor{keyword}{false};}
+\DoxyCodeLine{\Hypertarget{_skottie_player_8cs_source_l00039}00039\ \ \ [SerializeField]\ }
+\DoxyCodeLine{\Hypertarget{_skottie_player_8cs_source_l00040}00040\ \ \ \textcolor{keyword}{private}\ \textcolor{keywordtype}{bool}\ loop\ =\ \textcolor{keyword}{false};}
+\DoxyCodeLine{\Hypertarget{_skottie_player_8cs_source_l00041}00041\ }
+\DoxyCodeLine{\Hypertarget{_skottie_player_8cs_source_l00042}00042\ \ \ \textcolor{keyword}{public}\ UnityAction<string>\ OnAnimationFinished;}
+\DoxyCodeLine{\Hypertarget{_skottie_player_8cs_source_l00043}00043\ }
+\DoxyCodeLine{\Hypertarget{_skottie_player_8cs_source_l00044}00044\ \ \ \textcolor{keyword}{private}\ Animation\ currentAnimation;}
+\DoxyCodeLine{\Hypertarget{_skottie_player_8cs_source_l00045}00045\ \ \ \textcolor{keyword}{private}\ SKCanvas\ canvas;}
+\DoxyCodeLine{\Hypertarget{_skottie_player_8cs_source_l00046}00046\ \ \ \textcolor{keyword}{private}\ SKRect\ rect;}
+\DoxyCodeLine{\Hypertarget{_skottie_player_8cs_source_l00047}00047\ \ \ \textcolor{keyword}{private}\ \textcolor{keywordtype}{double}\ timer\ =\ 0,\ animationFps,\ animationDuration,\ animationStateDuration;}
+\DoxyCodeLine{\Hypertarget{_skottie_player_8cs_source_l00048}00048\ \ \ \textcolor{keyword}{private}\ SKImageInfo\ info;}
+\DoxyCodeLine{\Hypertarget{_skottie_player_8cs_source_l00049}00049\ \ \ \textcolor{keyword}{private}\ SKSurface\ surface;}
+\DoxyCodeLine{\Hypertarget{_skottie_player_8cs_source_l00050}00050\ \ \ \textcolor{keyword}{private}\ RawImage\ rawImage;}
+\DoxyCodeLine{\Hypertarget{_skottie_player_8cs_source_l00051}00051\ \ \ \textcolor{keyword}{private}\ SpriteRenderer\ spriteRenderer;}
+\DoxyCodeLine{\Hypertarget{_skottie_player_8cs_source_l00052}00052\ \ \ \textcolor{keyword}{private}\ Texture2D\ texture;}
+\DoxyCodeLine{\Hypertarget{_skottie_player_8cs_source_l00053}00053\ \ \ \textcolor{keyword}{private}\ \textcolor{keywordtype}{bool}\ playAniamtion\ =\ \textcolor{keyword}{false};}
+\DoxyCodeLine{\Hypertarget{_skottie_player_8cs_source_l00054}00054\ \ \ \textcolor{keyword}{private}\ \mbox{\hyperlink{class_skia_sharp_1_1_unity_1_1_skottie_markers}{SkottieMarkers}}\ states;}
+\DoxyCodeLine{\Hypertarget{_skottie_player_8cs_source_l00055}00055\ \ \ \textcolor{keyword}{private}\ \mbox{\hyperlink{class_skia_sharp_1_1_unity_1_1_skottie_markers_1_1state}{SkottieMarkers.state}}\ currentState;}
+\DoxyCodeLine{\Hypertarget{_skottie_player_8cs_source_l00056}00056\ \ \ }
+\DoxyCodeLine{\Hypertarget{_skottie_player_8cs_source_l00057}00057\ \ \ \textcolor{keyword}{private}\ \textcolor{keywordtype}{void}\ Start()\ \{}
+\DoxyCodeLine{\Hypertarget{_skottie_player_8cs_source_l00058}00058\ \ \ \ \ \textcolor{keywordflow}{if}\ (lottieFile\ ==\ \textcolor{keyword}{null})\ \{}
+\DoxyCodeLine{\Hypertarget{_skottie_player_8cs_source_l00059}00059\ \ \ \ \ \ \ \textcolor{keywordflow}{return};}
+\DoxyCodeLine{\Hypertarget{_skottie_player_8cs_source_l00060}00060\ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_skottie_player_8cs_source_l00061}00061\ }
+\DoxyCodeLine{\Hypertarget{_skottie_player_8cs_source_l00062}00062\ \ \ \ \ playAniamtion\ =\ playAniamtion\ ||\ autoPlay;}
+\DoxyCodeLine{\Hypertarget{_skottie_player_8cs_source_l00063}00063\ \ \ \ \ \mbox{\hyperlink{class_skia_sharp_1_1_unity_1_1_skottie_player_ac02264a2a99ca0eb29f2226ea55f55d7}{LoadAnimation}}(lottieFile.text);}
+\DoxyCodeLine{\Hypertarget{_skottie_player_8cs_source_l00064}00064\ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_skottie_player_8cs_source_l00065}00065\ }
+\DoxyCodeLine{\Hypertarget{_skottie_player_8cs_source_l00066}00066\ \ \ \textcolor{keywordtype}{void}\ LoadTexture()\ \{}
+\DoxyCodeLine{\Hypertarget{_skottie_player_8cs_source_l00067}00067\ \ \ \ \ \textcolor{keywordflow}{if}\ (texture\ !=\ \textcolor{keyword}{null})\ \{}
+\DoxyCodeLine{\Hypertarget{_skottie_player_8cs_source_l00068}00068\ \ \ \ \ \ \ DestroyImmediate(texture);}
+\DoxyCodeLine{\Hypertarget{_skottie_player_8cs_source_l00069}00069\ \ \ \ \ \ \ texture\ =\ \textcolor{keyword}{null};}
+\DoxyCodeLine{\Hypertarget{_skottie_player_8cs_source_l00070}00070\ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_skottie_player_8cs_source_l00071}00071\ \ \ \ \ }
+\DoxyCodeLine{\Hypertarget{_skottie_player_8cs_source_l00072}00072\ \ \ \ \ states\ =\ JsonConvert.DeserializeObject<\mbox{\hyperlink{class_skia_sharp_1_1_unity_1_1_skottie_markers}{SkottieMarkers}}>(lottieFile.text);}
+\DoxyCodeLine{\Hypertarget{_skottie_player_8cs_source_l00073}00073\ \ \ \ \ animationFps\ =\ currentAnimation.Fps;}
+\DoxyCodeLine{\Hypertarget{_skottie_player_8cs_source_l00074}00074\ \ \ \ \ animationDuration\ =\ currentAnimation.Duration;}
+\DoxyCodeLine{\Hypertarget{_skottie_player_8cs_source_l00075}00075\ \ \ \ \ \ \ }
+\DoxyCodeLine{\Hypertarget{_skottie_player_8cs_source_l00076}00076\ \ \ \ \ \textcolor{keywordflow}{if}\ (stateName.Length\ >\ 0\ \&\&\ states\ !=\ \textcolor{keyword}{null}\ \&\&\ states.markers.Count\ >\ 0)\ \{}
+\DoxyCodeLine{\Hypertarget{_skottie_player_8cs_source_l00077}00077\ \ \ \ \ \ \ currentState\ =\ states.GetStateByName(stateName);}
+\DoxyCodeLine{\Hypertarget{_skottie_player_8cs_source_l00078}00078\ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (currentState\ !=\ \textcolor{keyword}{null})\ \{}
+\DoxyCodeLine{\Hypertarget{_skottie_player_8cs_source_l00079}00079\ \ \ \ \ \ \ \ \ animationStateDuration\ =\ (currentState.tm\ +\ currentState.dr)\ /\ animationFps;}
+\DoxyCodeLine{\Hypertarget{_skottie_player_8cs_source_l00080}00080\ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_skottie_player_8cs_source_l00081}00081\ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_skottie_player_8cs_source_l00082}00082\ \ \ \ \ rawImage\ =\ GetComponent<RawImage>();}
+\DoxyCodeLine{\Hypertarget{_skottie_player_8cs_source_l00083}00083\ \ \ \ \ \textcolor{keywordflow}{if}\ (rawImage\ ==\ \textcolor{keyword}{null})\ \{}
+\DoxyCodeLine{\Hypertarget{_skottie_player_8cs_source_l00084}00084\ \ \ \ \ \ \ spriteRenderer\ =\ GetComponent<SpriteRenderer>();}
+\DoxyCodeLine{\Hypertarget{_skottie_player_8cs_source_l00085}00085\ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_skottie_player_8cs_source_l00086}00086\ \ \ \ \ info\ =\ \textcolor{keyword}{new}\ SKImageInfo(resWidth,\ resWidth);}
+\DoxyCodeLine{\Hypertarget{_skottie_player_8cs_source_l00087}00087\ \ \ \ \ surface\ =\ SKSurface.Create(info);}
+\DoxyCodeLine{\Hypertarget{_skottie_player_8cs_source_l00088}00088\ \ \ \ \ rect\ =\ SKRect.Create(resWidth,\ resHeight);}
+\DoxyCodeLine{\Hypertarget{_skottie_player_8cs_source_l00089}00089\ \ \ \ \ canvas\ =\ surface.Canvas;}
+\DoxyCodeLine{\Hypertarget{_skottie_player_8cs_source_l00090}00090\ \ \ \ \ currentAnimation.SeekFrame(currentState?.tm\ ??\ 0);}
+\DoxyCodeLine{\Hypertarget{_skottie_player_8cs_source_l00091}00091\ \ \ \ \ currentAnimation.Render(canvas,rect);}
+\DoxyCodeLine{\Hypertarget{_skottie_player_8cs_source_l00092}00092\ }
+\DoxyCodeLine{\Hypertarget{_skottie_player_8cs_source_l00093}00093\ \ \ \ \ TextureFormat\ format\ =\ (info.ColorType\ ==\ SKColorType.Rgba8888)\ ?\ TextureFormat.RGBA32\ :\ TextureFormat.BGRA32;}
+\DoxyCodeLine{\Hypertarget{_skottie_player_8cs_source_l00094}00094\ \ \ \ \ texture\ =\ \textcolor{keyword}{new}\ Texture2D(info.Width,\ info.Height,\ format,\ \textcolor{keyword}{false});}
+\DoxyCodeLine{\Hypertarget{_skottie_player_8cs_source_l00095}00095\ \ \ \ \ texture.wrapMode\ =\ TextureWrapMode.Repeat;}
+\DoxyCodeLine{\Hypertarget{_skottie_player_8cs_source_l00096}00096\ \ \ \ \ var\ pixmap\ =\ surface.PeekPixels();}
+\DoxyCodeLine{\Hypertarget{_skottie_player_8cs_source_l00097}00097\ \ \ \ \ texture.LoadRawTextureData(pixmap.GetPixels(),\ pixmap.RowBytes\ *\ pixmap.Height);}
+\DoxyCodeLine{\Hypertarget{_skottie_player_8cs_source_l00098}00098\ \ \ \ \ texture.Apply();}
+\DoxyCodeLine{\Hypertarget{_skottie_player_8cs_source_l00099}00099\ \ \ \ \ \textcolor{keywordflow}{if}\ (rawImage)\ \{}
+\DoxyCodeLine{\Hypertarget{_skottie_player_8cs_source_l00100}00100\ \ \ \ \ \ \ rawImage.texture\ =\ texture;}
+\DoxyCodeLine{\Hypertarget{_skottie_player_8cs_source_l00101}00101\ \ \ \ \ \}\ \textcolor{keywordflow}{else}\ \{}
+\DoxyCodeLine{\Hypertarget{_skottie_player_8cs_source_l00102}00102\ \ \ \ \ \ \ spriteRenderer.sprite\ =\ Sprite.Create(texture,\textcolor{keyword}{new}\ Rect(0,0,texture.width,texture.height),Vector2.one*0.5f,100f,0);}
+\DoxyCodeLine{\Hypertarget{_skottie_player_8cs_source_l00103}00103\ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_skottie_player_8cs_source_l00104}00104\ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_skottie_player_8cs_source_l00105}00105\ }
+\DoxyCodeLine{\Hypertarget{_skottie_player_8cs_source_l00110}\mbox{\hyperlink{class_skia_sharp_1_1_unity_1_1_skottie_player_ac02264a2a99ca0eb29f2226ea55f55d7}{00110}}\ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{class_skia_sharp_1_1_unity_1_1_skottie_player_ac02264a2a99ca0eb29f2226ea55f55d7}{LoadAnimation}}(\textcolor{keywordtype}{string}\ json)\ \{}
+\DoxyCodeLine{\Hypertarget{_skottie_player_8cs_source_l00111}00111\ \ \ \ \ \textcolor{keywordflow}{if}\ (!Animation.TryParse(json,\ out\ currentAnimation))\ \{}
+\DoxyCodeLine{\Hypertarget{_skottie_player_8cs_source_l00112}00112\ \ \ \ \ \ \ Debug.LogError(\textcolor{stringliteral}{"{}[SkottiePlayer]\ -\/\ wrong\ json\ file"{}});}
+\DoxyCodeLine{\Hypertarget{_skottie_player_8cs_source_l00113}00113\ \ \ \ \ \ \ \textcolor{keywordflow}{return};}
+\DoxyCodeLine{\Hypertarget{_skottie_player_8cs_source_l00114}00114\ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_skottie_player_8cs_source_l00115}00115\ \ \ \ \ LoadTexture();}
+\DoxyCodeLine{\Hypertarget{_skottie_player_8cs_source_l00116}00116\ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_skottie_player_8cs_source_l00117}00117\ }
+\DoxyCodeLine{\Hypertarget{_skottie_player_8cs_source_l00122}\mbox{\hyperlink{class_skia_sharp_1_1_unity_1_1_skottie_player_ad7cf89fef4a76cc9a6df868357e48408}{00122}}\ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{class_skia_sharp_1_1_unity_1_1_skottie_player_ad7cf89fef4a76cc9a6df868357e48408}{SetState}}(\textcolor{keywordtype}{string}\ name)\ \{}
+\DoxyCodeLine{\Hypertarget{_skottie_player_8cs_source_l00123}00123\ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (states\ !=\ \textcolor{keyword}{null}\ \&\&\ currentAnimation\ !=\ \textcolor{keyword}{null})\ \{}
+\DoxyCodeLine{\Hypertarget{_skottie_player_8cs_source_l00124}00124\ \ \ \ \ \ \ \ \ playAniamtion\ =\ \textcolor{keyword}{false};}
+\DoxyCodeLine{\Hypertarget{_skottie_player_8cs_source_l00125}00125\ \ \ \ \ \ \ \ \ currentState\ =\ states.GetStateByName(name);}
+\DoxyCodeLine{\Hypertarget{_skottie_player_8cs_source_l00126}00126\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (currentState\ !=\ \textcolor{keyword}{null})\ \{}
+\DoxyCodeLine{\Hypertarget{_skottie_player_8cs_source_l00127}00127\ \ \ \ \ \ \ \ \ \ \ animationStateDuration\ =\ (currentState.tm\ +\ currentState.dr)\ /\ animationFps;}
+\DoxyCodeLine{\Hypertarget{_skottie_player_8cs_source_l00128}00128\ \ \ \ \ \ \ \ \ \ \ timer\ =\ currentState.tm/animationFps;\ }
+\DoxyCodeLine{\Hypertarget{_skottie_player_8cs_source_l00129}00129\ \ \ \ \ \ \ \ \ \ \ canvas.Clear();}
+\DoxyCodeLine{\Hypertarget{_skottie_player_8cs_source_l00130}00130\ \ \ \ \ \ \ \ \ \ \ currentAnimation.SeekFrameTime(timer);\ }
+\DoxyCodeLine{\Hypertarget{_skottie_player_8cs_source_l00131}00131\ \ \ \ \ \ \ \ \ \ \ currentAnimation.Render(canvas,rect);\ }
+\DoxyCodeLine{\Hypertarget{_skottie_player_8cs_source_l00132}00132\ \ \ \ \ \ \ \ \ \ \ var\ pixmap\ =\ surface.PeekPixels();\ }
+\DoxyCodeLine{\Hypertarget{_skottie_player_8cs_source_l00133}00133\ \ \ \ \ \ \ \ \ \ \ texture.LoadRawTextureData(pixmap.GetPixels(),\ pixmap.RowBytes\ *\ pixmap.Height);\ }
+\DoxyCodeLine{\Hypertarget{_skottie_player_8cs_source_l00134}00134\ \ \ \ \ \ \ \ \ \ \ texture.Apply();\ }
+\DoxyCodeLine{\Hypertarget{_skottie_player_8cs_source_l00135}00135\ \ \ \ \ \ \ \ \ \}\ \textcolor{keywordflow}{else}\ \{}
+\DoxyCodeLine{\Hypertarget{_skottie_player_8cs_source_l00136}00136\ \ \ \ \ \ \ \ \ \ \ Debug.LogError(\$\textcolor{stringliteral}{"{}[SkottiePlayer]\ -\/\ SetState(\{name\}),\ state\ not\ found!"{}});}
+\DoxyCodeLine{\Hypertarget{_skottie_player_8cs_source_l00137}00137\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_skottie_player_8cs_source_l00138}00138\ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_skottie_player_8cs_source_l00139}00139\ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_skottie_player_8cs_source_l00140}00140\ }
+\DoxyCodeLine{\Hypertarget{_skottie_player_8cs_source_l00145}\mbox{\hyperlink{class_skia_sharp_1_1_unity_1_1_skottie_player_a4ff3ffb5dd20d038da6525157948e7c9}{00145}}\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{string}\ \mbox{\hyperlink{class_skia_sharp_1_1_unity_1_1_skottie_player_a4ff3ffb5dd20d038da6525157948e7c9}{GetStateName}}()\ \{}
+\DoxyCodeLine{\Hypertarget{_skottie_player_8cs_source_l00146}00146\ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (currentState\ !=\ \textcolor{keyword}{null})\ \{}
+\DoxyCodeLine{\Hypertarget{_skottie_player_8cs_source_l00147}00147\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ currentState.cm;}
+\DoxyCodeLine{\Hypertarget{_skottie_player_8cs_source_l00148}00148\ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_skottie_player_8cs_source_l00149}00149\ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{stringliteral}{"{}"{}};}
+\DoxyCodeLine{\Hypertarget{_skottie_player_8cs_source_l00150}00150\ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_skottie_player_8cs_source_l00151}00151\ }
+\DoxyCodeLine{\Hypertarget{_skottie_player_8cs_source_l00156}\mbox{\hyperlink{class_skia_sharp_1_1_unity_1_1_skottie_player_adde181cbe8d1c3b73fb01c5ba643cd50}{00156}}\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{double}\ \mbox{\hyperlink{class_skia_sharp_1_1_unity_1_1_skottie_player_adde181cbe8d1c3b73fb01c5ba643cd50}{GetFps}}()\ \{}
+\DoxyCodeLine{\Hypertarget{_skottie_player_8cs_source_l00157}00157\ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ animationFps;}
+\DoxyCodeLine{\Hypertarget{_skottie_player_8cs_source_l00158}00158\ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_skottie_player_8cs_source_l00159}00159\ \ \ }
+\DoxyCodeLine{\Hypertarget{_skottie_player_8cs_source_l00164}\mbox{\hyperlink{class_skia_sharp_1_1_unity_1_1_skottie_player_a3a7ad3f379c5a50ca555b25b7a6afd25}{00164}}\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{double}\ \mbox{\hyperlink{class_skia_sharp_1_1_unity_1_1_skottie_player_a3a7ad3f379c5a50ca555b25b7a6afd25}{GetDurations}}()\ \{}
+\DoxyCodeLine{\Hypertarget{_skottie_player_8cs_source_l00165}00165\ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ animationDuration;}
+\DoxyCodeLine{\Hypertarget{_skottie_player_8cs_source_l00166}00166\ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_skottie_player_8cs_source_l00167}00167\ }
+\DoxyCodeLine{\Hypertarget{_skottie_player_8cs_source_l00172}\mbox{\hyperlink{class_skia_sharp_1_1_unity_1_1_skottie_player_a0f03a1e138c0cf97485702ce8079f772}{00172}}\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{class_skia_sharp_1_1_unity_1_1_skottie_player_a0f03a1e138c0cf97485702ce8079f772}{PlayAnimation}}(\textcolor{keywordtype}{bool}?\ reset\ =\ \textcolor{keyword}{null})\ \{}
+\DoxyCodeLine{\Hypertarget{_skottie_player_8cs_source_l00173}00173\ \ \ \ \ \ \ playAniamtion\ =\ \textcolor{keyword}{true};}
+\DoxyCodeLine{\Hypertarget{_skottie_player_8cs_source_l00174}00174\ \ \ \ \ \ \ resetAfterFinished\ =\ reset\ ==\ \textcolor{keyword}{null}\ ?\ resetAfterFinished\ :\ reset.Value;}
+\DoxyCodeLine{\Hypertarget{_skottie_player_8cs_source_l00175}00175\ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_skottie_player_8cs_source_l00176}00176\ \ \ }
+\DoxyCodeLine{\Hypertarget{_skottie_player_8cs_source_l00177}00177\ }
+\DoxyCodeLine{\Hypertarget{_skottie_player_8cs_source_l00178}00178\ \ \ \ \ \textcolor{keyword}{private}\ \textcolor{keywordtype}{void}\ Update()\ \{}
+\DoxyCodeLine{\Hypertarget{_skottie_player_8cs_source_l00179}00179\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (playAniamtion\ ==\ \textcolor{keyword}{false}\ ||\ currentAnimation\ ==\ \textcolor{keyword}{null}\ ||\ canvas\ ==\ \textcolor{keyword}{null})\ \{}
+\DoxyCodeLine{\Hypertarget{_skottie_player_8cs_source_l00180}00180\ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return};}
+\DoxyCodeLine{\Hypertarget{_skottie_player_8cs_source_l00181}00181\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_skottie_player_8cs_source_l00182}00182\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{\Hypertarget{_skottie_player_8cs_source_l00183}00183\ \ \ \ \ \ \ \ \ timer\ +=\ Time.deltaTime;}
+\DoxyCodeLine{\Hypertarget{_skottie_player_8cs_source_l00184}00184\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (currentState\ !=\ \textcolor{keyword}{null}\ \&\&\ timer\ >=\ animationStateDuration)\ \{}
+\DoxyCodeLine{\Hypertarget{_skottie_player_8cs_source_l00185}00185\ \ \ \ \ \ \ \ \ \ \ timer\ =\ resetAfterFinished\ ||\ loop}
+\DoxyCodeLine{\Hypertarget{_skottie_player_8cs_source_l00186}00186\ \ \ \ \ \ \ \ \ \ \ \ \ ?\ currentState.tm\ /\ animationFps}
+\DoxyCodeLine{\Hypertarget{_skottie_player_8cs_source_l00187}00187\ \ \ \ \ \ \ \ \ \ \ \ \ :\ animationStateDuration;}
+\DoxyCodeLine{\Hypertarget{_skottie_player_8cs_source_l00188}00188\ \ \ \ \ \ \ \ \ \ \ playAniamtion\ =\ loop;}
+\DoxyCodeLine{\Hypertarget{_skottie_player_8cs_source_l00189}00189\ \ \ \ \ \ \ \ \ \ \ OnAnimationFinished?.Invoke(currentState?.cm);}
+\DoxyCodeLine{\Hypertarget{_skottie_player_8cs_source_l00190}00190\ \ \ \ \ \ \ \ \ \}\ \textcolor{keywordflow}{else}\ \textcolor{keywordflow}{if}\ (timer\ >=\ animationDuration)\ \{}
+\DoxyCodeLine{\Hypertarget{_skottie_player_8cs_source_l00191}00191\ \ \ \ \ \ \ \ \ \ \ timer\ =\ resetAfterFinished\ ||\ loop\ ?\ 0\ :\ timer;}
+\DoxyCodeLine{\Hypertarget{_skottie_player_8cs_source_l00192}00192\ \ \ \ \ \ \ \ \ \ \ playAniamtion\ =\ loop;}
+\DoxyCodeLine{\Hypertarget{_skottie_player_8cs_source_l00193}00193\ \ \ \ \ \ \ \ \ \ \ OnAnimationFinished?.Invoke(currentState?.cm);}
+\DoxyCodeLine{\Hypertarget{_skottie_player_8cs_source_l00194}00194\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_skottie_player_8cs_source_l00195}00195\ }
+\DoxyCodeLine{\Hypertarget{_skottie_player_8cs_source_l00196}00196\ \ \ \ \ \ \ \ \ canvas.Clear();}
+\DoxyCodeLine{\Hypertarget{_skottie_player_8cs_source_l00197}00197\ \ \ \ \ \ \ \ \ currentAnimation.SeekFrameTime(timer);}
+\DoxyCodeLine{\Hypertarget{_skottie_player_8cs_source_l00198}00198\ \ \ \ \ \ \ \ \ currentAnimation.Render(canvas,\ rect);}
+\DoxyCodeLine{\Hypertarget{_skottie_player_8cs_source_l00199}00199\ \ \ \ \ \ \ \ \ var\ pixmap\ =\ surface.PeekPixels();}
+\DoxyCodeLine{\Hypertarget{_skottie_player_8cs_source_l00200}00200\ \ \ \ \ \ \ \ \ texture.LoadRawTextureData(pixmap.GetPixels(),\ pixmap.RowBytes\ *\ pixmap.Height);}
+\DoxyCodeLine{\Hypertarget{_skottie_player_8cs_source_l00201}00201\ \ \ \ \ \ \ \ \ texture.Apply();}
+\DoxyCodeLine{\Hypertarget{_skottie_player_8cs_source_l00202}00202\ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_skottie_player_8cs_source_l00203}00203\ }
+\DoxyCodeLine{\Hypertarget{_skottie_player_8cs_source_l00204}00204\ \ \ \ \ \textcolor{keyword}{private}\ \textcolor{keywordtype}{void}\ OnDestroy()\ \{}
+\DoxyCodeLine{\Hypertarget{_skottie_player_8cs_source_l00205}00205\ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (texture\ !=\ \textcolor{keyword}{null})\ \{}
+\DoxyCodeLine{\Hypertarget{_skottie_player_8cs_source_l00206}00206\ \ \ \ \ \ \ \ \ DestroyImmediate(texture);}
+\DoxyCodeLine{\Hypertarget{_skottie_player_8cs_source_l00207}00207\ \ \ \ \ \ \ \ \ texture\ =\ \textcolor{keyword}{null};}
+\DoxyCodeLine{\Hypertarget{_skottie_player_8cs_source_l00208}00208\ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_skottie_player_8cs_source_l00209}00209\ }
+\DoxyCodeLine{\Hypertarget{_skottie_player_8cs_source_l00210}00210\ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (currentAnimation\ !=\ \textcolor{keyword}{null})\ \{}
+\DoxyCodeLine{\Hypertarget{_skottie_player_8cs_source_l00211}00211\ \ \ \ \ \ \ \ \ currentAnimation.Dispose();}
+\DoxyCodeLine{\Hypertarget{_skottie_player_8cs_source_l00212}00212\ \ \ \ \ \ \ \ \ currentAnimation\ =\ \textcolor{keyword}{null};}
+\DoxyCodeLine{\Hypertarget{_skottie_player_8cs_source_l00213}00213\ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_skottie_player_8cs_source_l00214}00214\ }
+\DoxyCodeLine{\Hypertarget{_skottie_player_8cs_source_l00215}00215\ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (canvas\ !=\ \textcolor{keyword}{null})\ \{}
+\DoxyCodeLine{\Hypertarget{_skottie_player_8cs_source_l00216}00216\ \ \ \ \ \ \ \ \ canvas.Dispose();}
+\DoxyCodeLine{\Hypertarget{_skottie_player_8cs_source_l00217}00217\ \ \ \ \ \ \ \ \ canvas\ =\ \textcolor{keyword}{null};}
+\DoxyCodeLine{\Hypertarget{_skottie_player_8cs_source_l00218}00218\ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_skottie_player_8cs_source_l00219}00219\ }
+\DoxyCodeLine{\Hypertarget{_skottie_player_8cs_source_l00220}00220\ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_skottie_player_8cs_source_l00221}00221\ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_skottie_player_8cs_source_l00222}00222\ \}}
+
+\end{DoxyCode}

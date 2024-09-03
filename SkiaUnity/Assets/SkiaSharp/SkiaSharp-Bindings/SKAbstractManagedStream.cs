@@ -1,7 +1,8 @@
-﻿using System;
+﻿#nullable disable
+
+using System;
 using System.Runtime.InteropServices;
 using System.Threading;
-using AOT;
 
 namespace SkiaSharp
 {

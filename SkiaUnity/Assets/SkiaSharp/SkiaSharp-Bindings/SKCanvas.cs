@@ -1,5 +1,6 @@
-﻿using System;
-using System.ComponentModel;
+﻿#nullable disable
+
+using System;
 
 namespace SkiaSharp
 {
@@ -227,9 +228,12 @@ namespace SkiaSharp
 
 		// Concat
 
-		public void Concat (ref SKMatrix m)
+		public void Concat (in SKMatrix m) =>
+			Concat ((SKMatrix44)m);
+
+		public void Concat (in SKMatrix44 m)
 		{
-			fixed (SKMatrix* ptr = &m) {
+			fixed (SKMatrix44* ptr = &m) {
 				SkiaApi.sk_canvas_concat (Handle, ptr);
 			}
 		}
@@ -446,28 +450,51 @@ namespace SkiaSharp
 
 		public void DrawImage (SKImage image, SKPoint p, SKPaint paint = null)
 		{
-			DrawImage (image, p.X, p.Y, paint);
+			DrawImage (image, p.X, p.Y, SKSamplingOptions.Default, paint);
+		}
+
+		public void DrawImage (SKImage image, SKPoint p, SKSamplingOptions sampling, SKPaint paint = null)
+		{
+			DrawImage (image, p.X, p.Y, sampling, paint);
 		}
 
 		public void DrawImage (SKImage image, float x, float y, SKPaint paint = null)
 		{
+			DrawImage (image, x, y, SKSamplingOptions.Default, paint);
+		}
+
+		public void DrawImage (SKImage image, float x, float y, SKSamplingOptions sampling, SKPaint paint = null)
+		{
 			if (image == null)
 				throw new ArgumentNullException (nameof (image));
-			SkiaApi.sk_canvas_draw_image (Handle, image.Handle, x, y, paint == null ? IntPtr.Zero : paint.Handle);
+			SkiaApi.sk_canvas_draw_image (Handle, image.Handle, x, y, &sampling, paint?.Handle ?? IntPtr.Zero);
 		}
 
 		public void DrawImage (SKImage image, SKRect dest, SKPaint paint = null)
 		{
-			if (image == null)
-				throw new ArgumentNullException (nameof (image));
-			SkiaApi.sk_canvas_draw_image_rect (Handle, image.Handle, null, &dest, paint == null ? IntPtr.Zero : paint.Handle);
+			DrawImage (image, null, &dest, SKSamplingOptions.Default, paint);
+		}
+
+		public void DrawImage (SKImage image, SKRect dest, SKSamplingOptions sampling, SKPaint paint = null)
+		{
+			DrawImage (image, null, &dest, sampling, paint);
 		}
 
 		public void DrawImage (SKImage image, SKRect source, SKRect dest, SKPaint paint = null)
 		{
+			DrawImage (image, &source, &dest, SKSamplingOptions.Default, paint);
+		}
+
+		public void DrawImage (SKImage image, SKRect source, SKRect dest, SKSamplingOptions sampling, SKPaint paint = null)
+		{
+			DrawImage (image, &source, &dest, sampling, paint);
+		}
+
+		private void DrawImage (SKImage image, SKRect* source, SKRect* dest, SKSamplingOptions sampling, SKPaint paint = null)
+		{
 			if (image == null)
 				throw new ArgumentNullException (nameof (image));
-			SkiaApi.sk_canvas_draw_image_rect (Handle, image.Handle, &source, &dest, paint == null ? IntPtr.Zero : paint.Handle);
+			SkiaApi.sk_canvas_draw_image_rect (Handle, image.Handle, source, dest, &sampling, paint?.Handle ?? IntPtr.Zero);
 		}
 
 		// DrawPicture
@@ -475,7 +502,7 @@ namespace SkiaSharp
 		public void DrawPicture (SKPicture picture, float x, float y, SKPaint paint = null)
 		{
 			var matrix = SKMatrix.CreateTranslation (x, y);
-			DrawPicture (picture, ref matrix, paint);
+			DrawPicture (picture, matrix, paint);
 		}
 
 		public void DrawPicture (SKPicture picture, SKPoint p, SKPaint paint = null)
@@ -483,13 +510,12 @@ namespace SkiaSharp
 			DrawPicture (picture, p.X, p.Y, paint);
 		}
 
-		public void DrawPicture (SKPicture picture, ref SKMatrix matrix, SKPaint paint = null)
+		public void DrawPicture (SKPicture picture, in SKMatrix matrix, SKPaint paint = null)
 		{
 			if (picture == null)
 				throw new ArgumentNullException (nameof (picture));
-			fixed (SKMatrix* m = &matrix) {
+			fixed (SKMatrix* m = &matrix)
 				SkiaApi.sk_canvas_draw_picture (Handle, picture.Handle, m, paint == null ? IntPtr.Zero : paint.Handle);
-			}
 		}
 
 		public void DrawPicture (SKPicture picture, SKPaint paint = null)
@@ -501,13 +527,12 @@ namespace SkiaSharp
 
 		// DrawDrawable
 
-		public void DrawDrawable (SKDrawable drawable, ref SKMatrix matrix)
+		public void DrawDrawable (SKDrawable drawable, in SKMatrix matrix)
 		{
 			if (drawable == null)
 				throw new ArgumentNullException (nameof (drawable));
-			fixed (SKMatrix* m = &matrix) {
+			fixed (SKMatrix* m = &matrix)
 				SkiaApi.sk_canvas_draw_drawable (Handle, drawable.Handle, m);
-			}
 		}
 
 		public void DrawDrawable (SKDrawable drawable, float x, float y)
@@ -515,7 +540,7 @@ namespace SkiaSharp
 			if (drawable == null)
 				throw new ArgumentNullException (nameof (drawable));
 			var matrix = SKMatrix.CreateTranslation (x, y);
-			DrawDrawable (drawable, ref matrix);
+			DrawDrawable (drawable, matrix);
 		}
 
 		public void DrawDrawable (SKDrawable drawable, SKPoint p)
@@ -523,7 +548,7 @@ namespace SkiaSharp
 			if (drawable == null)
 				throw new ArgumentNullException (nameof (drawable));
 			var matrix = SKMatrix.CreateTranslation (p.X, p.Y);
-			DrawDrawable (drawable, ref matrix);
+			DrawDrawable (drawable, matrix);
 		}
 
 		// DrawBitmap
@@ -578,17 +603,28 @@ namespace SkiaSharp
 
 		// DrawText
 
-		public void DrawText (string text, SKPoint p, SKPaint paint)
-		{
-			DrawText (text, p.X, p.Y, paint);
-		}
+		[Obsolete ("Use DrawText(string text, SKPoint p, SKTextAlign textAlign, SKFont font, SKPaint paint) instead.")]
+		public void DrawText (string text, SKPoint p, SKPaint paint) =>
+			DrawText (text, p, paint.TextAlign, paint.GetFont (), paint);
 
-		public void DrawText (string text, float x, float y, SKPaint paint)
-		{
-			DrawText (text, x, y, paint.GetFont (), paint);
-		}
+		[Obsolete ("Use DrawText(string text, float x, float y, SKTextAlign textAlign, SKFont font, SKPaint paint) instead.")]
+		public void DrawText (string text, float x, float y, SKPaint paint) =>
+			DrawText (text, x, y, paint.TextAlign, paint.GetFont (), paint);
 
-		public void DrawText (string text, float x, float y, SKFont font, SKPaint paint)
+		public void DrawText (string text, SKPoint p, SKFont font, SKPaint paint) =>
+#pragma warning disable CS0618 // Type or member is obsolete (TODO: replace paint.TextAlign with SKTextAlign.Left)
+			DrawText (text, p, paint.TextAlign, font, paint);
+#pragma warning restore CS0618 // Type or member is obsolete
+
+		public void DrawText (string text, SKPoint p, SKTextAlign textAlign, SKFont font, SKPaint paint) =>
+			DrawText (text, p.X, p.Y, textAlign, font, paint);
+
+		public void DrawText (string text, float x, float y, SKFont font, SKPaint paint) =>
+#pragma warning disable CS0618 // Type or member is obsolete (TODO: replace paint.TextAlign with SKTextAlign.Left)
+			DrawText (text, x, y, paint.TextAlign, font, paint);
+#pragma warning restore CS0618 // Type or member is obsolete
+
+		public void DrawText (string text, float x, float y, SKTextAlign textAlign, SKFont font, SKPaint paint)
 		{
 			if (text == null)
 				throw new ArgumentNullException (nameof (text));
@@ -597,9 +633,9 @@ namespace SkiaSharp
 			if (paint == null)
 				throw new ArgumentNullException (nameof (paint));
 
-			if (paint.TextAlign != SKTextAlign.Left) {
+			if (textAlign != SKTextAlign.Left) {
 				var width = font.MeasureText (text);
-				if (paint.TextAlign == SKTextAlign.Center)
+				if (textAlign == SKTextAlign.Center)
 					width *= 0.5f;
 				x -= width;
 			}
@@ -611,143 +647,42 @@ namespace SkiaSharp
 			DrawText (blob, x, y, paint);
 		}
 
-		[EditorBrowsable (EditorBrowsableState.Never)]
-		[Obsolete ("Use DrawText(SKTextBlob, float, float, SKPaint) instead.")]
-		public void DrawText (byte[] text, SKPoint p, SKPaint paint)
-		{
-			DrawText (text, p.X, p.Y, paint);
-		}
-
-		[EditorBrowsable (EditorBrowsableState.Never)]
-		[Obsolete ("Use DrawText(SKTextBlob, float, float, SKPaint) instead.")]
-		public void DrawText (byte[] text, float x, float y, SKPaint paint)
-		{
-			if (text == null)
-				throw new ArgumentNullException (nameof (text));
-			if (paint == null)
-				throw new ArgumentNullException (nameof (paint));
-
-			if (paint.TextAlign != SKTextAlign.Left) {
-				var width = paint.MeasureText (text);
-				if (paint.TextAlign == SKTextAlign.Center)
-					width *= 0.5f;
-				x -= width;
-			}
-
-			using var blob = SKTextBlob.Create (text, paint.TextEncoding, paint.GetFont ());
-			if (blob == null)
-				return;
-
-			DrawText (blob, x, y, paint);
-		}
-
-		[EditorBrowsable (EditorBrowsableState.Never)]
-		[Obsolete ("Use DrawText(SKTextBlob, float, float, SKPaint) instead.")]
-		public void DrawText (IntPtr buffer, int length, SKPoint p, SKPaint paint)
-		{
-			DrawText (buffer, length, p.X, p.Y, paint);
-		}
-
-		[EditorBrowsable (EditorBrowsableState.Never)]
-		[Obsolete ("Use DrawText(SKTextBlob, float, float, SKPaint) instead.")]
-		public void DrawText (IntPtr buffer, int length, float x, float y, SKPaint paint)
-		{
-			if (buffer == IntPtr.Zero && length != 0)
-				throw new ArgumentNullException (nameof (buffer));
-			if (paint == null)
-				throw new ArgumentNullException (nameof (paint));
-
-			if (paint.TextAlign != SKTextAlign.Left) {
-				var width = paint.MeasureText (buffer, length);
-				if (paint.TextAlign == SKTextAlign.Center)
-					width *= 0.5f;
-				x -= width;
-			}
-
-			using var blob = SKTextBlob.Create (buffer, length, paint.TextEncoding, paint.GetFont ());
-			if (blob == null)
-				return;
-
-			DrawText (blob, x, y, paint);
-		}
-
-		// DrawPositionedText
-
-		[EditorBrowsable (EditorBrowsableState.Never)]
-		[Obsolete ("Use DrawText(SKTextBlob, float, float, SKPaint) instead.")]
-		public void DrawPositionedText (string text, SKPoint[] points, SKPaint paint)
-		{
-			if (text == null)
-				throw new ArgumentNullException (nameof (text));
-			if (paint == null)
-				throw new ArgumentNullException (nameof (paint));
-			if (points == null)
-				throw new ArgumentNullException (nameof (points));
-
-			using var blob = SKTextBlob.CreatePositioned (text, paint.GetFont (), points);
-			if (blob == null)
-				return;
-
-			DrawText (blob, 0, 0, paint);
-		}
-
-		[EditorBrowsable (EditorBrowsableState.Never)]
-		[Obsolete ("Use DrawText(SKTextBlob, float, float, SKPaint) instead.")]
-		public void DrawPositionedText (byte[] text, SKPoint[] points, SKPaint paint)
-		{
-			if (text == null)
-				throw new ArgumentNullException (nameof (text));
-			if (paint == null)
-				throw new ArgumentNullException (nameof (paint));
-			if (points == null)
-				throw new ArgumentNullException (nameof (points));
-
-			using var blob = SKTextBlob.CreatePositioned (text, paint.TextEncoding, paint.GetFont (), points);
-			if (blob == null)
-				return;
-
-			DrawText (blob, 0, 0, paint);
-		}
-
-		[EditorBrowsable (EditorBrowsableState.Never)]
-		[Obsolete ("Use DrawText(SKTextBlob, float, float, SKPaint) instead.")]
-		public void DrawPositionedText (IntPtr buffer, int length, SKPoint[] points, SKPaint paint)
-		{
-			if (buffer == IntPtr.Zero && length != 0)
-				throw new ArgumentNullException (nameof (buffer));
-			if (paint == null)
-				throw new ArgumentNullException (nameof (paint));
-			if (points == null)
-				throw new ArgumentNullException (nameof (points));
-
-			using var blob = SKTextBlob.CreatePositioned (buffer, length, paint.TextEncoding, paint.GetFont (), points);
-			if (blob == null)
-				return;
-
-			DrawText (blob, 0, 0, paint);
-		}
-
 		// DrawTextOnPath
 
-		public void DrawTextOnPath (string text, SKPath path, SKPoint offset, SKPaint paint)
-		{
+		[Obsolete ("Use DrawTextOnPath(string text, SKPath path, float hOffset, float vOffset, SKTextAlign textAlign, SKFont font, SKPaint paint) instead.")]
+		public void DrawTextOnPath (string text, SKPath path, SKPoint offset, SKPaint paint) =>
 			DrawTextOnPath (text, path, offset, true, paint);
-		}
 
-		public void DrawTextOnPath (string text, SKPath path, float hOffset, float vOffset, SKPaint paint)
-		{
+		[Obsolete ("Use DrawTextOnPath(string text, SKPath path, float hOffset, float vOffset, SKTextAlign textAlign, SKFont font, SKPaint paint) instead.")]
+		public void DrawTextOnPath (string text, SKPath path, float hOffset, float vOffset, SKPaint paint) =>
 			DrawTextOnPath (text, path, new SKPoint (hOffset, vOffset), true, paint);
-		}
 
-		public void DrawTextOnPath (string text, SKPath path, SKPoint offset, bool warpGlyphs, SKPaint paint)
-		{
-			if (paint == null)
-				throw new ArgumentNullException (nameof (paint));
-
+		[Obsolete ("Use DrawTextOnPath(string text, SKPath path, SKPoint offset, bool warpGlyphs, SKTextAlign textAlign, SKFont font, SKPaint paint) instead.")]
+		public void DrawTextOnPath (string text, SKPath path, SKPoint offset, bool warpGlyphs, SKPaint paint) =>
 			DrawTextOnPath (text, path, offset, warpGlyphs, paint.GetFont (), paint);
-		}
 
-		public void DrawTextOnPath (string text, SKPath path, SKPoint offset, bool warpGlyphs, SKFont font, SKPaint paint)
+		public void DrawTextOnPath (string text, SKPath path, SKPoint offset, SKFont font, SKPaint paint) =>
+#pragma warning disable CS0618 // Type or member is obsolete (TODO: replace paint.TextAlign with SKTextAlign.Left)
+			DrawTextOnPath (text, path, offset, true, paint.TextAlign, font, paint);
+#pragma warning restore CS0618 // Type or member is obsolete
+
+		public void DrawTextOnPath (string text, SKPath path, SKPoint offset, SKTextAlign textAlign, SKFont font, SKPaint paint) =>
+			DrawTextOnPath (text, path, offset, true, textAlign, font, paint);
+
+		public void DrawTextOnPath (string text, SKPath path, float hOffset, float vOffset, SKFont font, SKPaint paint) =>
+#pragma warning disable CS0618 // Type or member is obsolete (TODO: replace paint.TextAlign with SKTextAlign.Left)
+			DrawTextOnPath (text, path, new SKPoint (hOffset, vOffset), true, paint.TextAlign, font, paint);
+#pragma warning restore CS0618 // Type or member is obsolete
+
+		public void DrawTextOnPath (string text, SKPath path, float hOffset, float vOffset, SKTextAlign textAlign, SKFont font, SKPaint paint) =>
+			DrawTextOnPath (text, path, new SKPoint (hOffset, vOffset), true, textAlign, font, paint);
+
+		public void DrawTextOnPath (string text, SKPath path, SKPoint offset, bool warpGlyphs, SKFont font, SKPaint paint) =>
+#pragma warning disable CS0618 // Type or member is obsolete (TODO: replace paint.TextAlign with SKTextAlign.Left)
+			DrawTextOnPath (text, path, offset, warpGlyphs, paint.TextAlign, font, paint);
+#pragma warning restore CS0618 // Type or member is obsolete
+
+		public void DrawTextOnPath (string text, SKPath path, SKPoint offset, bool warpGlyphs, SKTextAlign textAlign, SKFont font, SKPaint paint)
 		{
 			if (text == null)
 				throw new ArgumentNullException (nameof (text));
@@ -759,60 +694,13 @@ namespace SkiaSharp
 				throw new ArgumentNullException (nameof (paint));
 
 			if (warpGlyphs) {
-				using var textPath = font.GetTextPathOnPath (text, path, paint.TextAlign, offset);
+				using var textPath = font.GetTextPathOnPath (text, path, textAlign, offset);
 				DrawPath (textPath, paint);
 			} else {
-				using var blob = SKTextBlob.CreatePathPositioned (text, font, path, paint.TextAlign, offset);
+				using var blob = SKTextBlob.CreatePathPositioned (text, font, path, textAlign, offset);
 				if (blob != null)
 					DrawText (blob, 0, 0, paint);
 			}
-		}
-
-		[EditorBrowsable (EditorBrowsableState.Never)]
-		[Obsolete ("Use DrawTextOnPath(string, SKPath, SKPoint, SKPaint) instead.")]
-		public void DrawTextOnPath (byte[] text, SKPath path, SKPoint offset, SKPaint paint)
-		{
-			DrawTextOnPath (text, path, offset.X, offset.Y, paint);
-		}
-
-		[EditorBrowsable (EditorBrowsableState.Never)]
-		[Obsolete ("Use DrawTextOnPath(string, SKPath, float, float, SKPaint) instead.")]
-		public void DrawTextOnPath (byte[] text, SKPath path, float hOffset, float vOffset, SKPaint paint)
-		{
-			if (text == null)
-				throw new ArgumentNullException (nameof (text));
-			if (path == null)
-				throw new ArgumentNullException (nameof (path));
-			if (paint == null)
-				throw new ArgumentNullException (nameof (paint));
-
-			fixed (byte* t = text) {
-				DrawTextOnPath ((IntPtr)t, text.Length, path, hOffset, vOffset, paint);
-			}
-		}
-
-		[EditorBrowsable (EditorBrowsableState.Never)]
-		[Obsolete ("Use DrawTextOnPath(string, SKPath, SKPoint, SKPaint) instead.")]
-		public void DrawTextOnPath (IntPtr buffer, int length, SKPath path, SKPoint offset, SKPaint paint)
-		{
-			DrawTextOnPath (buffer, length, path, offset.X, offset.Y, paint);
-		}
-
-		[EditorBrowsable (EditorBrowsableState.Never)]
-		[Obsolete ("Use DrawTextOnPath(string, SKPath, float, float, SKPaint) instead.")]
-		public void DrawTextOnPath (IntPtr buffer, int length, SKPath path, float hOffset, float vOffset, SKPaint paint)
-		{
-			if (buffer == IntPtr.Zero && length != 0)
-				throw new ArgumentNullException (nameof (buffer));
-			if (path == null)
-				throw new ArgumentNullException (nameof (path));
-			if (paint == null)
-				throw new ArgumentNullException (nameof (paint));
-
-			var font = paint.GetFont ();
-
-			using var textPath = font.GetTextPathOnPath (buffer, length, paint.TextEncoding, path, paint.TextAlign, new SKPoint (hOffset, vOffset));
-			DrawPath (textPath, paint);
 		}
 
 		// Flush
@@ -870,13 +758,19 @@ namespace SkiaSharp
 
 		// Draw*NinePatch
 
-		public void DrawBitmapNinePatch (SKBitmap bitmap, SKRectI center, SKRect dst, SKPaint paint = null)
+		public void DrawBitmapNinePatch (SKBitmap bitmap, SKRectI center, SKRect dst, SKPaint paint = null) =>
+			DrawBitmapNinePatch (bitmap, center, dst, SKFilterMode.Nearest, paint);
+
+		public void DrawBitmapNinePatch (SKBitmap bitmap, SKRectI center, SKRect dst, SKFilterMode filterMode, SKPaint paint = null)
 		{
 			using var image = SKImage.FromBitmap (bitmap);
-			DrawImageNinePatch (image, center, dst, paint);
+			DrawImageNinePatch (image, center, dst, filterMode, paint);
 		}
 
-		public void DrawImageNinePatch (SKImage image, SKRectI center, SKRect dst, SKPaint paint = null)
+		public void DrawImageNinePatch (SKImage image, SKRectI center, SKRect dst, SKPaint paint = null) =>
+			DrawImageNinePatch (image, center, dst, SKFilterMode.Nearest, paint);
+
+		public void DrawImageNinePatch (SKImage image, SKRectI center, SKRect dst, SKFilterMode filterMode = SKFilterMode.Nearest, SKPaint paint = null)
 		{
 			if (image == null)
 				throw new ArgumentNullException (nameof (image));
@@ -884,33 +778,45 @@ namespace SkiaSharp
 			if (!SKRect.Create (image.Width, image.Height).Contains (center))
 				throw new ArgumentException ("Center rectangle must be contained inside the image bounds.", nameof (center));
 
-			SkiaApi.sk_canvas_draw_image_nine (Handle, image.Handle, &center, &dst, paint == null ? IntPtr.Zero : paint.Handle);
+			SkiaApi.sk_canvas_draw_image_nine (Handle, image.Handle, &center, &dst, filterMode, paint == null ? IntPtr.Zero : paint.Handle);
 		}
 
 		// Draw*Lattice
 
-		public void DrawBitmapLattice (SKBitmap bitmap, int[] xDivs, int[] yDivs, SKRect dst, SKPaint paint = null)
+		public void DrawBitmapLattice (SKBitmap bitmap, int[] xDivs, int[] yDivs, SKRect dst, SKPaint paint = null) =>
+			DrawBitmapLattice (bitmap, xDivs, yDivs, dst, SKFilterMode.Nearest, paint);
+
+		public void DrawBitmapLattice (SKBitmap bitmap, int[] xDivs, int[] yDivs, SKRect dst, SKFilterMode filterMode, SKPaint paint = null)
 		{
 			using var image = SKImage.FromBitmap (bitmap);
-			DrawImageLattice (image, xDivs, yDivs, dst, paint);
+			DrawImageLattice (image, xDivs, yDivs, dst, filterMode, paint);
 		}
 
-		public void DrawImageLattice (SKImage image, int[] xDivs, int[] yDivs, SKRect dst, SKPaint paint = null)
+		public void DrawImageLattice (SKImage image, int[] xDivs, int[] yDivs, SKRect dst, SKPaint paint = null) =>
+			DrawImageLattice (image, xDivs, yDivs, dst, SKFilterMode.Nearest, paint);
+
+		public void DrawImageLattice (SKImage image, int[] xDivs, int[] yDivs, SKRect dst, SKFilterMode filterMode, SKPaint paint = null)
 		{
 			var lattice = new SKLattice {
 				XDivs = xDivs,
 				YDivs = yDivs
 			};
-			DrawImageLattice (image, lattice, dst, paint);
+			DrawImageLattice (image, lattice, dst, filterMode, paint);
 		}
 
-		public void DrawBitmapLattice (SKBitmap bitmap, SKLattice lattice, SKRect dst, SKPaint paint = null)
+		public void DrawBitmapLattice (SKBitmap bitmap, SKLattice lattice, SKRect dst, SKPaint paint = null) =>
+			DrawBitmapLattice (bitmap, lattice, dst, SKFilterMode.Nearest, paint);
+
+		public void DrawBitmapLattice (SKBitmap bitmap, SKLattice lattice, SKRect dst, SKFilterMode filterMode, SKPaint paint = null)
 		{
 			using var image = SKImage.FromBitmap (bitmap);
-			DrawImageLattice (image, lattice, dst, paint);
+			DrawImageLattice (image, lattice, dst, filterMode, paint);
 		}
 
-		public void DrawImageLattice (SKImage image, SKLattice lattice, SKRect dst, SKPaint paint = null)
+		public void DrawImageLattice (SKImage image, SKLattice lattice, SKRect dst, SKPaint paint = null) =>
+			DrawImageLattice (image, lattice, dst, SKFilterMode.Nearest, paint);
+
+		public void DrawImageLattice (SKImage image, SKLattice lattice, SKRect dst, SKFilterMode filterMode, SKPaint paint = null)
 		{
 			if (image == null)
 				throw new ArgumentNullException (nameof (image));
@@ -936,7 +842,7 @@ namespace SkiaSharp
 					var bounds = lattice.Bounds.Value;
 					nativeLattice.fBounds = &bounds;
 				}
-				SkiaApi.sk_canvas_draw_image_lattice (Handle, image.Handle, &nativeLattice, &dst, paint == null ? IntPtr.Zero : paint.Handle);
+				SkiaApi.sk_canvas_draw_image_lattice (Handle, image.Handle, &nativeLattice, &dst, filterMode, paint == null ? IntPtr.Zero : paint.Handle);
 			}
 		}
 
@@ -947,15 +853,22 @@ namespace SkiaSharp
 			SkiaApi.sk_canvas_reset_matrix (Handle);
 		}
 
-		public void SetMatrix (SKMatrix matrix)
+		public void SetMatrix (in SKMatrix matrix) =>
+			SetMatrix ((SKMatrix44)matrix);
+
+		public void SetMatrix (in SKMatrix44 matrix)
 		{
-			SkiaApi.sk_canvas_set_matrix (Handle, &matrix);
+			fixed (SKMatrix44* ptr = &matrix) {
+				SkiaApi.sk_canvas_set_matrix (Handle, ptr);
+			}
 		}
 
-		public SKMatrix TotalMatrix {
+		public SKMatrix TotalMatrix => TotalMatrix44.Matrix;
+
+		public SKMatrix44 TotalMatrix44 {
 			get {
-				SKMatrix matrix;
-				SkiaApi.sk_canvas_get_total_matrix (Handle, &matrix);
+				SKMatrix44 matrix;
+				SkiaApi.sk_canvas_get_matrix (Handle, &matrix);
 				return matrix;
 			}
 		}
@@ -1025,15 +938,24 @@ namespace SkiaSharp
 		// DrawAtlas
 
 		public void DrawAtlas (SKImage atlas, SKRect[] sprites, SKRotationScaleMatrix[] transforms, SKPaint paint) =>
-			DrawAtlas (atlas, sprites, transforms, null, SKBlendMode.Dst, null, paint);
+			DrawAtlas (atlas, sprites, transforms, null, SKBlendMode.Dst, SKSamplingOptions.Default, null, paint);
+
+		public void DrawAtlas (SKImage atlas, SKRect[] sprites, SKRotationScaleMatrix[] transforms, SKSamplingOptions sampling, SKPaint paint) =>
+			DrawAtlas (atlas, sprites, transforms, null, SKBlendMode.Dst, sampling, null, paint);
 
 		public void DrawAtlas (SKImage atlas, SKRect[] sprites, SKRotationScaleMatrix[] transforms, SKColor[] colors, SKBlendMode mode, SKPaint paint) =>
-			DrawAtlas (atlas, sprites, transforms, colors, mode, null, paint);
+			DrawAtlas (atlas, sprites, transforms, colors, mode, SKSamplingOptions.Default, null, paint);
+
+		public void DrawAtlas (SKImage atlas, SKRect[] sprites, SKRotationScaleMatrix[] transforms, SKColor[] colors, SKBlendMode mode, SKSamplingOptions sampling, SKPaint paint) =>
+			DrawAtlas (atlas, sprites, transforms, colors, mode, sampling, null, paint);
 
 		public void DrawAtlas (SKImage atlas, SKRect[] sprites, SKRotationScaleMatrix[] transforms, SKColor[] colors, SKBlendMode mode, SKRect cullRect, SKPaint paint) =>
-			DrawAtlas (atlas, sprites, transforms, colors, mode, &cullRect, paint);
+			DrawAtlas (atlas, sprites, transforms, colors, mode, SKSamplingOptions.Default, &cullRect, paint);
 
-		private void DrawAtlas (SKImage atlas, SKRect[] sprites, SKRotationScaleMatrix[] transforms, SKColor[] colors, SKBlendMode mode, SKRect* cullRect, SKPaint paint)
+		public void DrawAtlas (SKImage atlas, SKRect[] sprites, SKRotationScaleMatrix[] transforms, SKColor[] colors, SKBlendMode mode, SKSamplingOptions sampling, SKRect cullRect, SKPaint paint) =>
+			DrawAtlas (atlas, sprites, transforms, colors, mode, sampling, &cullRect, paint);
+
+		private void DrawAtlas (SKImage atlas, SKRect[] sprites, SKRotationScaleMatrix[] transforms, SKColor[] colors, SKBlendMode mode, SKSamplingOptions sampling, SKRect* cullRect, SKPaint paint)
 		{
 			if (atlas == null)
 				throw new ArgumentNullException (nameof (atlas));
@@ -1050,7 +972,7 @@ namespace SkiaSharp
 			fixed (SKRect* s = sprites)
 			fixed (SKRotationScaleMatrix* t = transforms)
 			fixed (SKColor* c = colors) {
-				SkiaApi.sk_canvas_draw_atlas (Handle, atlas.Handle, t, s, (uint*)c, transforms.Length, mode, cullRect, paint.Handle);
+				SkiaApi.sk_canvas_draw_atlas (Handle, atlas.Handle, t, s, (uint*)c, transforms.Length, mode, &sampling, cullRect, paint.Handle);
 			}
 		}
 

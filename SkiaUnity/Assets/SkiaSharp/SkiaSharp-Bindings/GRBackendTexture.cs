@@ -1,4 +1,6 @@
-﻿using System;
+﻿#nullable disable
+
+using System;
 using System.ComponentModel;
 using System.Runtime.InteropServices;
 
@@ -9,30 +11,6 @@ namespace SkiaSharp
 		internal GRBackendTexture (IntPtr handle, bool owns)
 			: base (handle, owns)
 		{
-		}
-
-		[EditorBrowsable (EditorBrowsableState.Never)]
-		[Obsolete ("Use GRBackendTexture(int, int, bool, GRGlTextureInfo) instead.")]
-		public GRBackendTexture (GRGlBackendTextureDesc desc)
-			: this (IntPtr.Zero, true)
-		{
-			var handle = desc.TextureHandle;
-			if (handle.Format == 0) {
-				handle.Format = desc.Config.ToGlSizedFormat ();
-			}
-			CreateGl (desc.Width, desc.Height, false, handle);
-		}
-
-		[EditorBrowsable (EditorBrowsableState.Never)]
-		[Obsolete ("Use GRBackendTexture(int, int, bool, GRGlTextureInfo) instead.")]
-		public GRBackendTexture (GRBackendTextureDesc desc)
-			: this (IntPtr.Zero, true)
-		{
-			var handlePtr = desc.TextureHandle;
-			var oldHandle = Marshal.PtrToStructure<GRTextureInfoObsolete> (handlePtr);
-
-			var handle = new GRGlTextureInfo (oldHandle.fTarget, oldHandle.fID, desc.Config.ToGlSizedFormat ());
-			CreateGl (desc.Width, desc.Height, false, handle);
 		}
 
 		public GRBackendTexture (int width, int height, bool mipmapped, GRGlTextureInfo glInfo)
@@ -102,14 +80,6 @@ namespace SkiaSharp
 			fixed (GRGlTextureInfo* g = &glInfo) {
 				return SkiaApi.gr_backendtexture_get_gl_textureinfo (Handle, g);
 			}
-		}
-
-		[Obsolete]
-		[StructLayout (LayoutKind.Sequential)]
-		internal struct GRTextureInfoObsolete
-		{
-			public uint fTarget;
-			public uint fID;
 		}
 	}
 }

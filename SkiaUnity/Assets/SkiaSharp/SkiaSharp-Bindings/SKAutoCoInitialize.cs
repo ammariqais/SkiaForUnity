@@ -1,5 +1,8 @@
-﻿using System;
+﻿#nullable disable
+
+using System;
 using System.Runtime.InteropServices;
+using SkiaSharp.Internals;
 
 namespace SkiaSharp
 {

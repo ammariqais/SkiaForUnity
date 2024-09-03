@@ -1,0 +1,60 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="class_skia_sharp_1_1_unity_1_1_skottie_markers_1_1state" kind="class" language="C#" prot="public">
+    <compoundname>SkiaSharp::Unity::SkottieMarkers::state</compoundname>
+    <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="class_skia_sharp_1_1_unity_1_1_skottie_markers_1_1state_1a39c8ed008b2c9cd3e3ce433ef53d8dbe" prot="public" static="no" mutable="no">
+        <type>int</type>
+        <definition>int SkiaSharp.Unity.SkottieMarkers.state.tm</definition>
+        <argsstring></argsstring>
+        <name>tm</name>
+        <qualifiedname>SkiaSharp.Unity.SkottieMarkers.state.tm</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="models/markers.cs" line="7" column="24" bodyfile="models/markers.cs" bodystart="7" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="class_skia_sharp_1_1_unity_1_1_skottie_markers_1_1state_1ad7eb8daf1eaece1e2ad53805b8ce6dc5" prot="public" static="no" mutable="no">
+        <type>int</type>
+        <definition>int SkiaSharp.Unity.SkottieMarkers.state.dr</definition>
+        <argsstring></argsstring>
+        <name>dr</name>
+        <qualifiedname>SkiaSharp.Unity.SkottieMarkers.state.dr</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="models/markers.cs" line="8" column="24" bodyfile="models/markers.cs" bodystart="8" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="class_skia_sharp_1_1_unity_1_1_skottie_markers_1_1state_1a3d14ae376c6d102cfe81df1e0b07ecce" prot="public" static="no" mutable="no">
+        <type>string</type>
+        <definition>string SkiaSharp.Unity.SkottieMarkers.state.cm</definition>
+        <argsstring></argsstring>
+        <name>cm</name>
+        <qualifiedname>SkiaSharp.Unity.SkottieMarkers.state.cm</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="models/markers.cs" line="9" column="27" bodyfile="models/markers.cs" bodystart="9" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="models/markers.cs" line="6" column="15" bodyfile="models/markers.cs" bodystart="6" bodyend="10"/>
+    <listofallmembers>
+      <member refid="class_skia_sharp_1_1_unity_1_1_skottie_markers_1_1state_1a3d14ae376c6d102cfe81df1e0b07ecce" prot="public" virt="non-virtual"><scope>SkiaSharp::Unity::SkottieMarkers::state</scope><name>cm</name></member>
+      <member refid="class_skia_sharp_1_1_unity_1_1_skottie_markers_1_1state_1ad7eb8daf1eaece1e2ad53805b8ce6dc5" prot="public" virt="non-virtual"><scope>SkiaSharp::Unity::SkottieMarkers::state</scope><name>dr</name></member>
+      <member refid="class_skia_sharp_1_1_unity_1_1_skottie_markers_1_1state_1a39c8ed008b2c9cd3e3ce433ef53d8dbe" prot="public" virt="non-virtual"><scope>SkiaSharp::Unity::SkottieMarkers::state</scope><name>tm</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>
