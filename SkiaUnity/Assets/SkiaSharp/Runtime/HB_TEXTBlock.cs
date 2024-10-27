@@ -552,6 +552,18 @@ namespace SkiaSharp.Unity.HB {
 			urls.Clear();
 			RenderText();
 		}
+
+		public void RefreshFontFamily() {
+			if (font != null) {
+				var bytes = font.bytes;
+				SKData copy = SKData.CreateCopy(bytes);
+				skTypeface = SKTypeface.FromData(copy);
+				copy.Dispose();
+				if (skTypeface != null) {
+					rs.FontMapper = new FontMapper(skTypeface);
+				}
+			}
+		}
 		#endif
 
 		public string LinkPressed() {
