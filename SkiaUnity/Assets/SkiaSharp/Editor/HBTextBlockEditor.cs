@@ -1,12 +1,8 @@
 #if UNITY_EDITOR
-
-using System;
 using SkiaSharp.Unity.HB;
 using UnityEngine;
 using UnityEditor;
 using UnityEditor.SceneManagement;
-using Object = UnityEngine.Object;
-using TextAlignment = Topten.RichTextKit.TextAlignment;
 
 
 [CustomEditor(typeof(HB_TEXTBlock))]
