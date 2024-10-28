@@ -690,6 +690,19 @@ namespace Topten.RichTextKit
                                 return;
                         }
 
+                        if (Style.ShadowWidth > 0)
+                        {
+                            using (var shadowPaint = new SKPaint())
+                            {
+                                shadowPaint.Color = Style.ShadowColor;
+                                shadowPaint.TextSize = 48;
+                                shadowPaint.IsAntialias = true;
+                                shadowPaint.Style = SKPaintStyle.Fill;
+                                //shadowPaint.Typeface = skTypeface;
+                                ctx.Canvas.DrawText(_textBlob, Style.ShadowOffsetX, Style.ShadowOffsetY, shadowPaint);
+                            }
+                        }
+
                         // Paint underline
                         if (Style.Underline != UnderlineStyle.None && RunKind == FontRunKind.Normal)
                         {

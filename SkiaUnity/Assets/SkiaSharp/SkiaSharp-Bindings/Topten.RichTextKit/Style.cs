@@ -154,6 +154,16 @@ namespace Topten.RichTextKit
             }
         }
 
+        public SKColor ShadowColor
+        {
+            get => _shadowColor;
+            set
+            {
+                CheckNotSealed();
+                _shadowColor = value;
+            }
+        }
+
         /// <summary>
         /// Width of halo
         /// </summary>
@@ -164,6 +174,36 @@ namespace Topten.RichTextKit
             {
                 CheckNotSealed();
                 _haloWidth = value;
+            }
+        }
+
+        public float ShadowWidth
+        {
+            get => _shadowWidth;
+            set
+            {
+                CheckNotSealed();
+                _shadowWidth = value;
+            }
+        }
+
+        public float ShadowOffsetX
+        {
+            get => _shadowOffsetX;
+            set
+            {
+                CheckNotSealed();
+                _shadowOffsetX = value;
+            }
+        }
+
+        public float ShadowOffsetY
+        {
+            get => _shadowOffsetY;
+            set
+            {
+                CheckNotSealed();
+                _shadowOffsetY = value;
             }
         }
 
@@ -239,7 +279,11 @@ namespace Topten.RichTextKit
         SKColor _textColor = new SKColor(0xFF000000);
         SKColor _backgroundColor = SKColor.Empty;
         SKColor _haloColor = SKColor.Empty;
+        SKColor _shadowColor = SKColor.Empty;
         float _haloWidth = 0f;
+        float _shadowWidth;
+        float _shadowOffsetX;
+        float _shadowOffsetY;
         float _haloBlur = 0f;
         float _letterSpacing;
         FontVariant _fontVariant;

@@ -10,12 +10,14 @@ using TextAlignment = Topten.RichTextKit.TextAlignment;
 [CustomEditor(typeof(HB_TEXTBlock))]
 public class HBTextBlockEditor : Editor {
   private GUIStyle selectedStyle;
+
   private SerializedProperty fontSizeProperty, fontColorProperty, fontProperty,
-    italicProperty, boldProperty, haloColorProperty, haloWidthProperty, 
-    letterSpacingProperty, autoFitVerticalProperty, renderLinksProperty,
+    italicProperty, boldProperty, haloColorProperty,shadowColorProperty, haloWidthProperty,
+    shadowWidthProperty,shadowOffsetXProperty,shadowOffsetYProperty, letterSpacingProperty, autoFitVerticalProperty, renderLinksProperty,
     haloBlurProperty, backgroundColorProperty, underlineStyleProperty, lineHeightProperty,
     strikeThroughStyleProperty,textProperty, textAligmentProperty,colorTypeProperty, autoFitHorizontalProperty, maxWidthProperty, maxHeightProperty, gradiantColorsProperty
     ,gradiantPositionsProperty, enableGradiantProperty, gradiantAngleProperty, ellipsisProperty, maxLines, linkColorProperty;
+
   bool showHaloSettings = false;
   bool showMoreSettings = false;
 
@@ -33,7 +35,11 @@ public class HBTextBlockEditor : Editor {
     italicProperty = serializedObject.FindProperty("italic");
     boldProperty = serializedObject.FindProperty("bold");
     haloColorProperty = serializedObject.FindProperty("haloColor");
+    shadowColorProperty = serializedObject.FindProperty("shadowColor");
     haloWidthProperty = serializedObject.FindProperty("haloWidth");
+    shadowWidthProperty = serializedObject.FindProperty("shadowWidth");
+    shadowOffsetXProperty = serializedObject.FindProperty("shadowOffsetX");
+    shadowOffsetYProperty = serializedObject.FindProperty("shadowOffsetY");
     letterSpacingProperty = serializedObject.FindProperty("letterSpacing");
     autoFitVerticalProperty = serializedObject.FindProperty("autoFitVertical");
     autoFitHorizontalProperty = serializedObject.FindProperty("autoFitHorizontal");
@@ -126,6 +132,14 @@ public class HBTextBlockEditor : Editor {
       EditorGUILayout.PropertyField(haloWidthProperty);
       EditorGUILayout.PropertyField(haloColorProperty);
       EditorGUILayout.PropertyField(haloBlurProperty);
+      EditorGUILayout.PropertyField(shadowWidthProperty);
+      
+      if(shadowWidthProperty.intValue > 0){
+      EditorGUILayout.PropertyField(shadowOffsetXProperty);
+      EditorGUILayout.PropertyField(shadowOffsetYProperty);
+      EditorGUILayout.PropertyField(shadowColorProperty);
+      }
+      
       EditorGUILayout.EndVertical();
     }
     

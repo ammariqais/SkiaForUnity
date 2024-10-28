@@ -20,9 +20,11 @@ namespace SkiaSharp.Unity.HB {
 		[SerializeField]
 		public TextAsset font;
 		[SerializeField]
-		private int fontSize = 12, haloWidth, letterSpacing, haloBlur, maxLines;
+		private int fontSize = 12, haloWidth, shadowWidth, letterSpacing, haloBlur, maxLines;
 		[SerializeField]
-		private Color fontColor = Color.black, haloColor = Color.black, backgroundColor = Color.clear,linkColor = Color.blue;
+		float shadowOffsetX, shadowOffsetY = 1;
+		[SerializeField]
+		private Color fontColor = Color.black, haloColor = Color.black, shadowColor = Color.black, backgroundColor = Color.clear,linkColor = Color.blue;
 		[SerializeField]
 		private bool italic, bold, autoFitVertical = true, autoFitHorizontal, renderLinks, enableGradiant, enableEllipsis = true;
 		[SerializeField]
@@ -117,6 +119,16 @@ namespace SkiaSharp.Unity.HB {
 			}
 			set {
 				haloColor = value;
+				ReUpdate();
+			}
+		}
+
+		public Color ShadowColor {
+			get {
+				return shadowColor;
+			}
+			set {
+				shadowColor = value;
 				ReUpdate();
 			}
 		}
@@ -230,6 +242,16 @@ namespace SkiaSharp.Unity.HB {
 				ReUpdate();
 			}
 		}
+
+		public int ShadowWidth {
+			get {
+				return shadowWidth;
+			}
+			set {
+				shadowWidth = value;
+				ReUpdate();
+			}
+		}
 		
 		public int LetterSpacing {
 			get {
@@ -303,7 +325,9 @@ namespace SkiaSharp.Unity.HB {
 			styleBoldItalic.FontSize = fontSize;
 			styleBoldItalic.TextColor = new SKColor(ColorToUint(fontColor));
 			styleBoldItalic.HaloWidth = haloWidth;
+			styleBoldItalic.ShadowWidth = shadowWidth;
 			styleBoldItalic.HaloColor = haloWidth > 0 ? new SKColor(ColorToUint(haloColor)) : SKColor.Empty;
+			styleBoldItalic.ShadowColor = shadowWidth > 0 ? new SKColor(ColorToUint(shadowColor)) : SKColor.Empty;
 			styleBoldItalic.FontItalic = italic;
 			styleBoldItalic.FontWeight = bold ? 700 : 400;
 			styleBoldItalic.LetterSpacing = letterSpacing;
@@ -437,6 +461,8 @@ namespace SkiaSharp.Unity.HB {
 
 			surface = SKSurface.Create(info);
 			canvas = surface.Canvas;
+			canvas.Scale(1, -1);
+            canvas.Translate(0, -info.Height);
 			TextureFormat format = (info.ColorType == SKColorType.Rgba8888) ? TextureFormat.RGBA32 : info.ColorType == SKColorType.Alpha8 ? TextureFormat.Alpha8 : TextureFormat.RGBA32;
 			if (texture == null) {
 				texture = new Texture2D(roundedWidth, roundedHeight, format, false);
@@ -478,7 +504,9 @@ namespace SkiaSharp.Unity.HB {
 			TextColor = new SKColor(ColorToUint(linkColor)),
 			Underline = UnderlineStyle.Solid,
 			HaloWidth = haloWidth,
+			ShadowWidth = shadowWidth,
 			HaloColor = haloWidth > 0 ? new SKColor(ColorToUint(haloColor)) : SKColor.Empty,
+			ShadowColor = shadowWidth > 0 ? new SKColor(ColorToUint(shadowColor)) : SKColor.Empty,
 			FontItalic = italic,
 			FontWeight = bold ? 700 : 400,
 			LetterSpacing = letterSpacing,
@@ -539,7 +567,11 @@ namespace SkiaSharp.Unity.HB {
 			styleBoldItalic.FontSize = fontSize;
 			styleBoldItalic.TextColor = new SKColor(ColorToUint(fontColor));
 			styleBoldItalic.HaloWidth = haloWidth;
+			styleBoldItalic.ShadowWidth = shadowWidth;
+			styleBoldItalic.ShadowOffsetX = shadowOffsetX;
+			styleBoldItalic.ShadowOffsetY = shadowOffsetY;
 			styleBoldItalic.HaloColor = haloWidth > 0 ? new SKColor(ColorToUint(haloColor)) : SKColor.Empty;
+			styleBoldItalic.ShadowColor = shadowWidth > 0 ? new SKColor(ColorToUint(shadowColor)) : SKColor.Empty;
 			styleBoldItalic.FontItalic = italic;
 			styleBoldItalic.FontWeight = bold ? 700 : 400;
 			styleBoldItalic.LetterSpacing = letterSpacing;
