@@ -698,6 +698,7 @@ namespace Topten.RichTextKit
                                 shadowPaint.Style = SKPaintStyle.StrokeAndFill;
                                 shadowPaint.IsAntialias = true;
                                 shadowPaint.MaskFilter = SKMaskFilter.CreateBlur(SKBlurStyle.Normal, 12); // make shadow blurry not sharp
+                                shadowPaint.StrokeWidth = Style.ShadowWidth;
                                 ctx.Canvas.DrawText(_textBlob, Style.ShadowOffsetX, Style.ShadowOffsetY, shadowPaint);
                             }
                         }
@@ -805,7 +806,7 @@ namespace Topten.RichTextKit
                     {
                         innerGlowPaint.Color = Style.InnerGlowColor;
                         innerGlowPaint.Style = SKPaintStyle.Fill;
-                        innerGlowPaint.MaskFilter = SKMaskFilter.CreateBlur(SKBlurStyle.Normal, 12); // make shadow blurry not sharp
+                        innerGlowPaint.MaskFilter = SKMaskFilter.CreateBlur(SKBlurStyle.Normal, 12);
                         ctx.Canvas.DrawText(_textBlob, 0, 0, innerGlowPaint);
                     } 
                 }

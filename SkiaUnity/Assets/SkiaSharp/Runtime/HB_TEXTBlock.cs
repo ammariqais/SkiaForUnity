@@ -20,8 +20,18 @@ namespace SkiaSharp.Unity.HB {
 		[SerializeField]
 		public TextAsset font;
 		[SerializeField]
-		private int fontSize = 12, outlineWidth, shadowWidth, innerGlowWidth, letterSpacing, outlineBlur, maxLines;
+		private int fontSize = 12, letterSpacing, maxLines;
 		[SerializeField]
+		[Range (0,100)]
+		private int outlineWidth, outlineBlur;
+		[SerializeField]
+		[Range (0,10)]
+		private int shadowWidth;
+		[SerializeField]
+		[Range (0,1)]
+		private int innerGlowWidth = 0;
+		[SerializeField]
+		[Range (-100,100)]
 		float shadowOffsetX, shadowOffsetY = 1;
 		[SerializeField]
 		private Color fontColor = Color.black, outlineColor = Color.black, shadowColor = Color.black, innerGlowColor = Color.white, backgroundColor = Color.clear,linkColor = Color.blue;
@@ -721,5 +731,17 @@ namespace SkiaSharp.Unity.HB {
 		}
 		public float flexibleHeight { get; }
 		public int layoutPriority { get; }
+
+		public void RefreshFontFamily() {
+			if (font != null) {
+				var bytes = font.bytes;
+				SKData copy = SKData.CreateCopy(bytes);
+				skTypeface = SKTypeface.FromData(copy);
+				copy.Dispose();
+				if (skTypeface != null) {
+					rs.FontMapper = new FontMapper(skTypeface);
+				}
+			}
+		}
 	}
 }

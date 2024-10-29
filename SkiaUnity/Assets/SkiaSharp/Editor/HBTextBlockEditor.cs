@@ -18,9 +18,17 @@ public class HBTextBlockEditor : Editor {
     strikeThroughStyleProperty,textProperty, textAligmentProperty,colorTypeProperty, autoFitHorizontalProperty, maxWidthProperty, maxHeightProperty, gradiantColorsProperty
     ,gradiantPositionsProperty, enableGradiantProperty, gradiantAngleProperty, ellipsisProperty, maxLines, linkColorProperty;
 
-  bool showHaloSettings = false;
-  bool showMoreSettings = false;
-  bool showInnerGlowSettings = false;
+  private bool showHaloSettings = true;
+  private bool showMoreSettings;
+  private bool showInnerGlowSettings = true;
+  private bool showDropShadowSettings = true;
+  
+  private bool showAdvanceStyleSettings;
+  private bool showExtraSettings;
+  private bool showBasicFontSettings;
+  private bool showAdvanceFontSettings;
+  
+  private string currentFontFace = null;
 
   private void OnEnable(){
     selectedStyle = new GUIStyle();
@@ -64,70 +72,51 @@ public class HBTextBlockEditor : Editor {
     gradiantAngleProperty = serializedObject.FindProperty("gradiantAngle");
     maxLines = serializedObject.FindProperty("maxLines");
     linkColorProperty = serializedObject.FindProperty("linkColor");
+
+    if (fontProperty.propertyType == SerializedPropertyType.ObjectReference && fontProperty.objectReferenceValue != null) {
+      currentFontFace = AssetDatabase.GetAssetPath(fontProperty.objectReferenceValue);
+    }
   }
-  public override void OnInspectorGUI(){
-    HB_TEXTBlock script = (HB_TEXTBlock)target;
-    GUIStyle largeLabelStyle = new GUIStyle(GUI.skin.label);
-    largeLabelStyle.fontSize = 12; // Adjust the font size as needed
-    largeLabelStyle.fontStyle = FontStyle.Bold;
-    //script.text = EditorGUILayout.TextArea(script.text, GUILayout.Height(100));
-    //textProperty.stringValue = script.text;
+
+  public override void OnInspectorGUI() {
+    var script = (HB_TEXTBlock)target;
+    var largeLabelStyle = new GUIStyle(GUI.skin.label) {
+      fontSize = 12, // Adjust the font size as needed
+      fontStyle = FontStyle.Bold
+    };
+
     EditorGUILayout.PropertyField(textProperty);
-    EditorGUILayout.PropertyField(colorTypeProperty);
+    showBasicFontSettings = EditorGUILayout.Foldout(showBasicFontSettings, "Font Settings", CreateTitleStyle());
+    
+    if (showBasicFontSettings) {
+      EditorGUILayout.BeginVertical("box");
+      EditorGUILayout.PropertyField(fontColorProperty);
+      EditorGUILayout.PropertyField(fontProperty);
+      EditorGUILayout.PropertyField(fontSizeProperty);
+      EditorGUILayout.PropertyField(textAligmentProperty);
+      
+      GUILayout.Label("Font Style:", largeLabelStyle);   
+      EditorGUILayout.BeginHorizontal();
+      var position = EditorGUILayout.GetControlRect();
+      EditorGUI.LabelField(position, "Italic");
+      position.x += EditorGUIUtility.labelWidth;
+      position.width = 100f;
+      italicProperty.boolValue = EditorGUI.Toggle(position, italicProperty.boolValue);
 
-    // Display the fontSize field using the serialized property
-    EditorGUILayout.PropertyField(fontProperty);
-    EditorGUILayout.PropertyField(fontSizeProperty);
-    EditorGUILayout.PropertyField(fontColorProperty);
-    GUILayout.Label("Font Style:", largeLabelStyle);   
-    EditorGUILayout.BeginHorizontal();
-        
-    Rect position = EditorGUILayout.GetControlRect();
-    EditorGUI.LabelField(position, "Italic");
-    position.x += EditorGUIUtility.labelWidth;
-    position.width = 100f;
-    italicProperty.boolValue = EditorGUI.Toggle(position, italicProperty.boolValue);
-
-    position = EditorGUILayout.GetControlRect();
-    EditorGUI.LabelField(position, "Bold");
-    position.x += EditorGUIUtility.labelWidth;
-    position.width = 100f;
-    boldProperty.boolValue = EditorGUI.Toggle(position, boldProperty.boolValue);
-
-    EditorGUILayout.EndHorizontal();
-    GUILayout.Label("Max Lines (0 for no limitation!):",largeLabelStyle);
-    EditorGUILayout.PropertyField(maxLines);
-    GUILayout.Label("Text Alignment:",largeLabelStyle);
-    EditorGUILayout.PropertyField(textAligmentProperty);
-    GUILayout.Label("Enable Ellipsis :",largeLabelStyle);
-    EditorGUILayout.PropertyField(ellipsisProperty);
-
-    EditorGUILayout.PropertyField(letterSpacingProperty);
-    EditorGUILayout.PropertyField(autoFitVerticalProperty);
-    if (script.AutoFitVertical) {
-      GUILayout.Label("keep it -1 for no limitation!",largeLabelStyle);
-      EditorGUILayout.PropertyField(maxHeightProperty);
-    }
-    EditorGUILayout.PropertyField(autoFitHorizontalProperty);
-    if (script.AutoFitHorizontal) {
-      EditorGUILayout.PropertyField(maxWidthProperty);
+      position = EditorGUILayout.GetControlRect();
+      EditorGUI.LabelField(position, "Bold");
+      position.x += EditorGUIUtility.labelWidth;
+      position.width = 100f;
+      boldProperty.boolValue = EditorGUI.Toggle(position, boldProperty.boolValue);
+      EditorGUILayout.EndHorizontal();
+      EditorGUILayout.EndVertical();
     }
     
-    EditorGUILayout.PropertyField(enableGradiantProperty);
-    if (script.IsGradiantEnabled) {
-      EditorGUILayout.PropertyField(gradiantColorsProperty);
-      EditorGUILayout.PropertyField(gradiantPositionsProperty);
-      EditorGUILayout.PropertyField(gradiantAngleProperty);
-    }
-    
-    EditorGUILayout.PropertyField(renderLinksProperty);
+    showAdvanceStyleSettings = EditorGUILayout.Foldout(showAdvanceStyleSettings, "Font Style", CreateTitleStyle());
+    if (showAdvanceStyleSettings) {
+      EditorGUILayout.BeginVertical("box");
 
-    if (script.RenderLinks) {
-      EditorGUILayout.PropertyField(linkColorProperty);
-    }
-    
-    
-    showHaloSettings = EditorGUILayout.Foldout(showHaloSettings, "Outline", CreateTitleStyle());
+      showHaloSettings = EditorGUILayout.Foldout(showHaloSettings, "Outline", CreateTitleStyle());
 
     if (showHaloSettings)
     {
@@ -135,14 +124,6 @@ public class HBTextBlockEditor : Editor {
       EditorGUILayout.PropertyField(haloWidthProperty);
       EditorGUILayout.PropertyField(haloColorProperty);
       EditorGUILayout.PropertyField(haloBlurProperty);
-      EditorGUILayout.PropertyField(shadowWidthProperty);
-      
-      if(shadowWidthProperty.intValue > 0){
-      EditorGUILayout.PropertyField(shadowOffsetXProperty);
-      EditorGUILayout.PropertyField(shadowOffsetYProperty);
-      EditorGUILayout.PropertyField(shadowColorProperty);
-      }
-      
       EditorGUILayout.EndVertical();
     }
 
@@ -153,16 +134,37 @@ public class HBTextBlockEditor : Editor {
       EditorGUILayout.BeginVertical("box");
       EditorGUILayout.PropertyField(innerGlowWidthProperty);
       if(innerGlowWidthProperty.intValue > 0){
-      EditorGUILayout.PropertyField(innerGlowColorProperty);
+        EditorGUILayout.PropertyField(innerGlowColorProperty);
       }
-      
       EditorGUILayout.EndVertical();
     }
 
-    showMoreSettings = EditorGUILayout.Foldout(showMoreSettings, "More Settings", CreateTitleStyle());
-
-    if (showMoreSettings)
+    showDropShadowSettings = EditorGUILayout.Foldout(showDropShadowSettings, "Drop Shadow", CreateTitleStyle());
+    
+    if (showDropShadowSettings)
     {
+      EditorGUILayout.BeginVertical("box");
+      EditorGUILayout.PropertyField(shadowWidthProperty);
+      if(shadowWidthProperty.intValue > 0){
+        EditorGUILayout.PropertyField(shadowColorProperty);
+        EditorGUILayout.PropertyField(shadowOffsetXProperty);
+        EditorGUILayout.PropertyField(shadowOffsetYProperty);
+      }
+      EditorGUILayout.EndVertical();
+    }
+    
+    EditorGUILayout.PropertyField(enableGradiantProperty);
+      
+      if (script.IsGradiantEnabled) {
+        EditorGUILayout.PropertyField(gradiantColorsProperty);
+        EditorGUILayout.PropertyField(gradiantPositionsProperty);
+        EditorGUILayout.PropertyField(gradiantAngleProperty);
+      }
+      EditorGUILayout.EndVertical();
+    }
+
+    showExtraSettings = EditorGUILayout.Foldout(showExtraSettings, "Extra Settings", CreateTitleStyle());
+    if (showExtraSettings) {
       EditorGUILayout.BeginVertical("box");
       EditorGUILayout.PropertyField(backgroundColorProperty);
       EditorGUILayout.PropertyField(underlineStyleProperty);
@@ -171,7 +173,43 @@ public class HBTextBlockEditor : Editor {
       EditorGUILayout.EndVertical();
     }
 
+    showAdvanceFontSettings = EditorGUILayout.Foldout(showAdvanceFontSettings, "Advanced Font Settings", CreateTitleStyle());
+    if (showAdvanceFontSettings) {
+      EditorGUILayout.BeginVertical("box");
+      GUILayout.Label("Max Lines (0 for no limitation!):", largeLabelStyle);
+      EditorGUILayout.PropertyField(maxLines);
+      EditorGUILayout.PropertyField(colorTypeProperty);
+      GUILayout.Label("Enable Ellipsis :", largeLabelStyle);
+      EditorGUILayout.PropertyField(ellipsisProperty);
+      EditorGUILayout.PropertyField(letterSpacingProperty);
+      EditorGUILayout.PropertyField(autoFitVerticalProperty);
+      
+      if (script.AutoFitVertical) {
+        GUILayout.Label("keep it -1 for no limitation!", largeLabelStyle);
+        EditorGUILayout.PropertyField(maxHeightProperty);
+      }
+
+      EditorGUILayout.PropertyField(autoFitHorizontalProperty);
+      if (script.AutoFitHorizontal) {
+        EditorGUILayout.PropertyField(maxWidthProperty);
+      }
+      
+      EditorGUILayout.PropertyField(renderLinksProperty);
+      if (script.RenderLinks) {
+        EditorGUILayout.PropertyField(linkColorProperty);
+      }
+      EditorGUILayout.EndVertical();
+    }
+
     serializedObject.ApplyModifiedProperties();
+    if (fontProperty.propertyType == SerializedPropertyType.ObjectReference && fontProperty.objectReferenceValue != null) {
+      var assetPath = AssetDatabase.GetAssetPath(fontProperty.objectReferenceValue);
+      if (assetPath != currentFontFace) {
+        currentFontFace = assetPath;
+        script.RefreshFontFamily();
+      }
+    }
+    
     if (!EditorApplication.isPlayingOrWillChangePlaymode) {
       script.ReUpdateEditMode();
     }
