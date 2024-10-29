@@ -23,7 +23,7 @@ public class HBTextBlockEditor : Editor {
   private bool showInnerGlowSettings = true;
   private bool showDropShadowSettings = true;
   
-  private bool showAdvanceStyleSettings;
+  private bool showAdvanceStyleSettings = true;
   private bool showExtraSettings;
   private bool showBasicFontSettings;
   private bool showAdvanceFontSettings;
@@ -122,8 +122,10 @@ public class HBTextBlockEditor : Editor {
     {
       EditorGUILayout.BeginVertical("box");
       EditorGUILayout.PropertyField(haloWidthProperty);
+      if(haloWidthProperty.intValue > 0){
       EditorGUILayout.PropertyField(haloColorProperty);
       EditorGUILayout.PropertyField(haloBlurProperty);
+      }
       EditorGUILayout.EndVertical();
     }
 
