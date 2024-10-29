@@ -695,10 +695,9 @@ namespace Topten.RichTextKit
                             using (var shadowPaint = new SKPaint())
                             {
                                 shadowPaint.Color = Style.ShadowColor;
-                                shadowPaint.TextSize = 48;
+                                shadowPaint.Style = SKPaintStyle.StrokeAndFill;
                                 shadowPaint.IsAntialias = true;
-                                shadowPaint.Style = SKPaintStyle.Fill;
-                                //shadowPaint.Typeface = skTypeface;
+                                shadowPaint.MaskFilter = SKMaskFilter.CreateBlur(SKBlurStyle.Normal, 10); // make shadow blurry not sharp
                                 ctx.Canvas.DrawText(_textBlob, Style.ShadowOffsetX, Style.ShadowOffsetY, shadowPaint);
                             }
                         }
@@ -799,6 +798,19 @@ namespace Topten.RichTextKit
                     float strikeYPos = Line.YCoord + Line.BaseLine + (_font.Metrics.StrikeoutPosition ?? 0) + glyphVOffset;
                     ctx.Canvas.DrawLine(new SKPoint(XCoord, strikeYPos), new SKPoint(XCoord + Width, strikeYPos), paint);
                 }
+
+                //if (Style.ShadowWidth > 0)
+                //{
+                    using (var innerGlowPaint = new SKPaint())
+                    {
+                        innerGlowPaint.Color = Style.ShadowColor;
+                        innerGlowPaint.Style = SKPaintStyle.Fill;
+                        innerGlowPaint.MaskFilter = SKMaskFilter.CreateBlur(SKBlurStyle.Normal, 12); // make shadow blurry not sharp
+                        ctx.Canvas.Save();
+                        ctx.Canvas.DrawText(_textBlob, 0, 0, innerGlowPaint);
+                    } 
+                //}
+                
             }
         }
         

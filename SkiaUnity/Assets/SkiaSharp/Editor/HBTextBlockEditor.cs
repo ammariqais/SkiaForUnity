@@ -34,9 +34,9 @@ public class HBTextBlockEditor : Editor {
     fontProperty = serializedObject.FindProperty("font");
     italicProperty = serializedObject.FindProperty("italic");
     boldProperty = serializedObject.FindProperty("bold");
-    haloColorProperty = serializedObject.FindProperty("haloColor");
+    haloColorProperty = serializedObject.FindProperty("outlineColor");
     shadowColorProperty = serializedObject.FindProperty("shadowColor");
-    haloWidthProperty = serializedObject.FindProperty("haloWidth");
+    haloWidthProperty = serializedObject.FindProperty("outlineWidth");
     shadowWidthProperty = serializedObject.FindProperty("shadowWidth");
     shadowOffsetXProperty = serializedObject.FindProperty("shadowOffsetX");
     shadowOffsetYProperty = serializedObject.FindProperty("shadowOffsetY");
