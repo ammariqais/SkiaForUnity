@@ -13,13 +13,14 @@ public class HBTextBlockEditor : Editor {
 
   private SerializedProperty fontSizeProperty, fontColorProperty, fontProperty,
     italicProperty, boldProperty, haloColorProperty,shadowColorProperty, haloWidthProperty,
-    shadowWidthProperty,shadowOffsetXProperty,shadowOffsetYProperty, letterSpacingProperty, autoFitVerticalProperty, renderLinksProperty,
+    shadowWidthProperty,shadowOffsetXProperty,shadowOffsetYProperty,innerGlowColorProperty, innerGlowWidthProperty, letterSpacingProperty, autoFitVerticalProperty, renderLinksProperty,
     haloBlurProperty, backgroundColorProperty, underlineStyleProperty, lineHeightProperty,
     strikeThroughStyleProperty,textProperty, textAligmentProperty,colorTypeProperty, autoFitHorizontalProperty, maxWidthProperty, maxHeightProperty, gradiantColorsProperty
     ,gradiantPositionsProperty, enableGradiantProperty, gradiantAngleProperty, ellipsisProperty, maxLines, linkColorProperty;
 
   bool showHaloSettings = false;
   bool showMoreSettings = false;
+  bool showInnerGlowSettings = false;
 
   private void OnEnable(){
     selectedStyle = new GUIStyle();
@@ -40,13 +41,15 @@ public class HBTextBlockEditor : Editor {
     shadowWidthProperty = serializedObject.FindProperty("shadowWidth");
     shadowOffsetXProperty = serializedObject.FindProperty("shadowOffsetX");
     shadowOffsetYProperty = serializedObject.FindProperty("shadowOffsetY");
+    innerGlowColorProperty = serializedObject.FindProperty("innerGlowColor");
+    innerGlowWidthProperty = serializedObject.FindProperty("innerGlowWidth");
     letterSpacingProperty = serializedObject.FindProperty("letterSpacing");
     autoFitVerticalProperty = serializedObject.FindProperty("autoFitVertical");
     autoFitHorizontalProperty = serializedObject.FindProperty("autoFitHorizontal");
     maxWidthProperty = serializedObject.FindProperty("maxWidth");
     maxHeightProperty = serializedObject.FindProperty("maxHeight");
     renderLinksProperty = serializedObject.FindProperty("renderLinks");
-    haloBlurProperty =  serializedObject.FindProperty("haloBlur");
+    haloBlurProperty =  serializedObject.FindProperty("outlineBlur");
     backgroundColorProperty = serializedObject.FindProperty("backgroundColor");
     underlineStyleProperty = serializedObject.FindProperty("underlineStyle");
     lineHeightProperty = serializedObject.FindProperty("lineHeight");
@@ -124,7 +127,7 @@ public class HBTextBlockEditor : Editor {
     }
     
     
-    showHaloSettings = EditorGUILayout.Foldout(showHaloSettings, "Halo Settings", CreateTitleStyle());
+    showHaloSettings = EditorGUILayout.Foldout(showHaloSettings, "Outline", CreateTitleStyle());
 
     if (showHaloSettings)
     {
@@ -142,7 +145,20 @@ public class HBTextBlockEditor : Editor {
       
       EditorGUILayout.EndVertical();
     }
+
+    showInnerGlowSettings = EditorGUILayout.Foldout(showInnerGlowSettings, "Inner Glow", CreateTitleStyle());
     
+    if (showInnerGlowSettings)
+    {
+      EditorGUILayout.BeginVertical("box");
+      EditorGUILayout.PropertyField(innerGlowWidthProperty);
+      if(innerGlowWidthProperty.intValue > 0){
+      EditorGUILayout.PropertyField(innerGlowColorProperty);
+      }
+      
+      EditorGUILayout.EndVertical();
+    }
+
     showMoreSettings = EditorGUILayout.Foldout(showMoreSettings, "More Settings", CreateTitleStyle());
 
     if (showMoreSettings)

@@ -83,6 +83,7 @@ namespace Topten.RichTextKit
         /// </summary>
         SKColor HaloColor { get; }
         SKColor ShadowColor { get; }
+        SKColor InnerGlowColor { get; }
 
         /// <summary>
         /// Width of halo
@@ -94,6 +95,7 @@ namespace Topten.RichTextKit
         float ShadowOffsetX { get; }
 
         float ShadowOffsetY { get; }
+        float InnerGlowWidth { get; }
 
         /// <summary>
         /// Blur of halo
