@@ -1288,6 +1288,36 @@ namespace Topten.RichTextKit
             }
         }
 
+        class ShadowColorItem : Item
+        {
+            public ShadowColorItem(SKColor value)
+            {
+                _value = value;
+            }
+
+            SKColor _value;
+
+            public override void Build(BuildContext ctx)
+            {
+                ctx.StyleManager.ShadowColor(_value);
+            }
+        }
+
+        class InnerGlowColorItem : Item
+        {
+            public InnerGlowColorItem(SKColor value)
+            {
+                _value = value;
+            }
+
+            SKColor _value;
+
+            public override void Build(BuildContext ctx)
+            {
+                ctx.StyleManager.InnerGlowColor(_value);
+            }
+        }
+
         class HaloWidthItem : Item
         {
             public HaloWidthItem(float value)
@@ -1300,6 +1330,66 @@ namespace Topten.RichTextKit
             public override void Build(BuildContext ctx)
             {
                 ctx.StyleManager.HaloWidth(_value);
+            }
+        }
+
+        class ShadowWidthItem : Item
+        {
+            public ShadowWidthItem(float value)
+            {
+                _value = value;
+            }
+
+            float _value;
+
+            public override void Build(BuildContext ctx)
+            {
+                ctx.StyleManager.ShadowWidth(_value);
+            }
+        }
+
+        class InnerGlowWidthItem : Item
+        {
+            public InnerGlowWidthItem(float value)
+            {
+                _value = value;
+            }
+
+            float _value;
+
+            public override void Build(BuildContext ctx)
+            {
+                ctx.StyleManager.InnerGlowWidth(_value);
+            }
+        }
+
+        class ShadowOffsetXItem : Item
+        {
+            public ShadowOffsetXItem(float value)
+            {
+                _value = value;
+            }
+
+            float _value;
+
+            public override void Build(BuildContext ctx)
+            {
+                ctx.StyleManager.ShadowOffsetX(_value);
+            }
+        }
+
+        class ShadowOffsetYItem : Item
+        {
+            public ShadowOffsetYItem(float value)
+            {
+                _value = value;
+            }
+
+            float _value;
+
+            public override void Build(BuildContext ctx)
+            {
+                ctx.StyleManager.ShadowOffsetY(_value);
             }
         }
 

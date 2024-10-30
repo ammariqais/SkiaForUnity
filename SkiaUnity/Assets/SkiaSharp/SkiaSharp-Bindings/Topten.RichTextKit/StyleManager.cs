@@ -82,7 +82,7 @@ namespace Topten.RichTextKit
 
             return Update(value.FontFamily, value.FontSize, value.FontWeight, value.FontWidth, value.FontItalic,
                             value.Underline, value.StrikeThrough, value.LineHeight, value.TextColor, value.BackgroundColor,
-                            value.HaloColor, value.HaloWidth, value.HaloBlur,
+                            value.HaloColor,value.ShadowColor,value.InnerGlowColor, value.HaloWidth, value.ShadowWidth, value.ShadowOffsetX, value.ShadowOffsetY,value.InnerGlowWidth, value.HaloBlur,
                             value.LetterSpacing, value.FontVariant, value.TextDirection, value.ReplacementCharacter);
         }
 
@@ -211,6 +211,49 @@ namespace Topten.RichTextKit
         public IStyle HaloBlur(float haloBlur) => Update(haloBlur: haloBlur);
 
         /// <summary>
+        /// Changes the shadow Width and returns an updated IStyle
+        /// </summary>
+        /// <param name="shadowWidth">The new halo width</param>
+        /// <returns>An IStyle for the new style</returns>
+        public IStyle ShadowWidth(float shadowWidth) => Update(shadowWidth: shadowWidth);
+
+        /// <summary>
+        /// Changes theshadowOffsetX and returns an updated IStyle
+        /// </summary>
+        /// <param name="shadowOffsetX">The new halo width</param>
+        /// <returns>An IStyle for the new style</returns>
+        public IStyle ShadowOffsetX(float shadowOffsetX) => Update(shadowOffsetX: shadowOffsetX);
+
+        /// <summary>
+        /// Changes the ShadowOffsetY and returns an updated IStyle
+        /// </summary>
+        /// <param name="shadowOffsetY">The new halo width</param>
+        /// <returns>An IStyle for the new style</returns>
+        public IStyle ShadowOffsetY(float shadowOffsetY) => Update(shadowOffsetY: shadowOffsetY);
+
+        /// <summary>
+        /// Changes the halo blur width and returns an updated IStyle
+        /// </summary>
+        /// <param name="shadowColor">Shadow color</param>
+        /// <returns>An IStyle for the new style</returns>
+        public IStyle ShadowColor(SKColor shadowColor) => Update(shadowColor: shadowColor);
+
+        /// <summary>
+        /// Changes the halo blur width and returns an updated IStyle
+        /// </summary>
+        /// <param name="innerGlowColor">innerGlowColor</param>
+        /// <returns>An IStyle for the new style</returns>
+        public IStyle InnerGlowColor(SKColor innerGlowColor) => Update(innerGlowColor: innerGlowColor);
+
+        /// <summary>
+        /// Changes the halo blur width and returns an updated IStyle
+        /// </summary>
+        /// <param name="innerGlowWidth">innerGlowWidth</param>
+        /// <returns>An IStyle for the new style</returns>
+        public IStyle InnerGlowWidth(float innerGlowWidth) => Update(innerGlowWidth: innerGlowWidth);
+
+
+        /// <summary>
         /// Changes the character spacing and returns an updated IStyle
         /// </summary>
         /// <param name="letterSpacing">The new character spacing</param>
@@ -273,7 +316,13 @@ namespace Topten.RichTextKit
                SKColor? textColor = null,
                SKColor? backgroundColor = null,
                SKColor? haloColor = null,
+               SKColor? shadowColor = null,
+               SKColor? innerGlowColor = null,
                float? haloWidth = null,
+               float? shadowWidth = null,
+               float? shadowOffsetX = null,
+               float? shadowOffsetY = null,
+               float? innerGlowWidth = null,
                float? haloBlur = null,
                float? letterSpacing = null,
                FontVariant? fontVariant = null,
@@ -294,6 +343,12 @@ namespace Topten.RichTextKit
             var rBackgroundColor = backgroundColor ?? _currentStyle.BackgroundColor;
             var rHaloColor = haloColor ?? _currentStyle.HaloColor;
             var rHaloWidth = haloWidth ?? _currentStyle.HaloWidth;
+            var rShadowColor = shadowColor ?? _currentStyle.ShadowColor;
+            var rInnerGlowColor = innerGlowColor ?? _currentStyle.InnerGlowColor;
+            var rShadowWidth = shadowWidth ?? _currentStyle.ShadowWidth;
+            var rShadowOffsetX = shadowOffsetX ?? _currentStyle.ShadowOffsetX;
+            var rShadowOffsetY = shadowOffsetY ?? _currentStyle.ShadowOffsetY;
+            var rInnerGlowWidth = innerGlowWidth ?? _currentStyle.InnerGlowWidth;
             var rHaloBlur = haloBlur ?? _currentStyle.HaloBlur;
             var rLetterSpacing = letterSpacing ?? _currentStyle.LetterSpacing;
             var rFontVariant = fontVariant ?? _currentStyle.FontVariant;
@@ -323,6 +378,12 @@ namespace Topten.RichTextKit
                     HaloColor = rHaloColor,
                     HaloWidth = rHaloWidth,
                     HaloBlur = rHaloBlur,
+                    ShadowWidth = rShadowWidth,
+                    ShadowColor = rShadowColor,
+                    InnerGlowColor = rInnerGlowColor,
+                    ShadowOffsetX = rShadowOffsetX,
+                    ShadowOffsetY = rShadowOffsetY,
+                    InnerGlowWidth = rInnerGlowWidth,
                     LetterSpacing = rLetterSpacing,
                     FontVariant = rFontVariant,
                     TextDirection = rTextDirection,

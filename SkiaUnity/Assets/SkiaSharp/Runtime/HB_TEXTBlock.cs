@@ -20,9 +20,21 @@ namespace SkiaSharp.Unity.HB {
 		[SerializeField]
 		public TextAsset font;
 		[SerializeField]
-		private int fontSize = 12, haloWidth, letterSpacing, haloBlur, maxLines;
+		private int fontSize = 12, letterSpacing, maxLines;
 		[SerializeField]
-		private Color fontColor = Color.black, haloColor = Color.black, backgroundColor = Color.clear,linkColor = Color.blue;
+		[Range (0,100)]
+		private int outlineWidth, outlineBlur;
+		[SerializeField]
+		[Range (0,10)]
+		private int shadowWidth;
+		[SerializeField]
+		[Range (0,1)]
+		private int innerGlowWidth = 0;
+		[SerializeField]
+		[Range (-100,100)]
+		float shadowOffsetX, shadowOffsetY = 1;
+		[SerializeField]
+		private Color fontColor = Color.black, outlineColor = Color.black, shadowColor = Color.black, innerGlowColor = Color.white, backgroundColor = Color.clear,linkColor = Color.blue;
 		[SerializeField]
 		private bool italic, bold, autoFitVertical = true, autoFitHorizontal, renderLinks, enableGradiant, enableEllipsis = true;
 		[SerializeField]
@@ -113,10 +125,30 @@ namespace SkiaSharp.Unity.HB {
 		
 		public Color HaloColor {
 			get {
-				return haloColor;
+				return outlineColor;
 			}
 			set {
-				haloColor = value;
+				outlineColor = value;
+				ReUpdate();
+			}
+		}
+
+		public Color ShadowColor {
+			get {
+				return shadowColor;
+			}
+			set {
+				shadowColor = value;
+				ReUpdate();
+			}
+		}
+
+		public Color InnerGlowColor {
+			get {
+				return innerGlowColor;
+			}
+			set {
+				innerGlowColor = value;
 				ReUpdate();
 			}
 		}
@@ -223,10 +255,30 @@ namespace SkiaSharp.Unity.HB {
 		
 		public int HaloWidth {
 			get {
-				return haloWidth;
+				return outlineWidth;
 			}
 			set {
-				haloWidth = value;
+				outlineWidth = value;
+				ReUpdate();
+			}
+		}
+
+		public int ShadowWidth {
+			get {
+				return shadowWidth;
+			}
+			set {
+				shadowWidth = value;
+				ReUpdate();
+			}
+		}
+
+		public int InnerGlowWidth {
+			get {
+				return innerGlowWidth;
+			}
+			set {
+				innerGlowWidth = value;
 				ReUpdate();
 			}
 		}
@@ -243,10 +295,10 @@ namespace SkiaSharp.Unity.HB {
 		
 		public int HaloBlur {
 			get {
-				return haloBlur;
+				return outlineBlur;
 			}
 			set {
-				haloBlur = value;
+				outlineBlur = value;
 				ReUpdate();
 			}
 		}
@@ -302,18 +354,24 @@ namespace SkiaSharp.Unity.HB {
 			
 			styleBoldItalic.FontSize = fontSize;
 			styleBoldItalic.TextColor = new SKColor(ColorToUint(fontColor));
-			styleBoldItalic.HaloWidth = haloWidth;
-			styleBoldItalic.HaloColor = haloWidth > 0 ? new SKColor(ColorToUint(haloColor)) : SKColor.Empty;
+			styleBoldItalic.HaloWidth = outlineWidth;
+			styleBoldItalic.ShadowWidth = shadowWidth;
+			styleBoldItalic.HaloColor = outlineWidth > 0 ? new SKColor(ColorToUint(outlineColor)) : SKColor.Empty;
+			styleBoldItalic.ShadowColor = shadowWidth > 0 ? new SKColor(ColorToUint(shadowColor)) : SKColor.Empty;
+			styleBoldItalic.ShadowOffsetX = shadowOffsetX;
+			styleBoldItalic.ShadowOffsetY = shadowOffsetY;
+			styleBoldItalic.InnerGlowWidth = innerGlowWidth;
+			styleBoldItalic.InnerGlowColor = innerGlowWidth > 0 ? new SKColor(ColorToUint(innerGlowColor)) : SKColor.Empty;
+			
 			styleBoldItalic.FontItalic = italic;
 			styleBoldItalic.FontWeight = bold ? 700 : 400;
 			styleBoldItalic.LetterSpacing = letterSpacing;
 			styleBoldItalic.TextDirection = TextDirection.Auto;
-			styleBoldItalic.HaloBlur = haloBlur;
+			styleBoldItalic.HaloBlur = outlineBlur;
 			styleBoldItalic.BackgroundColor = backgroundColor.a > 0 ? new SKColor(ColorToUint(backgroundColor)) : SKColors.Empty;
 			styleBoldItalic.Underline = underlineStyle;
 			styleBoldItalic.LineHeight = lineHeight;
 			styleBoldItalic.StrikeThrough = strikeThroughStyle;
-		
 		}
 
 		private void OnEnable() {
@@ -437,6 +495,8 @@ namespace SkiaSharp.Unity.HB {
 
 			surface = SKSurface.Create(info);
 			canvas = surface.Canvas;
+			canvas.Scale(1, -1);
+            canvas.Translate(0, -info.Height);
 			TextureFormat format = (info.ColorType == SKColorType.Rgba8888) ? TextureFormat.RGBA32 : info.ColorType == SKColorType.Alpha8 ? TextureFormat.Alpha8 : TextureFormat.RGBA32;
 			if (texture == null) {
 				texture = new Texture2D(roundedWidth, roundedHeight, format, false);
@@ -477,13 +537,17 @@ namespace SkiaSharp.Unity.HB {
 			FontSize = fontSize,
 			TextColor = new SKColor(ColorToUint(linkColor)),
 			Underline = UnderlineStyle.Solid,
-			HaloWidth = haloWidth,
-			HaloColor = haloWidth > 0 ? new SKColor(ColorToUint(haloColor)) : SKColor.Empty,
+			HaloWidth = outlineWidth,
+			ShadowWidth = shadowWidth,
+			HaloColor = outlineWidth > 0 ? new SKColor(ColorToUint(outlineColor)) : SKColor.Empty,
+			ShadowColor = shadowWidth > 0 ? new SKColor(ColorToUint(shadowColor)) : SKColor.Empty,
+			InnerGlowColor = innerGlowWidth > 0 ? new SKColor(ColorToUint(innerGlowColor)) : SKColor.Empty,
+			InnerGlowWidth = innerGlowWidth,
 			FontItalic = italic,
 			FontWeight = bold ? 700 : 400,
 			LetterSpacing = letterSpacing,
 			TextDirection = TextDirection.Auto,
-			HaloBlur = haloBlur,
+			HaloBlur = outlineBlur,
 			BackgroundColor = backgroundColor.a > 0 ? new SKColor(ColorToUint(backgroundColor)) : SKColors.Empty,
 			LineHeight = lineHeight,
 			StrikeThrough = strikeThroughStyle,
@@ -538,13 +602,19 @@ namespace SkiaSharp.Unity.HB {
 
 			styleBoldItalic.FontSize = fontSize;
 			styleBoldItalic.TextColor = new SKColor(ColorToUint(fontColor));
-			styleBoldItalic.HaloWidth = haloWidth;
-			styleBoldItalic.HaloColor = haloWidth > 0 ? new SKColor(ColorToUint(haloColor)) : SKColor.Empty;
+			styleBoldItalic.HaloWidth = outlineWidth;
+			styleBoldItalic.ShadowWidth = shadowWidth;
+			styleBoldItalic.ShadowOffsetX = shadowOffsetX;
+			styleBoldItalic.ShadowOffsetY = shadowOffsetY;
+			styleBoldItalic.HaloColor = outlineWidth > 0 ? new SKColor(ColorToUint(outlineColor)) : SKColor.Empty;
+			styleBoldItalic.ShadowColor = shadowWidth > 0 ? new SKColor(ColorToUint(shadowColor)) : SKColor.Empty;
+			styleBoldItalic.InnerGlowColor = innerGlowWidth > 0 ? new SKColor(ColorToUint(innerGlowColor)) : SKColor.Empty;
+			styleBoldItalic.InnerGlowWidth = innerGlowWidth;
 			styleBoldItalic.FontItalic = italic;
 			styleBoldItalic.FontWeight = bold ? 700 : 400;
 			styleBoldItalic.LetterSpacing = letterSpacing;
 			styleBoldItalic.TextDirection = TextDirection.Auto;
-			styleBoldItalic.HaloBlur = haloBlur;
+			styleBoldItalic.HaloBlur = outlineBlur;
 			styleBoldItalic.BackgroundColor = backgroundColor.a > 0 ? new SKColor(ColorToUint(backgroundColor)) : SKColors.Empty;
 			styleBoldItalic.Underline = underlineStyle;
 			styleBoldItalic.LineHeight = lineHeight;
@@ -661,5 +731,17 @@ namespace SkiaSharp.Unity.HB {
 		}
 		public float flexibleHeight { get; }
 		public int layoutPriority { get; }
+
+		public void RefreshFontFamily() {
+			if (font != null) {
+				var bytes = font.bytes;
+				SKData copy = SKData.CreateCopy(bytes);
+				skTypeface = SKTypeface.FromData(copy);
+				copy.Dispose();
+				if (skTypeface != null) {
+					rs.FontMapper = new FontMapper(skTypeface);
+				}
+			}
+		}
 	}
 }
