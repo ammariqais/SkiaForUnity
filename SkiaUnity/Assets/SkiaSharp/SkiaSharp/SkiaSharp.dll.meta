@@ -1,5 +1,5 @@
 fileFormatVersion: 2
-guid: 6a2cc452ff1db4132abba0c9f8fd5b57
+guid: 4455c907a6b63439f9e7871e8b90ba9f
 PluginImporter:
   externalObjects: {}
   serializedVersion: 3
@@ -12,46 +12,49 @@ PluginImporter:
   validateReferences: 1
   platformData:
     Android:
-      enabled: 0
+      enabled: 1
       settings:
         AndroidLibraryDependee: UnityLibrary
         AndroidSharedLibraryType: Executable
         CPU: ARMv7
     Any:
-      enabled: 0
+      enabled: 1
       settings:
-        Exclude Android: 1
+        Exclude Android: 0
         Exclude Editor: 0
         Exclude Linux64: 0
         Exclude OSXUniversal: 0
-        Exclude WebGL: 1
         Exclude Win: 0
         Exclude Win64: 0
-        Exclude iOS: 1
+        Exclude iOS: 0
     Editor:
       enabled: 1
       settings:
         CPU: AnyCPU
         DefaultValueInitialized: true
-        OS: Linux
+        OS: AnyOS
     Linux64:
       enabled: 1
       settings:
-        CPU: None
+        CPU: AnyCPU
     OSXUniversal:
       enabled: 1
       settings:
-        CPU: None
+        CPU: AnyCPU
     Win:
       enabled: 1
       settings:
-        CPU: None
+        CPU: AnyCPU
     Win64:
       enabled: 1
       settings:
-        CPU: None
-    iOS:
+        CPU: AnyCPU
+    WindowsStoreApps:
       enabled: 0
+      settings:
+        CPU: AnyCPU
+    iOS:
+      enabled: 1
       settings:
         AddToEmbeddedBinaries: false
         CPU: AnyCPU
