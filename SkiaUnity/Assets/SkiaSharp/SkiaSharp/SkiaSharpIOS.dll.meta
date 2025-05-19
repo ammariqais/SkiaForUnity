@@ -1,12 +1,12 @@
 fileFormatVersion: 2
-guid: c622efda120e9420189bf6539a4c7be0
+guid: 864701c9b436b4627b1a7020d5aab5f8
 PluginImporter:
   externalObjects: {}
   serializedVersion: 3
   iconMap: {}
   executionOrder: {}
   defineConstraints: []
-  isPreloaded: 1
+  isPreloaded: 0
   isOverridable: 0
   isExplicitlyReferenced: 0
   validateReferences: 1
@@ -49,6 +49,10 @@ PluginImporter:
       enabled: 0
       settings:
         CPU: None
+    WindowsStoreApps:
+      enabled: 0
+      settings:
+        CPU: AnyCPU
     iOS:
       enabled: 1
       settings:
