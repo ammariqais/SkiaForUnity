@@ -10,17 +10,21 @@
 		</data>
 		<key>Info.plist</key>
 		<data>
-		KEU+0AMFn9p0S2L9hgh9ooWEqyc=
+		dRrV25B38Xv/UFr6O/yraueknv4=
 		</data>
 		<key>Modules/module.modulemap</key>
 		<data>
-		m7lOyLRLuRM8du/7NqQbzPi108U=
+		B5+8QeY98bLMjmt+BbGOL2mCnBs=
 		</data>
 	</dict>
 	<key>files2</key>
 	<dict>
 		<key>Headers/libHarfBuzzSharp.h</key>
 		<dict>
+			<key>hash</key>
+			<data>
+			rcg7GeeTSRscbqD9i0bNnzLlkvw=
+			</data>
 			<key>hash2</key>
 			<data>
 			AbpHGcgLb+kRsJGnwFEktk7uzpZOCcBY74+YBdrKVGs=
@@ -28,9 +32,13 @@
 		</dict>
 		<key>Modules/module.modulemap</key>
 		<dict>
+			<key>hash</key>
+			<data>
+			B5+8QeY98bLMjmt+BbGOL2mCnBs=
+			</data>
 			<key>hash2</key>
 			<data>
-			8z4VhtFjoZnhNquDaJvClmAv09M3mQmVOHlbEmZ3nhw=
+			epRYUpPjeSlXSj9JvwqCN/3J9HXaSv7XGxfjYEn230Y=
 			</data>
 		</dict>
 	</dict>
