@@ -32,8 +32,8 @@
     "/package.json.meta",
     "Runtime",
     "Runtime.meta",
-    "SkiaSharp",
-    "SkiaSharp.meta",
+    "SkiaSharp-Bindings",
+    "SkiaSharp-Bindings.meta",
     "Resources",
     "Resources.meta"
   ]
