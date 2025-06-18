@@ -1,3 +1,4 @@
+#if !UNITY_WEBGL
 using System;
 using UnityEngine;
 using Svg.Skia;
@@ -81,3 +82,4 @@ namespace SkiaSharp.Unity {
     public int layoutPriority { get; }
   }
 }
+#endif

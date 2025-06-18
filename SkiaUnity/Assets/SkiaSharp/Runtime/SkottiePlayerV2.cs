@@ -1,3 +1,4 @@
+#if !UNITY_WEBGL
 using System;
 using System.IO;
 using System.Text;
@@ -237,3 +238,4 @@ namespace SkiaSharp.Unity {
     }
   }
 }
+#endif

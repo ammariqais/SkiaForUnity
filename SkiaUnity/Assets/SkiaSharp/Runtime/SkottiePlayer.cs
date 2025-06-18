@@ -1,3 +1,4 @@
+#if !UNITY_WEBGL
 using System;
 using Newtonsoft.Json;
 using UnityEngine;
@@ -224,3 +225,4 @@ namespace SkiaSharp.Unity {
     }
   }
 }
+#endif

@@ -1,4 +1,4 @@
-#if UNITY_EDITOR
+#if UNITY_EDITOR && !UNITY_WEBGL
 using System.Reflection;
 using SkiaSharp.Unity;
 using UnityEditor;

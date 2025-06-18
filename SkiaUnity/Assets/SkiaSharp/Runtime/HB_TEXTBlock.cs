@@ -1,3 +1,4 @@
+#if !UNITY_WEBGL
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -745,3 +746,4 @@ namespace SkiaSharp.Unity.HB {
 		}
 	}
 }
+#endif
