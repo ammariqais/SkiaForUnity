@@ -18,6 +18,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using UnityEngine;
 
 namespace Topten.RichTextKit
 {
@@ -78,7 +79,7 @@ namespace Topten.RichTextKit
            float? lineHeight = null,
            SKColor? textColor = null,
            SKColor? backgroundColor = null,
-           SKColor? haloColor = null,
+           Gradient? haloColor = null,
            float? haloWidth = null,
            float? haloBlur = null,
            float? letterSpacing = null,
@@ -100,7 +101,7 @@ namespace Topten.RichTextKit
             if (lineHeight.HasValue) LineHeight(lineHeight.Value);
             if (textColor.HasValue) TextColor(textColor.Value);
             if (backgroundColor.HasValue) BackgroundColor(backgroundColor.Value);
-            if (haloColor.HasValue) HaloColor(haloColor.Value);
+            if (haloColor !=null) HaloColor(haloColor);
             if (haloWidth.HasValue) HaloWidth(haloWidth.Value);
             if (haloBlur.HasValue) HaloBlur(haloBlur.Value);
             if (fontVariant.HasValue) FontVariant(fontVariant.Value);
@@ -195,7 +196,7 @@ namespace Topten.RichTextKit
         /// </summary>
         /// <param name="value">The new halo color</param>
         /// <returns>A reference to the same RichString instance</returns>
-        public RichString HaloColor(SKColor value) => Append(new HaloColorItem(value));
+        public RichString HaloColor(Gradient value) => Append(new HaloColorItem(value));
 
         /// <summary>
         /// Changes the halo width
@@ -1275,12 +1276,12 @@ namespace Topten.RichTextKit
 
         class HaloColorItem : Item
         {
-            public HaloColorItem(SKColor value)
+            public HaloColorItem(Gradient value)
             {
                 _value = value;
             }
 
-            SKColor _value;
+            Gradient _value;
 
             public override void Build(BuildContext ctx)
             {
@@ -1300,6 +1301,21 @@ namespace Topten.RichTextKit
             public override void Build(BuildContext ctx)
             {
                 ctx.StyleManager.ShadowColor(_value);
+            }
+        }
+        
+        class ShadowGradientColorItem : Item
+        {
+            public ShadowGradientColorItem(Gradient value)
+            {
+                _value = value;
+            }
+
+            Gradient _value;
+
+            public override void Build(BuildContext ctx)
+            {
+                ctx.StyleManager.ShadowGradientColor(_value);
             }
         }
 

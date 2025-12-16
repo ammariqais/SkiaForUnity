@@ -17,6 +17,7 @@ using SkiaSharp;
 using System;
 using System.Collections.Generic;
 using System.Text;
+using UnityEngine;
 
 namespace Topten.RichTextKit
 {
@@ -144,7 +145,7 @@ namespace Topten.RichTextKit
         /// <summary>
         /// Color of the halo
         /// </summary>
-        public SKColor HaloColor
+        public Gradient HaloColor
         {
             get => _haloColor;
             set
@@ -161,6 +162,15 @@ namespace Topten.RichTextKit
             {
                 CheckNotSealed();
                 _shadowColor = value;
+            }
+        }
+        
+        public Gradient ShadowGradientColor {
+            get => _shadowGradientColor;
+            set
+            {
+                CheckNotSealed();
+                _shadowGradientColor = value;
             }
         }
 
@@ -295,19 +305,20 @@ namespace Topten.RichTextKit
         bool _fontItalic;
         UnderlineStyle _underlineStyle;
         StrikeThroughStyle _strikeThrough;
-        float _lineHeight = 1.0f;
-        SKColor _textColor = new SKColor(0xFF000000);
-        SKColor _backgroundColor = SKColor.Empty;
-        SKColor _haloColor = SKColor.Empty;
-        SKColor _shadowColor = SKColor.Empty;
-        SKColor _innerGlowColor = SKColor.Empty;
-        float _haloWidth = 0f;
-        float _shadowWidth;
-        float _innerGlowWidth;
-        float _shadowOffsetX;
-        float _shadowOffsetY;
-        float _haloBlur = 0f;
-        float _letterSpacing;
+        private float _lineHeight = 1.0f;
+        private SKColor _textColor = new SKColor(0xFF000000);
+        private SKColor _backgroundColor = SKColor.Empty;
+        private Gradient _haloColor = new();
+        private SKColor _shadowColor = SKColor.Empty;
+        private Gradient _shadowGradientColor = new();
+        private SKColor _innerGlowColor = SKColor.Empty;
+        private float _haloWidth;
+        private float _shadowWidth;
+        private float _innerGlowWidth;
+        private float _shadowOffsetX;
+        private float _shadowOffsetY;
+        private float _haloBlur;
+        private float _letterSpacing;
         FontVariant _fontVariant;
         TextDirection _textDirection = TextDirection.Auto;
         char _replacementCharacter = '\0';
@@ -350,7 +361,7 @@ namespace Topten.RichTextKit
                float? lineHeight = null,
                SKColor? textColor = null,
                SKColor? backgroundColor = null,
-               SKColor? haloColor = null,
+               Gradient haloColor = null,
                float? haloWidth = null,
                float? haloBlur = null,
                float? letterSpacing = null,

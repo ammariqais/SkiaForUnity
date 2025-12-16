@@ -19,6 +19,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using UnityEngine;
 
 namespace Topten.RichTextKit
 {
@@ -81,8 +82,9 @@ namespace Topten.RichTextKit
         /// <summary>
         /// Color of the halo
         /// </summary>
-        SKColor HaloColor { get; }
+        Gradient HaloColor { get; }
         SKColor ShadowColor { get; }
+        Gradient ShadowGradientColor { get; }
         SKColor InnerGlowColor { get; }
 
         /// <summary>
