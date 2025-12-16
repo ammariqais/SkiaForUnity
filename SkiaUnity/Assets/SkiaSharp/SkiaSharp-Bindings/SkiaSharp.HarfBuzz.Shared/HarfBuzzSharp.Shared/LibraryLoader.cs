@@ -4,8 +4,8 @@ using System.Runtime.InteropServices;
 
 namespace HarfBuzzSharp
 {
-#if USE_DELEGATES || USE_LIBRARY_LOADER
-	internal static class LibraryLoader
+#if UNITY_EDITOR_LINUX
+	public static class LibraryLoader
 	{
 		static LibraryLoader ()
 		{
@@ -192,16 +192,17 @@ namespace HarfBuzzSharp
 
 			private const int RTLD_LAZY = 1;
 			private const int RTLD_NOW = 2;
+			private const int RTLD_DEEPBIND = 8;
 
 			private static bool UseSystemLibrary2 = true;
 
-			public static IntPtr dlopen (string path, bool lazy = true)
+			public static IntPtr dlopen (string path, bool lazy = false)
 			{
 				try {
-					return dlopen2 (path, lazy ? RTLD_LAZY : RTLD_NOW);
+					return dlopen2 (path, lazy ? RTLD_LAZY : RTLD_NOW | RTLD_DEEPBIND);
 				} catch (DllNotFoundException) {
 					UseSystemLibrary2 = false;
-					return dlopen1 (path, lazy ? RTLD_LAZY : RTLD_NOW);
+					return dlopen1 (path, lazy ? RTLD_LAZY : RTLD_NOW | RTLD_DEEPBIND);
 				}
 			}
 
