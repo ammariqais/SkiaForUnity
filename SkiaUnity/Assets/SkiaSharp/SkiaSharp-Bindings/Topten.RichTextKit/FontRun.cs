@@ -20,6 +20,7 @@ using System;
 using System.Collections.Generic;
 using System.Threading;
 using Topten.RichTextKit.Utils;
+using UnityEngine;
 
 namespace Topten.RichTextKit
 {
@@ -642,17 +643,7 @@ namespace Topten.RichTextKit
                 // Setup SKPaint
                 paint.Color = Style.TextColor;
                 paint.Shader = ctx.Shader;
-
-                if (Style.HaloColor != SKColor.Empty)
-                {
-                    paintHalo.Color = Style.HaloColor;
-                    paintHalo.Style = SKPaintStyle.Stroke;
-                    paintHalo.StrokeWidth = Style.HaloWidth;
-                    paintHalo.StrokeCap = SKStrokeCap.Square;
-                    if (Style.HaloBlur > 0)
-                        paintHalo.MaskFilter = SKMaskFilter.CreateBlur(SKBlurStyle.Normal, Style.HaloBlur);
-                }
-
+                
                 unsafe
                 {
                     fixed (ushort* pGlyphs = Glyphs.Underlying)
@@ -689,15 +680,81 @@ namespace Topten.RichTextKit
                             if (_textBlob == null)
                                 return;
                         }
+                        
+                        if (Style.HaloColor != null)
+                        {
+                            using var shadowPaint = new SKPaint();
+                            // Measure text blob bounds to map the gradient
+                            var textBounds = _textBlob.Bounds;
+                            var startPoint = new SKPoint(
+                                textBounds.Left,
+                                textBounds.Top
+                            );
+                            var endPoint = new SKPoint(
+                                textBounds.Right,
+                                textBounds.Bottom
+                            );
+                    
+                            // Create a shader from the gradient
+                            paintHalo.Shader = SKShader.CreateLinearGradient(
+                                startPoint,
+                                endPoint,
+                                ConvertGradientToSKColors(Style.HaloColor),
+                                ExtractPositionsFromGradient(Style.HaloColor),
+                                SKShaderTileMode.Clamp
+                            );
+
+                            paintHalo.Style = SKPaintStyle.Stroke;
+                            paintHalo.StrokeWidth = Style.HaloWidth;
+                            paintHalo.StrokeCap = SKStrokeCap.Square;
+
+                            if (Style.HaloBlur > 0)
+                                paintHalo.MaskFilter = SKMaskFilter.CreateBlur(SKBlurStyle.Normal, Style.HaloBlur);
+                        }
 
                         if (Style.ShadowWidth > 0)
                         {
-                            using (var shadowPaint = new SKPaint())
-                            {
+                            if (Style.ShadowGradientColor != null && Style.ShadowGradientColor.colorKeys.Length >= 2) {
+                                using var shadowPaint = new SKPaint();
+                                // Measure text blob bounds to map the gradient
+                                var textBounds = _textBlob.Bounds;
+                                var startPoint = new SKPoint(
+                                    Style.ShadowOffsetX + textBounds.Left,
+                                    Style.ShadowOffsetY + textBounds.Top
+                                );
+                                var endPoint = new SKPoint(
+                                    Style.ShadowOffsetX + textBounds.Right,
+                                    Style.ShadowOffsetY + textBounds.Bottom
+                                );
+                                // Create a gradient shader
+                                var shader = SKShader.CreateLinearGradient(
+                                    startPoint,
+                                    endPoint,
+                                    ConvertGradientToSKColors(Style.ShadowGradientColor),
+                                    ExtractPositionsFromGradient(Style.ShadowGradientColor),
+                                    SKShaderTileMode.Clamp
+                                );
+
+                                // Apply shader to the shadow paint
+                                shadowPaint.Shader = shader;
+                                shadowPaint.Style = SKPaintStyle.StrokeAndFill;
+                                shadowPaint.IsAntialias = true;
+                                shadowPaint.MaskFilter =
+                                    SKMaskFilter.CreateBlur(SKBlurStyle.Normal, 2); // Blurry shadow
+                                shadowPaint.StrokeWidth = Style.ShadowWidth;
+
+                                // Draw the text blob with the gradient shadow
+                                ctx.Canvas.DrawText(_textBlob, Style.ShadowOffsetX, Style.ShadowOffsetY,
+                                    shadowPaint);
+
+                                // Dispose of the shader
+                                shader.Dispose();
+                            } else {
+                                using var shadowPaint = new SKPaint();
                                 shadowPaint.Color = Style.ShadowColor;
                                 shadowPaint.Style = SKPaintStyle.StrokeAndFill;
                                 shadowPaint.IsAntialias = true;
-                                shadowPaint.MaskFilter = SKMaskFilter.CreateBlur(SKBlurStyle.Normal, 12); // make shadow blurry not sharp
+                                shadowPaint.MaskFilter = SKMaskFilter.CreateBlur(SKBlurStyle.Normal, 2); // make shadow blurry not sharp
                                 shadowPaint.StrokeWidth = Style.ShadowWidth;
                                 ctx.Canvas.DrawText(_textBlob, Style.ShadowOffsetX, Style.ShadowOffsetY, shadowPaint);
                             }
@@ -727,7 +784,7 @@ namespace Topten.RichTextKit
                                     float b = interceptPositions[i] - paint.StrokeWidth;
                                     if (x < b)
                                     {
-                                        if (Style.HaloColor != SKColor.Empty)
+                                        if (Style.HaloWidth > 0)
                                             ctx.Canvas.DrawLine(new SKPoint(x, underlineYPos), new SKPoint(b, underlineYPos), paintHalo);
                                         ctx.Canvas.DrawLine(new SKPoint(x, underlineYPos), new SKPoint(b, underlineYPos), paint);
                                     }
@@ -735,7 +792,7 @@ namespace Topten.RichTextKit
                                 }
                                 if (x < XCoord + Width)
                                 {
-                                    if (Style.HaloColor != SKColor.Empty)
+                                    if (Style.HaloWidth > 0)
                                         ctx.Canvas.DrawLine(new SKPoint(x, underlineYPos), new SKPoint(XCoord + Width, underlineYPos), paintHalo);
                                     ctx.Canvas.DrawLine(new SKPoint(x, underlineYPos), new SKPoint(XCoord + Width, underlineYPos), paint);
                                 }
@@ -763,7 +820,7 @@ namespace Topten.RichTextKit
                                         break;
                                 }
                                 // Paint solid underline
-                                if (Style.HaloColor != SKColor.Empty)
+                                if (Style.HaloWidth > 0)
                                     ctx.Canvas.DrawLine(new SKPoint(XCoord, underlineYPos), new SKPoint(XCoord + Width, underlineYPos), paintHalo);
                                 ctx.Canvas.DrawLine(new SKPoint(XCoord, underlineYPos), new SKPoint(XCoord + Width, underlineYPos), paint);
                                 paint.PathEffect = null;
@@ -771,7 +828,7 @@ namespace Topten.RichTextKit
                             }
                         }
 
-                        if (Style.HaloColor != SKColor.Empty)
+                        if (Style.HaloWidth > 0)
                         {
                             // Paint strikethrough halo behind text
                             if (Style.StrikeThrough != StrikeThroughStyle.None && RunKind == FontRunKind.Normal)
@@ -849,5 +906,50 @@ namespace Topten.RichTextKit
         {
             Cleaner = (r) => r.Reset()
         });
+        
+        private SKColor[] ConvertGradientToSKColors(Gradient gradient)
+        {
+            // Get the color keys from the Gradient
+            var colorKeys = gradient.colorKeys;
+            var alphaKeys = gradient.alphaKeys;
+
+            // Create an array to store SKColor
+            var skColors = new SKColor[colorKeys.Length];
+            for (var i = 0; i < colorKeys.Length; i++)
+            {
+                // Match alpha for the same time if exists, default to full opacity (1.0f) if not explicitly matched
+                var alpha = 1f;
+                foreach (var alphaKey in alphaKeys)
+                {
+                    if (Mathf.Approximately(alphaKey.time, colorKeys[i].time))
+                    {
+                        alpha = alphaKey.alpha;
+                        break;
+                    }
+                }
+                // Convert Unity Color to SKColor
+                var color = colorKeys[i].color;
+                skColors[i] = new SKColor(
+                    (byte)(color.r * 255), // Red
+                    (byte)(color.g * 255), // Green
+                    (byte)(color.b * 255), // Blue
+                    (byte)(alpha * 255)    // Alpha
+                );
+            }
+            return skColors;
+        }
+
+        private float[] ExtractPositionsFromGradient(Gradient gradient) {
+            // Get the color keys from the Gradient
+            var colorKeys = gradient.colorKeys;
+
+            // Extract the positions (time) into a float array
+            var positions = new float[colorKeys.Length];
+            for (var i = 0; i < colorKeys.Length; i++) {
+                positions[i] = colorKeys[i].time;
+            }
+            return positions;
+        }
+
     }
 }

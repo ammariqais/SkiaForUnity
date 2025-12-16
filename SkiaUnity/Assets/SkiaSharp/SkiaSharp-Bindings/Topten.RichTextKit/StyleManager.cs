@@ -16,6 +16,7 @@
 using SkiaSharp;
 using System.Collections.Generic;
 using System.Threading;
+using UnityEngine;
 
 namespace Topten.RichTextKit
 {
@@ -82,7 +83,7 @@ namespace Topten.RichTextKit
 
             return Update(value.FontFamily, value.FontSize, value.FontWeight, value.FontWidth, value.FontItalic,
                             value.Underline, value.StrikeThrough, value.LineHeight, value.TextColor, value.BackgroundColor,
-                            value.HaloColor,value.ShadowColor,value.InnerGlowColor, value.HaloWidth, value.ShadowWidth, value.ShadowOffsetX, value.ShadowOffsetY,value.InnerGlowWidth, value.HaloBlur,
+                            value.HaloColor,value.ShadowColor,value.ShadowGradientColor, value.InnerGlowColor, value.HaloWidth, value.ShadowWidth, value.ShadowOffsetX, value.ShadowOffsetY,value.InnerGlowWidth, value.HaloBlur,
                             value.LetterSpacing, value.FontVariant, value.TextDirection, value.ReplacementCharacter);
         }
 
@@ -194,7 +195,7 @@ namespace Topten.RichTextKit
         /// </summary>
         /// <param name="haloColor">The new halo color</param>
         /// <returns>An IStyle for the new style</returns>
-        public IStyle HaloColor(SKColor haloColor) => Update(haloColor: haloColor);
+        public IStyle HaloColor(Gradient haloColor) => Update(haloColor: haloColor);
 
         /// <summary>
         /// Changes the halo width and returns an updated IStyle
@@ -237,6 +238,13 @@ namespace Topten.RichTextKit
         /// <param name="shadowColor">Shadow color</param>
         /// <returns>An IStyle for the new style</returns>
         public IStyle ShadowColor(SKColor shadowColor) => Update(shadowColor: shadowColor);
+        
+        /// <summary>
+        /// Changes the halo blur width and returns an updated IStyle
+        /// </summary>
+        /// <param name="shadowGradientColor">Shadow gradient colors</param>
+        /// <returns>An IStyle for the new style</returns>
+        public IStyle ShadowGradientColor(Gradient shadowGradientColor) => Update(shadowGradientColor: shadowGradientColor);
 
         /// <summary>
         /// Changes the halo blur width and returns an updated IStyle
@@ -315,8 +323,9 @@ namespace Topten.RichTextKit
                float? lineHeight = null,
                SKColor? textColor = null,
                SKColor? backgroundColor = null,
-               SKColor? haloColor = null,
+               Gradient? haloColor = null,
                SKColor? shadowColor = null,
+               Gradient? shadowGradientColor = null,
                SKColor? innerGlowColor = null,
                float? haloWidth = null,
                float? shadowWidth = null,
@@ -344,6 +353,7 @@ namespace Topten.RichTextKit
             var rHaloColor = haloColor ?? _currentStyle.HaloColor;
             var rHaloWidth = haloWidth ?? _currentStyle.HaloWidth;
             var rShadowColor = shadowColor ?? _currentStyle.ShadowColor;
+            var rShadowGradientColor = shadowGradientColor ?? _currentStyle.ShadowGradientColor;
             var rInnerGlowColor = innerGlowColor ?? _currentStyle.InnerGlowColor;
             var rShadowWidth = shadowWidth ?? _currentStyle.ShadowWidth;
             var rShadowOffsetX = shadowOffsetX ?? _currentStyle.ShadowOffsetX;
@@ -380,6 +390,7 @@ namespace Topten.RichTextKit
                     HaloBlur = rHaloBlur,
                     ShadowWidth = rShadowWidth,
                     ShadowColor = rShadowColor,
+                    ShadowGradientColor = rShadowGradientColor,
                     InnerGlowColor = rInnerGlowColor,
                     ShadowOffsetX = rShadowOffsetX,
                     ShadowOffsetY = rShadowOffsetY,

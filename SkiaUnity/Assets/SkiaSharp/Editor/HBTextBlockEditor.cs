@@ -12,10 +12,10 @@ public class HBTextBlockEditor : Editor {
   private GUIStyle selectedStyle;
 
   private SerializedProperty fontSizeProperty, fontColorProperty, fontProperty,
-    italicProperty, boldProperty, haloColorProperty,shadowColorProperty, haloWidthProperty,
+    italicProperty, boldProperty, haloColorProperty, shadowGradientColorProperty, haloWidthProperty,
     shadowWidthProperty,shadowOffsetXProperty,shadowOffsetYProperty,innerGlowColorProperty, innerGlowWidthProperty, letterSpacingProperty, autoFitVerticalProperty, renderLinksProperty,
     haloBlurProperty, backgroundColorProperty, underlineStyleProperty, lineHeightProperty,
-    strikeThroughStyleProperty,textProperty, textAligmentProperty,colorTypeProperty, autoFitHorizontalProperty, maxWidthProperty, maxHeightProperty, gradiantColorsProperty
+    strikeThroughStyleProperty,textProperty, textAlignmentProperty, textVerticalAlignmentProperty,colorTypeProperty, autoFitHorizontalProperty, maxWidthProperty, maxHeightProperty, gradiantColorsProperty
     ,gradiantPositionsProperty, enableGradiantProperty, gradiantAngleProperty, ellipsisProperty, maxLines, linkColorProperty;
 
   private bool showHaloSettings = true;
@@ -44,7 +44,7 @@ public class HBTextBlockEditor : Editor {
     italicProperty = serializedObject.FindProperty("italic");
     boldProperty = serializedObject.FindProperty("bold");
     haloColorProperty = serializedObject.FindProperty("outlineColor");
-    shadowColorProperty = serializedObject.FindProperty("shadowColor");
+    shadowGradientColorProperty = serializedObject.FindProperty("shadowGradientColor");
     haloWidthProperty = serializedObject.FindProperty("outlineWidth");
     shadowWidthProperty = serializedObject.FindProperty("shadowWidth");
     shadowOffsetXProperty = serializedObject.FindProperty("shadowOffsetX");
@@ -63,7 +63,8 @@ public class HBTextBlockEditor : Editor {
     lineHeightProperty = serializedObject.FindProperty("lineHeight");
     strikeThroughStyleProperty = serializedObject.FindProperty("strikeThroughStyle");
     textProperty = serializedObject.FindProperty("Text");
-    textAligmentProperty = serializedObject.FindProperty("textAlignment");
+    textAlignmentProperty = serializedObject.FindProperty("textAlignment");
+    textVerticalAlignmentProperty = serializedObject.FindProperty("verticalAlignment");
     ellipsisProperty = serializedObject.FindProperty("enableEllipsis");
     colorTypeProperty = serializedObject.FindProperty("colorType");
     gradiantColorsProperty = serializedObject.FindProperty("gradiantColors");
@@ -93,7 +94,8 @@ public class HBTextBlockEditor : Editor {
       EditorGUILayout.PropertyField(fontColorProperty);
       EditorGUILayout.PropertyField(fontProperty);
       EditorGUILayout.PropertyField(fontSizeProperty);
-      EditorGUILayout.PropertyField(textAligmentProperty);
+      EditorGUILayout.PropertyField(textAlignmentProperty);
+      EditorGUILayout.PropertyField(textVerticalAlignmentProperty);
       
       GUILayout.Label("Font Style:", largeLabelStyle);   
       EditorGUILayout.BeginHorizontal();
@@ -147,16 +149,17 @@ public class HBTextBlockEditor : Editor {
     {
       EditorGUILayout.BeginVertical("box");
       EditorGUILayout.PropertyField(shadowWidthProperty);
-      if(shadowWidthProperty.intValue > 0){
-        EditorGUILayout.PropertyField(shadowColorProperty);
+      if (shadowWidthProperty.intValue > 0) {
+        EditorGUILayout.PropertyField(shadowGradientColorProperty);
         EditorGUILayout.PropertyField(shadowOffsetXProperty);
         EditorGUILayout.PropertyField(shadowOffsetYProperty);
       }
+
       EditorGUILayout.EndVertical();
     }
     
     EditorGUILayout.PropertyField(enableGradiantProperty);
-      
+    
       if (script.IsGradiantEnabled) {
         EditorGUILayout.PropertyField(gradiantColorsProperty);
         EditorGUILayout.PropertyField(gradiantPositionsProperty);
