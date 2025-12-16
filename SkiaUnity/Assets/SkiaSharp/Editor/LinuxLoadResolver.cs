@@ -4,12 +4,12 @@ using UnityEngine;
 using System.IO;
 using System;
 
-public class LinuxLoadResolverWindow : EditorWindow {
+public class LinuxLoadResolver : EditorWindow {
   private static string libraryStatus = "Not Checked";
 
-  [MenuItem("Jawaker/[HarfBuzz] Linux Load Resolver Status")]
+  [MenuItem("SKIA/[HarfBuzz] Linux Load Resolver Status")]
   public static void ShowWindow() {
-    GetWindow<LinuxLoadResolverWindow>("Linux Load Resolver Status");
+    GetWindow<LinuxLoadResolver>("Linux Load Resolver Status");
   }
 
   private void OnGUI() {
@@ -23,20 +23,23 @@ public class LinuxLoadResolverWindow : EditorWindow {
 
   [InitializeOnLoadMethod]
   private static void Initialize() {
-    CheckLibraryStatus();
+    EditorApplication.delayCall += CheckLibraryStatus;
   }
 
   private static void CheckLibraryStatus() {
     IntPtr result = LoadHarfBuzzLibrary();
     libraryStatus = result == IntPtr.Zero ? "Failed" : "Success";
-    Debug.Log($"Library Load Status: {libraryStatus} {result}");
+    
+    if (result == IntPtr.Zero) {
+        Debug.LogWarning($"[SKIA] Library Load Status: {libraryStatus}. Try opening 'Skia/[HarfBuzz] Linux Load Resolver Status' to fix.");
+    }
   }
 
   private static IntPtr LoadHarfBuzzLibrary() {
-    string packagePath = GetPackagePath("com.jawaker.skiaunity"); // Replace with your package name
+    string packagePath = GetCurrentPackagePath();
 
     if (string.IsNullOrEmpty(packagePath)) {
-      Debug.LogError("SkiaForUnity package not found in the Package Manager.");
+      Debug.LogError("[SKIA] Could not find package root (looking for package.json).");
       return IntPtr.Zero;
     }
 
@@ -45,32 +48,33 @@ public class LinuxLoadResolverWindow : EditorWindow {
     if (File.Exists(libraryPath)) {
       return HarfBuzzSharp.LibraryLoader.LoadLibrary(libraryPath);
     } else {
-      Debug.LogError($"Library not found at path: {libraryPath}");
+      Debug.LogError($"[SKIA] Library not found at path: {libraryPath}");
       return IntPtr.Zero;
     }
   }
 
-  private static string GetPackagePath(string packageName) {
-    string packagePath = null;
+  private static string GetCurrentPackagePath() {
+    string[] guids = AssetDatabase.FindAssets("LinuxLoadResolver t:Script");
+    if (guids.Length == 0) return null;
+    string assetPath = AssetDatabase.GUIDToAssetPath(guids[0]);
 
-    var request = UnityEditor.PackageManager.Client.List(true);
-
-    while (!request.IsCompleted) {
-      System.Threading.Thread.Sleep(10);
+    var packageInfo = UnityEditor.PackageManager.PackageInfo.FindForAssetPath(assetPath);
+    if (packageInfo != null) {
+        return packageInfo.resolvedPath;
     }
 
-    if (request.Status == UnityEditor.PackageManager.StatusCode.Success) {
-      foreach (var package in request.Result) {
-        if (package.name == packageName) {
-          packagePath = package.resolvedPath;
-          break;
+    string absolutePath = Path.GetFullPath(assetPath);
+    string currentDir = Path.GetDirectoryName(absolutePath);
+
+    while (!string.IsNullOrEmpty(currentDir)) {
+        if (File.Exists(Path.Combine(currentDir, "package.json"))) {
+            return currentDir;
         }
-      }
-    } else if (request.Status >= UnityEditor.PackageManager.StatusCode.Failure) {
-      Debug.LogError($"Failed to list packages: {request.Error.message}");
+        if (Directory.GetParent(currentDir) == null) break;
+        currentDir = Directory.GetParent(currentDir).FullName;
     }
 
-    return packagePath;
+    return null;
   }
 }
 #endif
