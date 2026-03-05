@@ -12,13 +12,14 @@ namespace SkiaSharp.Unity.HB {
 		alpha8,
 		rgb32
 	}
-	
+
+	[RequireComponent(typeof(RawImage))]
 	public class HB_TEXTBlock : MonoBehaviour, ILayoutElement {
 		[SerializeField]
 		[TextArea]
 		protected string Text;
 		[SerializeField]
-		public TextAsset font;
+		public UnityEngine.Object font;
 		[SerializeField]
 		protected int fontSize = 20, letterSpacing, maxLines;
 		[SerializeField]
@@ -38,7 +39,7 @@ namespace SkiaSharp.Unity.HB {
 		[SerializeField]
 		protected Gradient shadowGradientColor = new(), outlineColor = new ();
 		[SerializeField]
-		protected bool italic, bold, autoFitVertical = true, autoFitHorizontal, renderLinks, enableGradiant, enableEllipsis = true;
+		protected bool italic, bold, autoFitVertical = true, autoFitHorizontal, renderLinks, enableGradiant, enableEllipsis = true, richText;
 		[SerializeField]
 		protected UnderlineStyle underlineStyle;
 		[SerializeField]
@@ -46,15 +47,24 @@ namespace SkiaSharp.Unity.HB {
 		[SerializeField]
 		protected float lineHeight = 1.0f, maxWidth = 264, maxHeight = -1 , gradiantAngle = 90;
 		[SerializeField]
-		protected HBColorFormat colorType = HBColorFormat.rgb32; 
-		[SerializeField] 
+		protected HBColorFormat colorType = HBColorFormat.rgb32;
+		[SerializeField]
 		protected TextAlignment textAlignment = TextAlignment.Center;
 		[SerializeField]
 		protected Color[] gradiantColors;
 		[SerializeField]
 		protected float[] gradiantPositions;
+		[SerializeField]
+		protected TextDirection textDirection = TextDirection.Auto;
+		[SerializeField]
+		[Range(100, 900)]
+		protected int fontWeight = 400;
+		[SerializeField]
+		protected FontVariant fontVariant = FontVariant.Normal;
+		[SerializeField]
+		protected Vector4 padding; // left, top, right, bottom
 
-        
+
 		protected SKCanvas canvas;
 		protected SKImageInfo info = new();
 		protected SKSurface surface;
@@ -67,10 +77,20 @@ namespace SkiaSharp.Unity.HB {
 		protected string pattern = @"(https?://\S+|www\.\S+)";
 		protected Regex regex;
 		protected SKTypeface skTypeface;
+		private static readonly Dictionary<int, SKTypeface> _typefaceCache = new();
+		private static readonly Dictionary<int, int> _typefaceRefCounts = new();
+		private int _typefaceCacheKey;
+		private bool _typefaceCacheRegistered;
 		protected RectTransform rectTransform;
 		protected float currentWidth, currentHeight, currentPreferdWidth = 0, currentPreferdHeight;
 		protected TextGradient blockGradient;
 		protected bool widthPreferred, heightPreferred;
+
+		// Cached objects to avoid per-render allocations
+		private FontMapper _cachedFontMapper;
+		private int _cachedFontMapperKey;
+		private Style _linkStyle;
+		private static readonly Gradient _emptyGradient = new();
 
 		public virtual TextBlock Info => rs;
 
@@ -78,7 +98,7 @@ namespace SkiaSharp.Unity.HB {
 		[SerializeField]
 		protected VerticalAlignment verticalAlignment = VerticalAlignment.Top; // Default alignment
 
-		
+
 		public virtual float MaxWidth {
 			get => maxWidth;
 			set {
@@ -93,7 +113,7 @@ namespace SkiaSharp.Unity.HB {
 				}
 			}
 		}
-		
+
 		public virtual float MaxHeight {
 			get => maxHeight;
 			set {
@@ -108,7 +128,7 @@ namespace SkiaSharp.Unity.HB {
 				}
 			}
 		}
-		
+
 		public virtual string text {
 			get => Text;
 			set {
@@ -129,7 +149,7 @@ namespace SkiaSharp.Unity.HB {
 				}
 			}
 		}
-		
+
 		public float alpha {
 			get {
 				if (rawImage == null) rawImage = GetComponent<RawImage>();
@@ -144,7 +164,7 @@ namespace SkiaSharp.Unity.HB {
 				}
 			}
 		}
-		
+
 		public virtual Gradient HaloColor {
 			get {
 				return outlineColor;
@@ -154,7 +174,7 @@ namespace SkiaSharp.Unity.HB {
 				ReUpdate();
 			}
 		}
-		
+
 		public virtual Gradient ShadowGradientColor {
 			get => shadowGradientColor;
 			set {
@@ -172,7 +192,7 @@ namespace SkiaSharp.Unity.HB {
 				ReUpdate();
 			}
 		}
-		
+
 		public virtual Color BackgroundColor {
 			get {
 				return backgroundColor;
@@ -182,7 +202,7 @@ namespace SkiaSharp.Unity.HB {
 				ReUpdate();
 			}
 		}
-		
+
 		public virtual HBColorFormat ColorType {
 			get {
 				return colorType;
@@ -192,7 +212,7 @@ namespace SkiaSharp.Unity.HB {
 				ReUpdate();
 			}
 		}
-		
+
 		public virtual bool AutoFitVertical {
 			get {
 				return autoFitVertical;
@@ -202,7 +222,7 @@ namespace SkiaSharp.Unity.HB {
 				ReUpdate();
 			}
 		}
-		
+
 		public virtual bool AutoFitHorizontal {
 			get {
 				return autoFitHorizontal;
@@ -231,8 +251,8 @@ namespace SkiaSharp.Unity.HB {
 				ReUpdate();
 			}
 		}
-		
-		public virtual TextAsset Font {
+
+		public virtual UnityEngine.Object Font {
 			get {
 				return font;
 			}
@@ -241,7 +261,13 @@ namespace SkiaSharp.Unity.HB {
 				ReUpdate();
 			}
 		}
-		
+
+		protected byte[] GetFontBytes() {
+			if (font is HBFontData hb) return hb.fontBytes;
+			if (font is TextAsset ta) return ta.bytes;
+			return null;
+		}
+
 		public virtual bool Bold {
 			get {
 				return bold;
@@ -251,7 +277,7 @@ namespace SkiaSharp.Unity.HB {
 				ReUpdate();
 			}
 		}
-		
+
 		public virtual bool Italic {
 			get {
 				return italic;
@@ -261,7 +287,7 @@ namespace SkiaSharp.Unity.HB {
 				ReUpdate();
 			}
 		}
-		
+
 		public virtual int FontSize {
 			get {
 				return fontSize;
@@ -271,7 +297,7 @@ namespace SkiaSharp.Unity.HB {
 				ReUpdate();
 			}
 		}
-		
+
 		public virtual int HaloWidth {
 			get {
 				return outlineWidth;
@@ -301,7 +327,7 @@ namespace SkiaSharp.Unity.HB {
 				ReUpdate();
 			}
 		}
-		
+
 		public virtual int LetterSpacing {
 			get {
 				return letterSpacing;
@@ -311,7 +337,7 @@ namespace SkiaSharp.Unity.HB {
 				ReUpdate();
 			}
 		}
-		
+
 		public virtual int HaloBlur {
 			get {
 				return outlineBlur;
@@ -321,7 +347,7 @@ namespace SkiaSharp.Unity.HB {
 				ReUpdate();
 			}
 		}
-		
+
 		public virtual UnderlineStyle UnderLineStyle {
 			get {
 				return underlineStyle;
@@ -331,7 +357,7 @@ namespace SkiaSharp.Unity.HB {
 				ReUpdate();
 			}
 		}
-		
+
 		public virtual StrikeThroughStyle  StrikeThroughStyle{
 			get {
 				return strikeThroughStyle;
@@ -341,17 +367,17 @@ namespace SkiaSharp.Unity.HB {
 				ReUpdate();
 			}
 		}
-		
+
 		public virtual float LineHeight{
 			get {
-				return LineHeight;
+				return lineHeight;
 			}
 			set {
-				LineHeight = value;
+				lineHeight = value;
 				ReUpdate();
 			}
 		}
-		
+
 		public virtual TextAlignment TextAlignment{
 			get {
 				return textAlignment;
@@ -368,38 +394,42 @@ namespace SkiaSharp.Unity.HB {
 			rawImage = GetComponent<RawImage>();
 			if (rawImage) {
 				rawImage.enabled = false;
+				#if UNITY_EDITOR
+				rawImage.hideFlags |= HideFlags.HideInInspector;
+				#endif
 			}
 			rectTransform = transform as RectTransform;
-			
+
 			styleBoldItalic.FontSize = fontSize;
 			styleBoldItalic.TextColor = new SKColor(ColorToUint(fontColor));
 			styleBoldItalic.HaloWidth = outlineWidth;
 			styleBoldItalic.ShadowWidth = shadowWidth;
-			styleBoldItalic.HaloColor = outlineWidth > 0 ? outlineColor : new Gradient();
+			styleBoldItalic.HaloColor = outlineWidth > 0 ? outlineColor : _emptyGradient;
 			styleBoldItalic.ShadowGradientColor = shadowGradientColor != null && shadowGradientColor.colorKeys.Length > 0
 				? shadowGradientColor
-				: new Gradient();
+				: _emptyGradient;
 			styleBoldItalic.ShadowOffsetX = shadowOffsetX;
 			styleBoldItalic.ShadowOffsetY = shadowOffsetY;
 			styleBoldItalic.InnerGlowWidth = innerGlowWidth;
 			styleBoldItalic.InnerGlowColor = innerGlowWidth > 0 ? new SKColor(ColorToUint(innerGlowColor)) : SKColor.Empty;
-			
+
 			styleBoldItalic.FontItalic = italic;
-			styleBoldItalic.FontWeight = bold ? 700 : 400;
+			styleBoldItalic.FontWeight = bold ? 700 : fontWeight;
 			styleBoldItalic.LetterSpacing = letterSpacing;
-			styleBoldItalic.TextDirection = TextDirection.Auto;
+			styleBoldItalic.TextDirection = textDirection;
 			styleBoldItalic.HaloBlur = outlineBlur;
 			styleBoldItalic.BackgroundColor = backgroundColor.a > 0 ? new SKColor(ColorToUint(backgroundColor)) : SKColors.Empty;
 			styleBoldItalic.Underline = underlineStyle;
 			styleBoldItalic.LineHeight = lineHeight;
 			styleBoldItalic.StrikeThrough = strikeThroughStyle;
+			styleBoldItalic.FontVariant = fontVariant;
 		}
 
 		protected virtual void OnEnable() {
 			if (String.IsNullOrEmpty(Text)){
 				return;
 			}
-			
+
 			if (rawImage) {
 				urls.Clear();
 				RenderText();
@@ -407,8 +437,8 @@ namespace SkiaSharp.Unity.HB {
 		}
 
 		protected bool textRendered;
-        
-		
+
+
 		// Convert a Color to a uint
 		public virtual uint ColorToUint(Color color){
 			uint alpha = (uint)(color.a * 255);
@@ -417,26 +447,18 @@ namespace SkiaSharp.Unity.HB {
 			uint blue = (uint)(color.b * 255);
 			return (alpha << 24) | (red << 16) | (green << 8) | blue;
 		}
-		
+
 		protected virtual void RenderText() {
 			if (rawImage && String.IsNullOrEmpty(text)) {
 				rawImage.enabled = false;
 			}
-			Dispose();
-			#if !UNITY_EDITOR
-				DestroyImmediate(rawImage.texture);
-			#else
-			DestroyImmediate(rawImage.texture);
-			#endif
-			
-			if (texture != null) {
-				#if !UNITY_EDITOR
-				DestroyImmediate(texture);
-				#else
-				DestroyImmediate(texture);
-				#endif
+
+			// Dispose only the pixmap from previous render; keep surface for reuse
+			if (pixmap != null) {
+				pixmap.Dispose();
+				pixmap = null;
 			}
-			
+
 			if (rs == null) {
 				rs = new TextBlock();
 			}
@@ -450,48 +472,89 @@ namespace SkiaSharp.Unity.HB {
 				rawImage.color = Color.white;
 			}
 			rs.Alignment = textAlignment;
-			rs.EllipsisEnabled = enableEllipsis;            
-			rs.AddText(Text, styleBoldItalic);
-			
+			rs.BaseDirection = textDirection;
+			rs.EllipsisEnabled = enableEllipsis;
+			if (richText) {
+				HBRichTextParser.Parse(rs, Text, styleBoldItalic);
+			} else {
+				rs.AddText(Text, styleBoldItalic);
+			}
+
 			if (renderLinks) {
 				RenderLinksCall();
 			}
 
 			if (font != null) {
+				var fontBytes = GetFontBytes();
+				if (fontBytes == null) return;
 				if (skTypeface == null) {
-					var bytes = font.bytes;
-					SKData copy = SKData.CreateCopy(bytes);
-					skTypeface = SKTypeface.FromData(copy);
-					copy.Dispose();
+					int key = font.GetInstanceID();
+					if (!_typefaceCache.ContainsKey(key)) {
+						SKData copy = SKData.CreateCopy(fontBytes);
+						_typefaceCache[key] = SKTypeface.FromData(copy);
+						copy.Dispose();
+						_typefaceRefCounts[key] = 0;
+					}
+					skTypeface = _typefaceCache[key];
+					_typefaceCacheKey = key;
+					_typefaceRefCounts[key]++;
+					_typefaceCacheRegistered = true;
 				}
-				rs.FontMapper = new FontMapper(skTypeface);
+				// Reuse FontMapper if typeface hasn't changed
+				int typefaceKey = font.GetInstanceID();
+				if (_cachedFontMapper == null || _cachedFontMapperKey != typefaceKey) {
+					_cachedFontMapper = new FontMapper(skTypeface);
+					_cachedFontMapperKey = typefaceKey;
+				}
+				rs.FontMapper = _cachedFontMapper;
 			}
 
 			if ( (!autoFitHorizontal && rectTransform.rect.width == 0)) {
 				return;
 			}
-			
-			currentPreferdWidth = autoFitHorizontal ? rs.MeasuredWidth > maxWidth ? maxWidth : rs.MeasuredWidth : rectTransform.rect.width;
-			rs.MaxWidth = currentPreferdWidth;
-		//	rs.MaxWidth = currentPreferdWidth = rs.MeasuredWidth;
-			currentPreferdHeight = autoFitVertical ? maxHeight > -1  && rs.MeasuredHeight > maxHeight ? maxHeight : rs.MeasuredHeight : rectTransform.rect.height;
 
-			rs.MaxHeight = currentPreferdHeight;
-			//rs.MaxHeight = currentPreferdHeight = rs.MeasuredHeight;
-			
+			// Calculate extra padding needed for effects (outline, blur, shadow) + user padding
+			float effectPadX = 0f;
+			float effectPadY = 0f;
+			if (outlineWidth > 0) {
+				float outlineExtra = outlineWidth + outlineBlur;
+				effectPadX = Mathf.Max(effectPadX, outlineExtra);
+				effectPadY = Mathf.Max(effectPadY, outlineExtra);
+			}
+			if (shadowWidth > 0) {
+				effectPadX = Mathf.Max(effectPadX, shadowWidth + Mathf.Abs(shadowOffsetX));
+				effectPadY = Mathf.Max(effectPadY, shadowWidth + Mathf.Abs(shadowOffsetY));
+			}
+			// Add user-defined padding (left, top, right, bottom)
+			float userPadL = padding.x;
+			float userPadT = padding.y;
+			float userPadR = padding.z;
+			float userPadB = padding.w;
+			effectPadX += (userPadL + userPadR) / 2f;
+			effectPadY += (userPadT + userPadB) / 2f;
+			float padW = effectPadX * 2f;
+			float padH = effectPadY * 2f;
+
+			currentPreferdWidth = autoFitHorizontal ? rs.MeasuredWidth + padW > maxWidth ? maxWidth : rs.MeasuredWidth + padW : rectTransform.rect.width;
+			rs.MaxWidth = Mathf.Max(0, currentPreferdWidth - padW);
+			currentPreferdHeight = autoFitVertical ? maxHeight > -1  && rs.MeasuredHeight + padH > maxHeight ? maxHeight : rs.MeasuredHeight + padH : rectTransform.rect.height;
+
+			rs.MaxHeight = Mathf.Max(0, currentPreferdHeight - padH);
+
 			if (autoFitVertical) {
+				float fitHeight = heightPreferred ? rectTransform.sizeDelta.y : rs.MeasuredHeight + padH;
 				var size = autoFitHorizontal
-					? new Vector2(currentPreferdWidth, heightPreferred ? rectTransform.sizeDelta.y : rs.MeasuredHeight)
-					: new Vector2(rectTransform.rect.width, heightPreferred ? rectTransform.sizeDelta.y : rs.MeasuredHeight);
+					? new Vector2(currentPreferdWidth, fitHeight)
+					: new Vector2(rectTransform.rect.width, fitHeight);
 
 				if (size.x == 0) return;
 
 				// Only set sizeDelta if the RectTransform is not in stretch mode for that axis
 				if (rectTransform.anchorMin.x == rectTransform.anchorMax.x) {
-					rectTransform.sizeDelta = new Vector2(size.x, rectTransform.sizeDelta.y); // Modify width if not stretching horizontally
+					rectTransform.sizeDelta = new Vector2(size.x, rectTransform.sizeDelta.y);
 				}
 				if (rectTransform.anchorMin.y == rectTransform.anchorMax.y) {
-					rectTransform.sizeDelta = new Vector2(rectTransform.sizeDelta.x, size.y); // Modify height if not stretching vertically
+					rectTransform.sizeDelta = new Vector2(rectTransform.sizeDelta.x, size.y);
 				}
 			} else {
 				var size = autoFitHorizontal
@@ -499,14 +562,14 @@ namespace SkiaSharp.Unity.HB {
 					: new Vector2(rectTransform.rect.width, rectTransform.rect.height);
 
 				if (rectTransform.anchorMin.x == rectTransform.anchorMax.x) {
-					rectTransform.sizeDelta = new Vector2(size.x, rectTransform.sizeDelta.y); // Modify width if not stretching horizontally
+					rectTransform.sizeDelta = new Vector2(size.x, rectTransform.sizeDelta.y);
 				}
 				if (rectTransform.anchorMin.y == rectTransform.anchorMax.y) {
-					rectTransform.sizeDelta = new Vector2(rectTransform.sizeDelta.x, size.y); // Modify height if not stretching vertically
+					rectTransform.sizeDelta = new Vector2(rectTransform.sizeDelta.x, size.y);
 				}
 			}
 
-			
+
 			currentWidth = rectTransform.rect.width;
 			currentHeight = rectTransform.rect.height;
 			LayoutRebuilder.MarkLayoutForRebuild(rectTransform);
@@ -517,40 +580,56 @@ namespace SkiaSharp.Unity.HB {
 
 			int roundedWidth = Mathf.CeilToInt(rectTransform.rect.width / 4) * 4;
 			int roundedHeight = Mathf.CeilToInt(rectTransform.rect.height / 4) * 4;
-			
+
+			SKColorType targetColorType = colorType == HBColorFormat.alpha8 ? SKColorType.Alpha8 : SKColorType.Rgba8888;
+
+			// Reuse surface if size and format match, otherwise recreate
+			if (surface != null && (info.Width != roundedWidth || info.Height != roundedHeight || info.ColorType != targetColorType)) {
+				surface.Dispose();
+				surface = null;
+				canvas = null;
+			}
+
 			if (info.IsEmpty) {
 				info = new SKImageInfo(roundedWidth, roundedHeight);
 			} else {
 				info.Width = roundedWidth;
 				info.Height = roundedHeight;
 			}
+			info.ColorType = targetColorType;
 
-			info.ColorType = colorType == HBColorFormat.alpha8 ? SKColorType.Alpha8 : info.ColorType ;
-
-			surface = SKSurface.Create(info);
+			if (surface == null) {
+				surface = SKSurface.Create(info);
+			}
 			canvas = surface.Canvas;
+			canvas.Clear();
+			canvas.ResetMatrix();
 			canvas.Scale(1, -1);
-   //canvas.Translate(0, -info.Height);
-   
-// Calculate vertical offset based on alignment
-   float verticalOffset = 0;
-   if (verticalAlignment == VerticalAlignment.Middle) {
-	   verticalOffset = (-info.Height + (currentHeight - rs.MeasuredHeight) / 2);
-   } else if (verticalAlignment == VerticalAlignment.Bottom) {
-	   verticalOffset = -info.Height + (currentHeight - rs.MeasuredHeight);
-   } else {
-	   verticalOffset = -info.Height;
-   }
-   canvas.Translate(0, verticalOffset); // Apply vertical alignment offset within bounds
 
-   
+			// Calculate vertical offset based on alignment
+			float baseEffectPadY = effectPadY - (userPadT + userPadB) / 2f;
+			float baseEffectPadX = effectPadX - (userPadL + userPadR) / 2f;
+			float translateX = baseEffectPadX + userPadL;
+			float verticalOffset;
+			if (verticalAlignment == VerticalAlignment.Middle) {
+				verticalOffset = (-info.Height + (currentHeight - rs.MeasuredHeight) / 2);
+			} else if (verticalAlignment == VerticalAlignment.Bottom) {
+				verticalOffset = -info.Height + (currentHeight - rs.MeasuredHeight) - userPadB;
+			} else {
+				verticalOffset = -info.Height + baseEffectPadY + userPadT;
+			}
+			canvas.Translate(translateX, verticalOffset);
+
+
 			TextureFormat format = (info.ColorType == SKColorType.Rgba8888) ? TextureFormat.RGBA32 : info.ColorType == SKColorType.Alpha8 ? TextureFormat.Alpha8 : TextureFormat.RGBA32;
 			if (texture == null) {
 				texture = new Texture2D(roundedWidth, roundedHeight, format, false);
+				texture.name = "HB_Text";
+				texture.wrapMode = TextureWrapMode.Repeat;
 			} else {
 				texture.Reinitialize(roundedWidth, roundedHeight, format, false);
 			}
-			
+
 			if (enableGradiant && gradiantColors != null) {
 				SKColor[] colors = new SKColor[gradiantColors.Length];
 				for (int i = 0; i < gradiantColors.Length; i++) {
@@ -564,49 +643,50 @@ namespace SkiaSharp.Unity.HB {
 			} else {
 				rs.Paint(canvas);
 			}
-			
-			texture.name = "HB_Text";
-			texture.wrapMode = TextureWrapMode.Repeat;
+
 			pixmap = surface.PeekPixels();
 			texture.LoadRawTextureData(pixmap.GetPixels(), pixmap.RowBytes * pixmap.Height);
-			texture.Compress(false);
 			texture.Apply();
 			rawImage.texture = texture;
 			if (!rawImage.enabled) {
 				rawImage.enabled = true;
 			}
-			Dispose();
+
+			// Dispose pixmap (it just references the surface's memory)
+			pixmap.Dispose();
+			pixmap = null;
+
 			textRendered = true;
 		}
 
 		protected virtual void RenderLinksCall() {
-			Style styleLink = new Style() {
-			FontSize = fontSize,
-			TextColor = new SKColor(ColorToUint(linkColor)),
-			Underline = UnderlineStyle.Solid,
-			HaloWidth = outlineWidth,
-			ShadowWidth = shadowWidth,
-			HaloColor = outlineWidth > 0 ? outlineColor : new Gradient(),
-			ShadowGradientColor = shadowGradientColor != null && shadowGradientColor.colorKeys.Length > 0
-				? shadowGradientColor
-				: new Gradient(),
-			InnerGlowColor = innerGlowWidth > 0 ? new SKColor(ColorToUint(innerGlowColor)) : SKColor.Empty,
-			InnerGlowWidth = innerGlowWidth,
-			FontItalic = italic,
-			FontWeight = bold ? 700 : 400,
-			LetterSpacing = letterSpacing,
-			TextDirection = TextDirection.Auto,
-			HaloBlur = outlineBlur,
-			BackgroundColor = backgroundColor.a > 0 ? new SKColor(ColorToUint(backgroundColor)) : SKColors.Empty,
-			LineHeight = lineHeight,
-			StrikeThrough = strikeThroughStyle,
-		};
-			
-			string pattern = @"(https?://\S+|www\.\S+)";
-			if (regex == null) {
-				regex = new Regex(pattern);
+			if (_linkStyle == null) {
+				_linkStyle = new Style();
 			}
-			
+			_linkStyle.FontSize = fontSize;
+			_linkStyle.TextColor = new SKColor(ColorToUint(linkColor));
+			_linkStyle.Underline = UnderlineStyle.Solid;
+			_linkStyle.HaloWidth = outlineWidth;
+			_linkStyle.ShadowWidth = shadowWidth;
+			_linkStyle.HaloColor = outlineWidth > 0 ? outlineColor : _emptyGradient;
+			_linkStyle.ShadowGradientColor = shadowGradientColor != null && shadowGradientColor.colorKeys.Length > 0
+				? shadowGradientColor
+				: _emptyGradient;
+			_linkStyle.InnerGlowColor = innerGlowWidth > 0 ? new SKColor(ColorToUint(innerGlowColor)) : SKColor.Empty;
+			_linkStyle.InnerGlowWidth = innerGlowWidth;
+			_linkStyle.FontItalic = italic;
+			_linkStyle.FontWeight = bold ? 700 : 400;
+			_linkStyle.LetterSpacing = letterSpacing;
+			_linkStyle.TextDirection = TextDirection.Auto;
+			_linkStyle.HaloBlur = outlineBlur;
+			_linkStyle.BackgroundColor = backgroundColor.a > 0 ? new SKColor(ColorToUint(backgroundColor)) : SKColors.Empty;
+			_linkStyle.LineHeight = lineHeight;
+			_linkStyle.StrikeThrough = strikeThroughStyle;
+
+			if (regex == null) {
+				regex = new Regex(pattern, RegexOptions.Compiled);
+			}
+
 			MatchCollection matches = regex.Matches(Text);
 				foreach (Match match in matches) {
 					var length = match.Index + match.Length;
@@ -616,7 +696,7 @@ namespace SkiaSharp.Unity.HB {
 						length = length - differnce;
 					}
 
-					rs.ApplyStyle(Mathf.Clamp(match.Index,0,rs.Length), Mathf.Clamp(match.Length - differnce,0,match.Length),styleLink);
+					rs.ApplyStyle(Mathf.Clamp(match.Index,0,rs.Length), Mathf.Clamp(match.Length - differnce,0,match.Length),_linkStyle);
 					urls.Add(match.Index,new HBLinks() {
 						IndexStart = match.Index,
 						IndexEnd = length,
@@ -625,7 +705,7 @@ namespace SkiaSharp.Unity.HB {
 					});
 				}
 		}
-        
+
 		protected virtual void FixedUpdate() {
 			if (currentWidth != rectTransform.rect.width || currentHeight != currentPreferdHeight) {
 				urls.Clear();
@@ -641,7 +721,7 @@ namespace SkiaSharp.Unity.HB {
 			urls.Clear();
 			RenderText();
 		}
-		
+
 		#if UNITY_EDITOR
 		public virtual void ReUpdateEditMode() {
 			if (rawImage == null) {
@@ -655,21 +735,22 @@ namespace SkiaSharp.Unity.HB {
 			styleBoldItalic.ShadowWidth = shadowWidth;
 			styleBoldItalic.ShadowOffsetX = shadowOffsetX;
 			styleBoldItalic.ShadowOffsetY = shadowOffsetY;
-			styleBoldItalic.HaloColor = outlineWidth > 0 ? outlineColor : new Gradient();
+			styleBoldItalic.HaloColor = outlineWidth > 0 ? outlineColor : _emptyGradient;
 			styleBoldItalic.ShadowGradientColor = shadowGradientColor != null && shadowGradientColor.colorKeys.Length > 0
 				? shadowGradientColor
-				: new Gradient();
+				: _emptyGradient;
 			styleBoldItalic.InnerGlowColor = innerGlowWidth > 0 ? new SKColor(ColorToUint(innerGlowColor)) : SKColor.Empty;
 			styleBoldItalic.InnerGlowWidth = innerGlowWidth;
 			styleBoldItalic.FontItalic = italic;
-			styleBoldItalic.FontWeight = bold ? 700 : 400;
+			styleBoldItalic.FontWeight = bold ? 700 : fontWeight;
 			styleBoldItalic.LetterSpacing = letterSpacing;
-			styleBoldItalic.TextDirection = TextDirection.Auto;
+			styleBoldItalic.TextDirection = textDirection;
 			styleBoldItalic.HaloBlur = outlineBlur;
 			styleBoldItalic.BackgroundColor = backgroundColor.a > 0 ? new SKColor(ColorToUint(backgroundColor)) : SKColors.Empty;
 			styleBoldItalic.Underline = underlineStyle;
 			styleBoldItalic.LineHeight = lineHeight;
 			styleBoldItalic.StrikeThrough = strikeThroughStyle;
+			styleBoldItalic.FontVariant = fontVariant;
 			urls.Clear();
 			RenderText();
 		}
@@ -694,34 +775,38 @@ namespace SkiaSharp.Unity.HB {
 		protected virtual void OnDestroy() {
 			Dispose();
 			if (texture != null) {
-				#if !UNITY_EDITOR
 				DestroyImmediate(texture);
-				#else
-				DestroyImmediate(texture);
-				#endif
 				texture = null;
 			}
 
-
-			if (skTypeface != null) {
-				skTypeface.Dispose();
+			if (rs != null) {
+				rs.Clear();
+				rs = null;
 			}
+
+			if (_typefaceCacheRegistered && _typefaceRefCounts.ContainsKey(_typefaceCacheKey)) {
+				_typefaceRefCounts[_typefaceCacheKey]--;
+				if (_typefaceRefCounts[_typefaceCacheKey] <= 0) {
+					if (_typefaceCache.TryGetValue(_typefaceCacheKey, out var cachedTypeface)) {
+						cachedTypeface?.Dispose();
+						_typefaceCache.Remove(_typefaceCacheKey);
+					}
+					_typefaceRefCounts.Remove(_typefaceCacheKey);
+				}
+			}
+			skTypeface = null;
+			_cachedFontMapper = null;
 		}
-		
+
 		protected virtual void OnDisable() {
 			Dispose();
-			#if !UNITY_EDITOR
+			if (rawImage != null) {
 				DestroyImmediate(rawImage.texture);
-			#else
-			DestroyImmediate(rawImage.texture);
-			#endif
-			
+			}
+
 			if (texture != null) {
-				#if !UNITY_EDITOR
 				DestroyImmediate(texture);
-				#else
-				DestroyImmediate(texture);
-				#endif
+				texture = null;
 			}
 		}
 
@@ -730,23 +815,21 @@ namespace SkiaSharp.Unity.HB {
 				pixmap.Dispose();
 				pixmap = null;
 			}
-			
+
 			if (surface != null) {
 				surface.Dispose();
+				surface = null;
 			}
-			
-			if (canvas != null) {
-				canvas.Dispose();
-				canvas = null;
-			}
+			// canvas is owned by surface — already disposed above
+			canvas = null;
 		}
-		
+
 		public virtual void CalculateLayoutInputHorizontal() {}
 
-		
+
 		public virtual void CalculateLayoutInputVertical() {}
 
-		
+
 		public virtual float minWidth { get; }
 		public virtual float preferredWidth {
 			get {
@@ -760,13 +843,14 @@ namespace SkiaSharp.Unity.HB {
 		public virtual float flexibleWidth { get; }
 		public virtual float minHeight { get; }
 		protected TextBlock temp = new TextBlock();
-		
+
 		public virtual float preferredHeight {
 			get {
 				heightPreferred = true;
 				if (rs != null && textRendered) {
 					return currentPreferdHeight;
 				}
+				temp.Clear();
 				styleBoldItalic.FontSize = fontSize;
 				styleBoldItalic.FontWeight = bold ? 700 : 400;
 
@@ -786,12 +870,20 @@ namespace SkiaSharp.Unity.HB {
 
 		public virtual void RefreshFontFamily() {
 			if (font != null) {
-				var bytes = font.bytes;
-				SKData copy = SKData.CreateCopy(bytes);
-				skTypeface = SKTypeface.FromData(copy);
-				copy.Dispose();
-				if (skTypeface != null) {
-					rs.FontMapper = new FontMapper(skTypeface);
+				int key = font.GetInstanceID();
+				if (!_typefaceCache.ContainsKey(key)) {
+					var fontBytes = GetFontBytes();
+					if (fontBytes == null) return;
+					SKData copy = SKData.CreateCopy(fontBytes);
+					_typefaceCache[key] = SKTypeface.FromData(copy);
+					copy.Dispose();
+					_typefaceRefCounts[key] = 0;
+				}
+				skTypeface = _typefaceCache[key];
+				_cachedFontMapper = new FontMapper(skTypeface);
+				_cachedFontMapperKey = key;
+				if (rs != null) {
+					rs.FontMapper = _cachedFontMapper;
 				}
 			}
 		}
