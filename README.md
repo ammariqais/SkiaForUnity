@@ -31,6 +31,8 @@ Benefits of SVG.Skia:
 
 ### v4.0 — New Features
 
+https://github.com/user-attachments/assets/a28f7218-6a5a-46c6-9a2b-f21c516a9a1e
+
 #### HB TextBlock
 - **Vertical alignment** — Top, Middle, Bottom
 - **Text direction** — LTR, RTL, Auto
