@@ -88,6 +88,12 @@ public class HBTextBlockEditor : Editor {
   static readonly GUIContent k_RenderLinksLabel = new GUIContent("Detect URLs", "Detect and render URL links in the text.");
   static readonly GUIContent k_LinkColorLabel = new GUIContent("Color", "Color for detected links.");
 
+  static readonly GUIContent k_FallbackFontsLabel = new GUIContent("Fallback Fonts", "Additional HBFontData assets used when the primary font lacks glyphs.");
+  static readonly GUIContent k_ParagraphSpacingLabel = new GUIContent("Para. Spacing", "Extra vertical space (in points) between paragraphs.");
+  static readonly GUIContent k_EventsLabel = new GUIContent("Events");
+  static readonly GUIContent k_OnTextChangedLabel = new GUIContent("On Text Changed", "Fired when the text content changes at runtime.");
+  static readonly GUIContent k_OnLinkClickedLabel = new GUIContent("On Link Clicked", "Fired when a detected URL link is clicked. Passes the URL string.");
+
   static readonly string[] k_CollapseExpandHint = { "<i>(Click to collapse)</i>", "<i>(Click to expand)</i>" };
 
   // --- Cached GUIStyles ---
@@ -110,6 +116,7 @@ public class HBTextBlockEditor : Editor {
     public static bool autoSize = true;
     public static bool appearance = true;
     public static bool links = false;
+    public static bool events = false;
   }
 
   // --- Serialized properties ---
@@ -119,7 +126,8 @@ public class HBTextBlockEditor : Editor {
     haloBlurProperty, backgroundColorProperty, underlineStyleProperty, lineHeightProperty,
     strikeThroughStyleProperty, textProperty, textAlignmentProperty, textVerticalAlignmentProperty, colorTypeProperty, autoFitHorizontalProperty, maxWidthProperty, maxHeightProperty, gradiantColorsProperty,
     gradiantPositionsProperty, enableGradiantProperty, gradiantAngleProperty, ellipsisProperty, maxLines, linkColorProperty,
-    textDirectionProperty, fontWeightProperty, fontVariantProperty, paddingProperty, richTextProperty;
+    textDirectionProperty, fontWeightProperty, fontVariantProperty, paddingProperty, richTextProperty,
+    fallbackFontsProperty, paragraphSpacingProperty, onTextChangedProperty, onLinkClickedProperty;
 
   private string currentFontFace = null;
   private bool _needsInitialRender = true;
@@ -181,6 +189,10 @@ public class HBTextBlockEditor : Editor {
     fontVariantProperty = serializedObject.FindProperty("fontVariant");
     paddingProperty = serializedObject.FindProperty("padding");
     richTextProperty = serializedObject.FindProperty("richText");
+    fallbackFontsProperty = serializedObject.FindProperty("fallbackFonts");
+    paragraphSpacingProperty = serializedObject.FindProperty("paragraphSpacing");
+    onTextChangedProperty = serializedObject.FindProperty("onTextChanged");
+    onLinkClickedProperty = serializedObject.FindProperty("onLinkClicked");
 
     if (fontProperty.propertyType == SerializedPropertyType.ObjectReference && fontProperty.objectReferenceValue != null) {
       currentFontFace = AssetDatabase.GetAssetPath(fontProperty.objectReferenceValue);
@@ -223,6 +235,7 @@ public class HBTextBlockEditor : Editor {
     DrawSectionHeader(k_MainSettingsHeader);
 
     DrawFontField();
+    EditorGUILayout.PropertyField(fallbackFontsProperty, k_FallbackFontsLabel);
     EditorGUILayout.PropertyField(fontSizeProperty, k_FontSizeLabel);
     DrawFontStyleToggles();
     DrawFontWeightSlider();
@@ -233,6 +246,7 @@ public class HBTextBlockEditor : Editor {
     DrawVerticalAlignmentButtons();
     DrawTextDirectionButtons();
     DrawSpacingRow();
+    EditorGUILayout.PropertyField(paragraphSpacingProperty, k_ParagraphSpacingLabel);
     EditorGUILayout.PropertyField(paddingProperty, k_PaddingLabel);
     EditorGUILayout.Space();
   }
@@ -331,6 +345,15 @@ public class HBTextBlockEditor : Editor {
       if (renderLinksProperty.boolValue) {
         EditorGUILayout.PropertyField(linkColorProperty, k_LinkColorLabel);
       }
+      EditorGUI.indentLevel--;
+    }
+
+    // --- Events ---
+    FoldoutState.events = EditorGUILayout.Foldout(FoldoutState.events, k_EventsLabel, true, s_BoldFoldout);
+    if (FoldoutState.events) {
+      EditorGUI.indentLevel++;
+      EditorGUILayout.PropertyField(onTextChangedProperty, k_OnTextChangedLabel);
+      EditorGUILayout.PropertyField(onLinkClickedProperty, k_OnLinkClickedLabel);
       EditorGUI.indentLevel--;
     }
 
@@ -684,7 +707,7 @@ public class HBTextBlockEditor : Editor {
     if (rect.Contains(Event.current.mousePosition)) {
       if (Event.current.type == EventType.DragUpdated) {
         foreach (var obj in DragAndDrop.objectReferences) {
-          if (obj is HBFontData || HBFontDataCreator.IsFontFile(obj)) {
+          if (obj is HBFontData || obj is TextAsset || HBFontDataCreator.IsFontFile(obj)) {
             DragAndDrop.visualMode = DragAndDropVisualMode.Link;
             Event.current.Use();
             break;
@@ -692,7 +715,7 @@ public class HBTextBlockEditor : Editor {
         }
       } else if (Event.current.type == EventType.DragPerform) {
         var dropped = DragAndDrop.objectReferences[0];
-        if (dropped is HBFontData) {
+        if (dropped is HBFontData || dropped is TextAsset) {
           fontProperty.objectReferenceValue = dropped;
           DragAndDrop.AcceptDrag();
           Event.current.Use();
@@ -719,11 +742,15 @@ public class HBTextBlockEditor : Editor {
     EditorGUI.BeginChangeCheck();
     EditorGUI.showMixedValue = fontProperty.hasMultipleDifferentValues;
     var current = fontProperty.objectReferenceValue;
-    var newObj = EditorGUI.ObjectField(rect, label, current, typeof(HBFontData), false);
+    // Accept both HBFontData (new) and TextAsset (legacy .txt/.json) for backwards compatibility
+    var newObj = EditorGUI.ObjectField(rect, label, current, typeof(UnityEngine.Object), false);
     EditorGUI.showMixedValue = false;
 
     if (EditorGUI.EndChangeCheck() && newObj != current) {
-      fontProperty.objectReferenceValue = newObj;
+      // Only accept HBFontData, TextAsset, or null
+      if (newObj == null || newObj is HBFontData || newObj is TextAsset) {
+        fontProperty.objectReferenceValue = newObj;
+      }
     }
 
     EditorGUI.EndProperty();
@@ -777,6 +804,22 @@ public class HBTextBlockEditor : Editor {
         }
         hbText.ReUpdateEditMode();
       }
+    }
+  }
+
+  // ===================== Preview =====================
+
+  public override bool HasPreviewGUI() => true;
+
+  public override GUIContent GetPreviewTitle() => new GUIContent("HB Text Preview");
+
+  public override void OnPreviewGUI(Rect r, GUIStyle background) {
+    var hb = (HB_TEXTBlock)target;
+    var rawImage = hb.GetComponent<UnityEngine.UI.RawImage>();
+    if (rawImage != null && rawImage.texture != null) {
+      EditorGUI.DrawPreviewTexture(r, rawImage.texture, null, ScaleMode.ScaleToFit);
+    } else {
+      EditorGUI.DropShadowLabel(r, "No preview available");
     }
   }
 
@@ -906,6 +949,56 @@ public class HBTextBlockOpenCallback {
       if (string.IsNullOrEmpty(textBlock.text)) continue;
       textBlock.ReUpdateEditMode();
     }
+  }
+}
+
+static class HBTextBlockMenuItems {
+  [MenuItem("GameObject/Skia UI (Canvas)/HB TextBlock", false, 10)]
+  static void CreateHBTextBlock(MenuCommand menuCommand) {
+    // Find or create Canvas
+    GameObject parent = menuCommand.context as GameObject;
+    Canvas canvas = parent != null ? parent.GetComponentInParent<Canvas>() : null;
+
+    if (canvas == null) {
+      // Look for existing Canvas in scene
+      canvas = Object.FindObjectOfType<Canvas>();
+    }
+
+    if (canvas == null) {
+      // Create new Canvas + EventSystem (like Unity's built-in UI creation)
+      var canvasGO = new GameObject("Canvas");
+      canvas = canvasGO.AddComponent<Canvas>();
+      canvas.renderMode = RenderMode.ScreenSpaceOverlay;
+      canvasGO.AddComponent<UnityEngine.UI.CanvasScaler>();
+      canvasGO.AddComponent<UnityEngine.UI.GraphicRaycaster>();
+      Undo.RegisterCreatedObjectUndo(canvasGO, "Create Canvas");
+
+      // Create EventSystem if none exists
+      if (Object.FindObjectOfType<UnityEngine.EventSystems.EventSystem>() == null) {
+        var esGO = new GameObject("EventSystem");
+        esGO.AddComponent<UnityEngine.EventSystems.EventSystem>();
+        esGO.AddComponent<UnityEngine.EventSystems.StandaloneInputModule>();
+        Undo.RegisterCreatedObjectUndo(esGO, "Create EventSystem");
+      }
+    }
+
+    // Create HB TextBlock
+    var go = new GameObject("HB TextBlock");
+    go.AddComponent<UnityEngine.UI.RawImage>();
+    var hb = go.AddComponent<HB_TEXTBlock>();
+    Undo.RegisterCreatedObjectUndo(go, "Create HB TextBlock");
+
+    // Parent to canvas or selected object
+    Transform parentTransform = parent != null && parent.GetComponentInParent<Canvas>() != null
+      ? parent.transform
+      : canvas.transform;
+    GameObjectUtility.SetParentAndAlign(go, parentTransform.gameObject);
+
+    // Set default RectTransform size
+    var rt = go.GetComponent<RectTransform>();
+    rt.sizeDelta = new Vector2(200, 50);
+
+    Selection.activeGameObject = go;
   }
 }
 #endif

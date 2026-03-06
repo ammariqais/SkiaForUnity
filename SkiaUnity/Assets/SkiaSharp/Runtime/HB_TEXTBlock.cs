@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
 using UnityEngine;
+using UnityEngine.Events;
 using UnityEngine.UI;
 using Topten.RichTextKit;
 using TextAlignment = Topten.RichTextKit.TextAlignment;
@@ -13,6 +14,7 @@ namespace SkiaSharp.Unity.HB {
 		rgb32
 	}
 
+	[AddComponentMenu("Skia UI (Canvas)/HB TextBlock")]
 	[RequireComponent(typeof(RawImage))]
 	public class HB_TEXTBlock : MonoBehaviour, ILayoutElement {
 		[SerializeField]
@@ -63,7 +65,14 @@ namespace SkiaSharp.Unity.HB {
 		protected FontVariant fontVariant = FontVariant.Normal;
 		[SerializeField]
 		protected Vector4 padding; // left, top, right, bottom
+		[SerializeField]
+		protected HBFontData[] fallbackFonts;
+		[SerializeField]
+		[Range(0, 50)]
+		protected float paragraphSpacing;
 
+		public UnityEvent onTextChanged = new();
+		public UnityEvent<string> onLinkClicked = new();
 
 		protected SKCanvas canvas;
 		protected SKImageInfo info = new();
@@ -134,7 +143,15 @@ namespace SkiaSharp.Unity.HB {
 			set {
 				Text = value;
 				ReUpdate();
+				onTextChanged?.Invoke();
 			}
+		}
+
+		public virtual void SetRichText(string value) {
+			richText = true;
+			Text = value;
+			ReUpdate();
+			onTextChanged?.Invoke();
 		}
 
 		public virtual Color FontColor {
@@ -474,7 +491,22 @@ namespace SkiaSharp.Unity.HB {
 			rs.Alignment = textAlignment;
 			rs.BaseDirection = textDirection;
 			rs.EllipsisEnabled = enableEllipsis;
-			if (richText) {
+			if (paragraphSpacing > 0 && Text.Contains("\n")) {
+				string[] paragraphs = Text.Split('\n');
+				var spacerStyle = styleBoldItalic.Modify(fontSize: paragraphSpacing, lineHeight: 1f);
+				for (int i = 0; i < paragraphs.Length; i++) {
+					if (i > 0) {
+						rs.AddText("\n", styleBoldItalic);
+						rs.AddText("\n", spacerStyle);
+					}
+					if (string.IsNullOrEmpty(paragraphs[i])) continue;
+					if (richText) {
+						HBRichTextParser.Parse(rs, paragraphs[i], styleBoldItalic);
+					} else {
+						rs.AddText(paragraphs[i], styleBoldItalic);
+					}
+				}
+			} else if (richText) {
 				HBRichTextParser.Parse(rs, Text, styleBoldItalic);
 			} else {
 				rs.AddText(Text, styleBoldItalic);
@@ -507,6 +539,9 @@ namespace SkiaSharp.Unity.HB {
 					_cachedFontMapperKey = typefaceKey;
 				}
 				rs.FontMapper = _cachedFontMapper;
+			} else {
+				// Reset to default FontMapper so system fonts respect weight/italic
+				rs.FontMapper = null;
 			}
 
 			if ( (!autoFitHorizontal && rectTransform.rect.width == 0)) {
@@ -535,14 +570,56 @@ namespace SkiaSharp.Unity.HB {
 			float padW = effectPadX * 2f;
 			float padH = effectPadY * 2f;
 
-			currentPreferdWidth = autoFitHorizontal ? rs.MeasuredWidth + padW > maxWidth ? maxWidth : rs.MeasuredWidth + padW : rectTransform.rect.width;
-			rs.MaxWidth = Mathf.Max(0, currentPreferdWidth - padW);
-			currentPreferdHeight = autoFitVertical ? maxHeight > -1  && rs.MeasuredHeight + padH > maxHeight ? maxHeight : rs.MeasuredHeight + padH : rectTransform.rect.height;
+			// --- Width ---
+			if (autoFitHorizontal) {
+				// Measure unconstrained (MaxWidth is null from line 483)
+				float naturalW = rs.MeasuredWidth;
+				float neededW = naturalW + padW;
+				if (maxWidth > -1 && neededW > maxWidth) {
+					// Text exceeds user's max limit — constrain
+					currentPreferdWidth = maxWidth;
+					rs.MaxWidth = Mathf.Max(0, maxWidth - padW);
+				} else {
+					// Text fits — size rect to content, add small buffer to MaxWidth
+					// to prevent floating-point precision issues from truncating
+					// single-word text (no break points) to 0 lines.
+					currentPreferdWidth = neededW;
+					rs.MaxWidth = Mathf.Ceil(naturalW) + 2;
+				}
+			} else {
+				currentPreferdWidth = rectTransform.rect.width;
+				rs.MaxWidth = Mathf.Max(0, currentPreferdWidth - padW);
+			}
 
-			rs.MaxHeight = Mathf.Max(0, currentPreferdHeight - padH);
+			// --- Height ---
+			// Capture measured height BEFORE setting MaxHeight (which can trigger truncation)
+			float measuredH = rs.MeasuredHeight;
+			if (autoFitVertical) {
+				float neededH = measuredH + padH;
+				if (maxHeight > -1 && neededH > maxHeight) {
+					currentPreferdHeight = maxHeight;
+				} else {
+					currentPreferdHeight = neededH;
+				}
+			} else {
+				currentPreferdHeight = rectTransform.rect.height;
+			}
+
+			if (autoFitVertical && maxHeight <= -1) {
+				rs.MaxHeight = null;
+			} else if (autoFitVertical) {
+				if (maxHeight > -1 && measuredH + padH > maxHeight) {
+					rs.MaxHeight = Mathf.Max(0, maxHeight - padH);
+				} else {
+					// Add buffer to prevent exact-match truncation
+					rs.MaxHeight = Mathf.Ceil(measuredH) + 2;
+				}
+			} else {
+				rs.MaxHeight = Mathf.Max(0, currentPreferdHeight - padH);
+			}
 
 			if (autoFitVertical) {
-				float fitHeight = heightPreferred ? rectTransform.sizeDelta.y : rs.MeasuredHeight + padH;
+				float fitHeight = measuredH + padH;
 				var size = autoFitHorizontal
 					? new Vector2(currentPreferdWidth, fitHeight)
 					: new Vector2(rectTransform.rect.width, fitHeight);
@@ -718,17 +795,57 @@ namespace SkiaSharp.Unity.HB {
 				rawImage = GetComponent<RawImage>();
 				rectTransform = transform as RectTransform;
 			}
+			SyncStyleFromFields();
 			urls.Clear();
 			RenderText();
 		}
 
-		#if UNITY_EDITOR
-		public virtual void ReUpdateEditMode() {
+		public virtual float GradientAngle {
+			get => gradiantAngle;
+			set {
+				if (gradiantAngle != value) {
+					gradiantAngle = value;
+					ReUpdate();
+				}
+			}
+		}
+
+		/// <summary>
+		/// Set multiple properties at once and render a single frame.
+		/// Used by HBTextAnimator to avoid multiple re-renders per frame.
+		/// </summary>
+		public virtual void ApplyAnimatedValues(
+			string displayText = null,
+			Color? fontColor = null,
+			int? haloWidth = null,
+			float? shadowOffX = null,
+			float? shadowOffY = null,
+			int? fontSize = null,
+			int? letterSpacing = null,
+			float? gradientAngle = null,
+			float? maxWidth = null,
+			float? maxHeight = null) {
+			if (displayText != null) Text = displayText;
+			if (fontColor.HasValue) this.fontColor = fontColor.Value;
+			if (haloWidth.HasValue) outlineWidth = haloWidth.Value;
+			if (shadowOffX.HasValue) shadowOffsetX = shadowOffX.Value;
+			if (shadowOffY.HasValue) shadowOffsetY = shadowOffY.Value;
+			if (fontSize.HasValue) this.fontSize = fontSize.Value;
+			if (letterSpacing.HasValue) this.letterSpacing = letterSpacing.Value;
+			if (gradientAngle.HasValue) gradiantAngle = gradientAngle.Value;
+			if (maxWidth.HasValue) this.maxWidth = maxWidth.Value;
+			if (maxHeight.HasValue) this.maxHeight = maxHeight.Value;
+
 			if (rawImage == null) {
 				rawImage = GetComponent<RawImage>();
 				rectTransform = transform as RectTransform;
 			}
+			SyncStyleFromFields();
+			urls.Clear();
+			RenderText();
+		}
 
+		protected void SyncStyleFromFields() {
 			styleBoldItalic.FontSize = fontSize;
 			styleBoldItalic.TextColor = new SKColor(ColorToUint(fontColor));
 			styleBoldItalic.HaloWidth = outlineWidth;
@@ -751,6 +868,61 @@ namespace SkiaSharp.Unity.HB {
 			styleBoldItalic.LineHeight = lineHeight;
 			styleBoldItalic.StrikeThrough = strikeThroughStyle;
 			styleBoldItalic.FontVariant = fontVariant;
+		}
+
+		// --- Reset ---
+		[ContextMenu("Reset to Defaults")]
+		private void ResetToDefaults() {
+			#if UNITY_EDITOR
+			UnityEditor.Undo.RecordObject(this, "Reset HB_TEXTBlock");
+			#endif
+			Text = "";
+			fontSize = 20;
+			letterSpacing = 0;
+			maxLines = 0;
+			outlineWidth = 0;
+			outlineBlur = 0;
+			shadowWidth = 0;
+			innerGlowWidth = 0;
+			shadowOffsetX = 0;
+			shadowOffsetY = 1;
+			fontColor = Color.black;
+			innerGlowColor = Color.white;
+			backgroundColor = Color.clear;
+			linkColor = Color.blue;
+			italic = false;
+			bold = false;
+			autoFitVertical = true;
+			autoFitHorizontal = false;
+			renderLinks = false;
+			enableGradiant = false;
+			enableEllipsis = true;
+			richText = false;
+			underlineStyle = default;
+			strikeThroughStyle = default;
+			lineHeight = 1.0f;
+			maxHeight = -1;
+			gradiantAngle = 90;
+			textAlignment = TextAlignment.Center;
+			verticalAlignment = VerticalAlignment.Top;
+			textDirection = TextDirection.Auto;
+			fontWeight = 400;
+			fontVariant = FontVariant.Normal;
+			padding = Vector4.zero;
+			paragraphSpacing = 0;
+			fallbackFonts = null;
+			gradiantColors = null;
+			gradiantPositions = null;
+			ReUpdate();
+		}
+
+		#if UNITY_EDITOR
+		public virtual void ReUpdateEditMode() {
+			if (rawImage == null) {
+				rawImage = GetComponent<RawImage>();
+				rectTransform = transform as RectTransform;
+			}
+			SyncStyleFromFields();
 			urls.Clear();
 			RenderText();
 		}
@@ -764,6 +936,7 @@ namespace SkiaSharp.Unity.HB {
 					var caretPos = rs.HitTest(rawImageRect.sizeDelta.x * normalizedX, rawImageRect.sizeDelta.y * normalizedY);
 					foreach (var url in urls) {
 						if (caretPos.ClosestCodePointIndex >= url.Value.IndexStart && caretPos.ClosestCodePointIndex <=  url.Value.IndexEnd) {
+							onLinkClicked?.Invoke(url.Value.link);
 							return url.Value.link;
 						}
 					}
