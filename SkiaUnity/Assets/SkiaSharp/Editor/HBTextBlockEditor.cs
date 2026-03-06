@@ -1000,5 +1000,114 @@ static class HBTextBlockMenuItems {
 
     Selection.activeGameObject = go;
   }
+
+  [MenuItem("GameObject/Skia UI (Canvas)/HB InputField", false, 11)]
+  static void CreateHBInputField(MenuCommand menuCommand) {
+    GameObject parent = menuCommand.context as GameObject;
+    Canvas canvas = parent != null ? parent.GetComponentInParent<Canvas>() : null;
+
+    if (canvas == null)
+      canvas = Object.FindObjectOfType<Canvas>();
+
+    if (canvas == null) {
+      var canvasGO = new GameObject("Canvas");
+      canvas = canvasGO.AddComponent<Canvas>();
+      canvas.renderMode = RenderMode.ScreenSpaceOverlay;
+      canvasGO.AddComponent<UnityEngine.UI.CanvasScaler>();
+      canvasGO.AddComponent<UnityEngine.UI.GraphicRaycaster>();
+      Undo.RegisterCreatedObjectUndo(canvasGO, "Create Canvas");
+
+      if (Object.FindObjectOfType<UnityEngine.EventSystems.EventSystem>() == null) {
+        var esGO = new GameObject("EventSystem");
+        esGO.AddComponent<UnityEngine.EventSystems.EventSystem>();
+        esGO.AddComponent<UnityEngine.EventSystems.StandaloneInputModule>();
+        Undo.RegisterCreatedObjectUndo(esGO, "Create EventSystem");
+      }
+    }
+
+    Transform parentTransform = parent != null && parent.GetComponentInParent<Canvas>() != null
+      ? parent.transform
+      : canvas.transform;
+
+    // Root: HB InputField (Image background + HBInputField)
+    var root = new GameObject("HB InputField");
+    var rootRT = root.AddComponent<RectTransform>();
+    var bgImage = root.AddComponent<UnityEngine.UI.Image>();
+    bgImage.color = new Color(1f, 1f, 1f, 1f);
+    bgImage.sprite = AssetDatabase.GetBuiltinExtraResource<Sprite>("UI/Skin/InputFieldBackground.psd");
+    bgImage.type = UnityEngine.UI.Image.Type.Sliced;
+    var inputField = root.AddComponent<HBInputField>();
+    GameObjectUtility.SetParentAndAlign(root, parentTransform.gameObject);
+    rootRT.sizeDelta = new Vector2(300, 40);
+
+    // Text Viewport (RectMask2D for clipping)
+    var viewport = new GameObject("Text Area");
+    var viewportRT = viewport.AddComponent<RectTransform>();
+    viewport.AddComponent<UnityEngine.UI.RectMask2D>();
+    viewport.transform.SetParent(root.transform, false);
+    viewportRT.anchorMin = Vector2.zero;
+    viewportRT.anchorMax = Vector2.one;
+    viewportRT.offsetMin = new Vector2(10, 6);
+    viewportRT.offsetMax = new Vector2(-10, -6);
+
+    // Placeholder
+    var placeholderGO = new GameObject("Placeholder");
+    placeholderGO.AddComponent<UnityEngine.UI.RawImage>();
+    var placeholderText = placeholderGO.AddComponent<HB_TEXTBlock>();
+    placeholderGO.transform.SetParent(viewport.transform, false);
+    var placeholderRT = placeholderGO.GetComponent<RectTransform>();
+    placeholderRT.anchorMin = Vector2.zero;
+    placeholderRT.anchorMax = Vector2.one;
+    placeholderRT.offsetMin = Vector2.zero;
+    placeholderRT.offsetMax = Vector2.zero;
+
+    // Text
+    var textGO = new GameObject("Text");
+    textGO.AddComponent<UnityEngine.UI.RawImage>();
+    var textComp = textGO.AddComponent<HB_TEXTBlock>();
+    textGO.transform.SetParent(viewport.transform, false);
+    var textRT = textGO.GetComponent<RectTransform>();
+    textRT.anchorMin = Vector2.zero;
+    textRT.anchorMax = Vector2.one;
+    textRT.offsetMin = Vector2.zero;
+    textRT.offsetMax = Vector2.zero;
+
+    // Caret
+    var caretGO = new GameObject("Caret");
+    var caretRT = caretGO.AddComponent<RectTransform>();
+    var caretImg = caretGO.AddComponent<UnityEngine.UI.Image>();
+    caretImg.color = new Color(0.2f, 0.2f, 0.2f, 1f);
+    caretImg.raycastTarget = false;
+    caretGO.transform.SetParent(textGO.transform, false);
+    caretRT.sizeDelta = new Vector2(2, 20);
+    caretGO.SetActive(false);
+
+    // Wire references via SerializedObject
+    Undo.RegisterCreatedObjectUndo(root, "Create HB InputField");
+    var so = new SerializedObject(inputField);
+    so.FindProperty("textComponent").objectReferenceValue = textComp;
+    so.FindProperty("placeholder").objectReferenceValue = placeholderText;
+    so.FindProperty("textViewport").objectReferenceValue = viewportRT;
+    so.FindProperty("caretImage").objectReferenceValue = caretImg;
+    so.ApplyModifiedPropertiesWithoutUndo();
+
+    // Configure text components for input field layout
+    float textWidth = 300f - 20f; // root width minus viewport padding
+    var textSO = new SerializedObject(textComp);
+    textSO.FindProperty("maxWidth").floatValue = textWidth;
+    textSO.FindProperty("textAlignment").enumValueIndex = 0; // Left
+    textSO.FindProperty("autoFitVertical").boolValue = true;
+    textSO.ApplyModifiedPropertiesWithoutUndo();
+
+    var placeholderSO = new SerializedObject(placeholderText);
+    placeholderSO.FindProperty("Text").stringValue = "Enter text...";
+    placeholderSO.FindProperty("fontColor").colorValue = new Color(0.5f, 0.5f, 0.5f, 0.5f);
+    placeholderSO.FindProperty("maxWidth").floatValue = textWidth;
+    placeholderSO.FindProperty("textAlignment").enumValueIndex = 0; // Left
+    placeholderSO.FindProperty("autoFitVertical").boolValue = true;
+    placeholderSO.ApplyModifiedPropertiesWithoutUndo();
+
+    Selection.activeGameObject = root;
+  }
 }
 #endif

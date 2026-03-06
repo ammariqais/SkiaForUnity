@@ -810,6 +810,100 @@ namespace SkiaSharp.Unity.HB {
 			}
 		}
 
+		// Computes the same canvas transform used in RenderText.
+		// Canvas does Scale(1,-1) then Translate(translateX, verticalOffset).
+		// TextBlock point (tx,ty) → surface pixel (tx+translateX, -(ty+verticalOffset)).
+		// Surface pixel (0,0) maps to bottom of Unity RawImage.
+		private void GetRenderTransform(out float translateX, out float verticalOffset, out int surfW, out int surfH) {
+			float epX = 0f, epY = 0f;
+			if (outlineWidth > 0) {
+				float oe = outlineWidth + outlineBlur;
+				epX = Mathf.Max(epX, oe);
+				epY = Mathf.Max(epY, oe);
+			}
+			if (shadowWidth > 0) {
+				epX = Mathf.Max(epX, shadowWidth + Mathf.Abs(shadowOffsetX));
+				epY = Mathf.Max(epY, shadowWidth + Mathf.Abs(shadowOffsetY));
+			}
+			float uPadL = padding.x, uPadT = padding.y, uPadR = padding.z, uPadB = padding.w;
+			epX += (uPadL + uPadR) / 2f;
+			epY += (uPadT + uPadB) / 2f;
+			float baseEpX = epX - (uPadL + uPadR) / 2f;
+			float baseEpY = epY - (uPadT + uPadB) / 2f;
+
+			translateX = baseEpX + uPadL;
+
+			float rectW = rectTransform.rect.width;
+			float rectH = rectTransform.rect.height;
+			surfW = Mathf.CeilToInt(rectW / 4) * 4;
+			surfH = Mathf.CeilToInt(rectH / 4) * 4;
+
+			if (verticalAlignment == VerticalAlignment.Middle)
+				verticalOffset = -surfH + (rectH - rs.MeasuredHeight) / 2f;
+			else if (verticalAlignment == VerticalAlignment.Bottom)
+				verticalOffset = -surfH + (rectH - rs.MeasuredHeight) - uPadB;
+			else
+				verticalOffset = -surfH + baseEpY + uPadT;
+		}
+
+		/// <summary>
+		/// Returns the caret rectangle in RectTransform local coordinates.
+		/// Used by HBInputField for cursor positioning.
+		/// </summary>
+		public bool GetCaretLocalRect(int codePointIndex, out Rect localRect) {
+			localRect = default;
+			if (rs == null) return false;
+
+			int clampedIndex = Mathf.Clamp(codePointIndex, 0, rs.MeasuredLength);
+			var caretInfo = rs.GetCaretInfo(new Topten.RichTextKit.CaretPosition(clampedIndex));
+			if (caretInfo.IsNone) return false;
+
+			GetRenderTransform(out float translateX, out float verticalOffset, out int surfW, out int surfH);
+
+			// TextBlock (tx,ty) → surface (tx+translateX, -(ty+verticalOffset))
+			float surfX = caretInfo.CaretRectangle.Left + translateX;
+			float surfYTop = -(caretInfo.CaretRectangle.Top + verticalOffset);
+			float surfYBot = -(caretInfo.CaretRectangle.Bottom + verticalOffset);
+
+			// Surface → RectTransform local
+			// Surface (0,0) = bottom of RawImage, (surfW,surfH) = top of RawImage
+			Rect rect = rectTransform.rect;
+			float rectW = rect.width;
+			float rectH = rect.height;
+
+			float localX = (surfX / surfW) * rectW + rect.xMin;
+			float localYTop = (surfYTop / surfH) * rectH + rect.yMin;
+			float localYBot = (surfYBot / surfH) * rectH + rect.yMin;
+
+			localRect = new Rect(localX, localYBot, 2f, localYTop - localYBot);
+			return true;
+		}
+
+		/// <summary>
+		/// Hit-test a local point and return the closest code point index.
+		/// Used by HBInputField for click-to-caret.
+		/// </summary>
+		public int HitTestLocal(Vector2 localPoint) {
+			if (rs == null) return 0;
+
+			GetRenderTransform(out float translateX, out float verticalOffset, out int surfW, out int surfH);
+
+			// Local → surface
+			Rect rect = rectTransform.rect;
+			float rectW = rect.width;
+			float rectH = rect.height;
+
+			float surfX = (localPoint.x - rect.xMin) / rectW * surfW;
+			float surfY = (localPoint.y - rect.yMin) / rectH * surfH;
+
+			// Surface → TextBlock: tx = surfX - translateX, ty = -surfY - verticalOffset
+			float tx = surfX - translateX;
+			float ty = -surfY - verticalOffset;
+
+			var result = rs.HitTest(tx, ty);
+			return result.ClosestCodePointIndex;
+		}
+
 		/// <summary>
 		/// Set multiple properties at once and render a single frame.
 		/// Used by HBTextAnimator to avoid multiple re-renders per frame.
