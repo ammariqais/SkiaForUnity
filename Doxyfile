@@ -1,0 +1,66 @@
+# Doxyfile for SkiaForUnity
+
+PROJECT_NAME           = "SkiaForUnity"
+PROJECT_BRIEF          = ""
+OUTPUT_DIRECTORY       = /Users/apple/Desktop/SkiaForUnity/docs
+CREATE_SUBDIRS         = NO
+OUTPUT_LANGUAGE        = English
+BRIEF_MEMBER_DESC      = YES
+REPEAT_BRIEF           = YES
+ALWAYS_DETAILED_SEC    = NO
+FULL_PATH_NAMES        = NO
+OPTIMIZE_OUTPUT_JAVA   = YES
+MARKDOWN_SUPPORT       = YES
+TOC_INCLUDE_HEADINGS   = 5
+MARKDOWN_ID_STYLE      = GITHUB
+AUTOLINK_SUPPORT       = YES
+TAB_SIZE               = 4
+SHOW_USED_FILES        = NO
+
+# --- Extract ---
+EXTRACT_ALL            = NO
+EXTRACT_PRIVATE        = NO
+EXTRACT_STATIC         = NO
+
+# --- Input ---
+INPUT                  = /Users/apple/Desktop/SkiaForUnity/SkiaUnity/Assets/SkiaSharp/Runtime
+INPUT_ENCODING         = UTF-8
+FILE_PATTERNS          = *.cs *.md
+RECURSIVE              = YES
+EXCLUDE                =
+EXCLUDE_PATTERNS       =
+
+# --- Source browsing ---
+SOURCE_BROWSER         = YES
+INLINE_SOURCES         = NO
+STRIP_CODE_COMMENTS    = YES
+
+# --- HTML output ---
+GENERATE_HTML          = YES
+HTML_OUTPUT            = html
+HTML_EXTRA_STYLESHEET  = /tmp/doxygen-awesome-css/doxygen-awesome.css \
+                         /tmp/doxygen-awesome-css/doxygen-awesome-sidebar-only.css
+HTML_COLORSTYLE        = TOGGLE
+GENERATE_TREEVIEW      = YES
+TREEVIEW_WIDTH         = 250
+SEARCHENGINE           = YES
+HTML_DYNAMIC_MENUS     = YES
+HTML_CODE_FOLDING      = YES
+DISABLE_INDEX          = NO
+FULL_SIDEBAR           = NO
+
+# --- Other outputs (disabled to keep it fast) ---
+GENERATE_LATEX         = NO
+GENERATE_RTF           = NO
+GENERATE_MAN           = NO
+GENERATE_XML           = NO
+
+# --- Graphs (disabled, no dot) ---
+HAVE_DOT               = NO
+CLASS_GRAPH            = NO
+
+# --- Warnings ---
+QUIET                  = NO
+WARNINGS               = YES
+WARN_IF_UNDOCUMENTED   = NO
+WARN_IF_DOC_ERROR      = YES
