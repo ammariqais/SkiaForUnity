@@ -15,24 +15,61 @@ Benefits of SVG.Skia:
 
 ## Features
 
-- **High-performance graphics:** SkiaSharp for Unity utilizes Skia's hardware-accelerated rendering capabilities to deliver fast and smooth graphics performance.
+- **High-performance graphics:** Hardware-accelerated rendering with SKSurface reuse, SKTypeface caching with reference counting, and reduced per-render allocations.
 
-- **Cross-platform support:** SkiaSharp supports multiple platforms, including Windows, macOS, Linux, iOS, Android, allowing you to create graphics that work seamlessly across different devices.
+- **Cross-platform support:** Windows, macOS, Linux, iOS, and Android.
 
-- **Extensive API:** SkiaSharp provides a rich set of APIs for drawing paths, shapes, text, and images, enabling you to create visually stunning graphics and user interfaces.
+- **Extensive API:** Rich set of APIs for drawing paths, shapes, text, and images.
 
-- **Custom shaders:** With SkiaSharp for Unity, you can write custom shaders using the Skia graphics API, allowing you to create unique visual effects and stylized graphics.
+- **Custom shaders:** Write custom shaders using the Skia graphics API for unique visual effects.
 
-- **Lottie animations:** The package includes the Skottie library, which enables you to import and play Lottie animations in your Unity projects.
+- **Lottie animations:** Import and play Lottie animations via the Skottie library.
 
-- **HarfBuzz support:** The integration of HarfBuzz enhances text rendering in SkiaSharp, offering benefits such as native fonts, emoji rendering, and RTL language support. This makes SkiaSharp for Unity an excellent choice for projects that require advanced text rendering capabilities.
-  
+- **HarfBuzz text rendering:** Native fonts, emoji, RTL/bidirectional text, and advanced text shaping.
+
+- **Integration with Unity:** Seamlessly integrates with the Unity Editor and Canvas UI system.
+
+### v4.0 — New Features
+
+#### HB TextBlock
+- **Vertical alignment** — Top, Middle, Bottom
+- **Text direction** — LTR, RTL, Auto
+- **Font weight** — 100 (Thin) to 900 (Black)
+- **Font variant** — Normal, SuperScript, SubScript
+- **Rich text** — `<b>` `<i>` `<u>` `<s>` `<sup>` `<sub>` `<size=N>` `<color=#HEX>` `<color=name>`
+- **Fallback fonts** — multiple HBFontData assets for multi-language support
+- **Paragraph spacing** — configurable space between paragraphs
+- **Padding** — Left, Top, Right, Bottom text area padding
+- **Link detection** — automatic URL rendering with click callbacks
+- **Events** — onTextChanged, onLinkClicked
+- **ILayoutElement** integration for Unity layout system
+- **TMP-style Inspector** — section headers, B/I/U/S toggle strip, alignment buttons, collapsible sections, gradient editor, text info panel, live preview, tooltips on every field
+
+#### HB InputField (New)
+Full-featured input field built on HB_TEXTBlock, similar to TMP_InputField.
+- **Content types** — Standard, Integer, Decimal, Alphanumeric, Name, Email, Password
+- **Line types** — SingleLine, MultiLine
+- **Text settings** — font, font size, color, bold, italic, alignment, rich text
+- **Placeholder** — configurable text and color
+- **Auto-resize** — multiline fields grow height to fit content (min/max bounds)
+- **Text scrolling** — horizontal for single-line, vertical for multiline
+- **Caret** — configurable color, blink rate, width, or hide completely
+- **Selection** — click, double-click (word), triple-click (all), Shift+arrows, Ctrl+A
+- **Clipboard** — Ctrl+C, Ctrl+V, Ctrl+X
+- **Navigation** — arrow keys, Ctrl+arrows (word jump), Home, End, Tab/Shift+Tab
+- **Read-only mode** — custom background and font color
+- **Focus highlight** — optional background color change
+- **Mobile support** — hide native input overlay on iOS/Android
+- **Character limit** and password masking
+- **Events** — onValueChanged, onSubmit, onEndEdit, onFocus, onUnfocus
+
+#### HB Text Animator
+- Sequential multi-step animations on any HB_TEXTBlock
+- **Effects** — Typewriter, Fade, Color Lerp, Scale, Slide, Shake, Gradient Angle, Outline Pulse, Shadow Animate, Font Size, Letter Spacing
+- Per-step duration, delay, and ease curve
+- Loop support, editor preview, onStepComplete/onComplete events
 
 https://github.com/ammariqais/SkiaForUnity/assets/62248657/ac1a8c35-bb24-4b64-ac3e-85a5b06ed276
-
-
-
-- **Integration with Unity:** SkiaSharp for Unity seamlessly integrates with the Unity Editor, providing a familiar development environment for working with Skia graphics and Lottie animations in your Unity projects.
 
 ## Watch the SkiaForUnity v1.0.0.Pre-2 Release Videos:
 ## Editor Mode
