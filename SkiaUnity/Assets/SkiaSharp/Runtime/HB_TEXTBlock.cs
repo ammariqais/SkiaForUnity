@@ -702,6 +702,7 @@ namespace SkiaSharp.Unity.HB {
 			if (texture == null) {
 				texture = new Texture2D(roundedWidth, roundedHeight, format, false);
 				texture.name = "HB_Text";
+				texture.hideFlags = HideFlags.DontSave;
 				texture.wrapMode = TextureWrapMode.Repeat;
 			} else {
 				texture.Reinitialize(roundedWidth, roundedHeight, format, false);
