@@ -456,11 +456,19 @@ namespace SkiaSharp.Unity.HB {
 				if (characterLimit > 0 && kbText.Length > characterLimit)
 					kbText = kbText.Substring(0, characterLimit);
 
+				// Sync validated text back to keyboard if it changed
+				if (kbText != m_Keyboard.text)
+					m_Keyboard.text = kbText;
+
+				// Compute new caret position from what actually changed
+				m_CaretPosition = ComputeCaretFromDiff(m_Text, kbText);
 				m_Text = kbText;
-				m_CaretPosition = m_Text.Length;
 				m_SelectionAnchor = m_CaretPosition;
 				UpdateDisplay();
 				onValueChanged?.Invoke(m_Text);
+
+				// Keep native keyboard cursor in sync with our caret
+				SyncKeyboardSelection();
 			}
 
 			if (m_Keyboard.status == TouchScreenKeyboard.Status.Done) {
@@ -468,6 +476,39 @@ namespace SkiaSharp.Unity.HB {
 				Deactivate();
 			} else if (m_Keyboard.status == TouchScreenKeyboard.Status.Canceled) {
 				Deactivate();
+			}
+		}
+
+		private int ComputeCaretFromDiff(string oldText, string newText) {
+			int oldLen = oldText.Length;
+			int newLen = newText.Length;
+
+			// Find common prefix
+			int prefixLen = 0;
+			int minLen = Mathf.Min(oldLen, newLen);
+			while (prefixLen < minLen && oldText[prefixLen] == newText[prefixLen])
+				prefixLen++;
+
+			// Find common suffix
+			int suffixLen = 0;
+			while (suffixLen < (minLen - prefixLen)
+				   && oldText[oldLen - 1 - suffixLen] == newText[newLen - 1 - suffixLen])
+				suffixLen++;
+
+			// Caret goes right after the inserted/changed region
+			int insertedLen = newLen - prefixLen - suffixLen;
+			return Mathf.Clamp(prefixLen + Mathf.Max(0, insertedLen), 0, newLen);
+		}
+
+		private void SyncKeyboardSelection() {
+			if (m_Keyboard == null || !m_Keyboard.active) return;
+
+			if (HasSelection) {
+				int start = Mathf.Min(m_CaretPosition, m_SelectionAnchor);
+				int length = Mathf.Abs(m_CaretPosition - m_SelectionAnchor);
+				m_Keyboard.selection = new RangeInt(start, length);
+			} else {
+				m_Keyboard.selection = new RangeInt(m_CaretPosition, 0);
 			}
 		}
 
@@ -881,6 +922,7 @@ namespace SkiaSharp.Unity.HB {
 			UpdateCaretVisual();
 			ScrollToCaret();
 			UpdateSelectionVisual();
+			SyncKeyboardSelection();
 		}
 
 		private void ResetBlink() {
