@@ -4,18 +4,9 @@ SkiaSharp for Unity is a powerful plugin that leverages the SkiaSharp 2D graphic
 
 SkiaSharp is a .NET binding to the Skia library, which is utilized by popular platforms like Google Chrome, Android, and Flutter. By integrating SkiaSharp into Unity, you gain access to a wide range of APIs for rendering vector graphics, text, and images. The inclusion of HarfBuzz further improves text rendering, making it ideal for internationalization and multilingual projects.
 
-## Added support for SVG.Skia:
-
-SkiaForUnity now supports rendering SVG graphics using SVG.Skia. This allows you to leverage the power of SVG for creating scalable vector graphics within your Unity projects.
-
-Benefits of SVG.Skia:
-
-    Scalability: SVG graphics can be scaled to any size without losing quality.
-    Cross-platform compatibility: SVG is a widely supported format that works across different platforms.
-
 ## Features
 
-- **High-performance graphics:** Hardware-accelerated rendering with SKSurface reuse, SKTypeface caching with reference counting, and reduced per-render allocations.
+- **High-performance graphics:** Hardware-accelerated rendering with SKSurface reuse, SKTypeface caching with reference counting, dirty-flag rendering, and reduced per-render allocations.
 
 - **Cross-platform support:** Windows, macOS, Linux, iOS, and Android.
 
@@ -25,15 +16,34 @@ Benefits of SVG.Skia:
 
 - **Lottie animations:** Import and play Lottie animations via the Skottie library.
 
+- **SVG support:** Render scalable vector graphics using SVG.Skia — scale to any size without losing quality, cross-platform compatible.
+
 - **HarfBuzz text rendering:** Native fonts, emoji, RTL/bidirectional text, and advanced text shaping.
+
+- **SkiaGraphic:** Vector shape UI component for Canvas — rectangles, rounded rects, circles, ellipses with fills, strokes, shadows, and gradients.
+
+- **Pre-Bake System:** Bake any SkiaGraphic or HB TextBlock to a Sprite PNG with auto SpriteAtlas for draw call batching and zero runtime cost.
 
 - **Integration with Unity:** Seamlessly integrates with the Unity Editor and Canvas UI system.
 
-### v4.0 — New Features
-
 https://github.com/user-attachments/assets/a28f7218-6a5a-46c6-9a2b-f21c516a9a1e
 
-#### HB TextBlock
+## SkiaGraphic
+
+A Canvas UI component for rendering vector shapes with zero code.
+
+- **Shapes** — Rectangle, RoundedRect (per-corner radii), Circle, Ellipse
+- **Fill** — Solid color, LinearGradient, RadialGradient, SweepGradient, Image (Stretch/Fit/Fill/Tile)
+- **Stroke** — Solid or gradient, dashed, configurable width
+- **Drop Shadow** — Offset, blur, color
+- **Inner Shadow** — Offset, blur, color
+- **Resolution Scale** — Lower for mobile performance
+- Right-click: `GameObject > Skia UI (Canvas) > Skia Graphic`
+
+## HB TextBlock
+
+Advanced text rendering component powered by HarfBuzz and SkiaSharp.
+
 - **Vertical alignment** — Top, Middle, Bottom
 - **Text direction** — LTR, RTL, Auto
 - **Font weight** — 100 (Thin) to 900 (Black)
@@ -47,8 +57,10 @@ https://github.com/user-attachments/assets/a28f7218-6a5a-46c6-9a2b-f21c516a9a1e
 - **ILayoutElement** integration for Unity layout system
 - **TMP-style Inspector** — section headers, B/I/U/S toggle strip, alignment buttons, collapsible sections, gradient editor, text info panel, live preview, tooltips on every field
 
-#### HB InputField (New)
-Full-featured input field built on HB_TEXTBlock, similar to TMP_InputField.
+## HB InputField
+
+Full-featured input field built on HB TextBlock, similar to TMP_InputField.
+
 - **Content types** — Standard, Integer, Decimal, Alphanumeric, Name, Email, Password
 - **Line types** — SingleLine, MultiLine
 - **Text settings** — font, font size, color, bold, italic, alignment, rich text
@@ -65,20 +77,42 @@ Full-featured input field built on HB_TEXTBlock, similar to TMP_InputField.
 - **Character limit** and password masking
 - **Events** — onValueChanged, onSubmit, onEndEdit, onFocus, onUnfocus
 
-#### HB Text Animator
-- Sequential multi-step animations on any HB_TEXTBlock
+## HB Text Animator
+
+Sequential multi-step animations on any HB TextBlock.
+
 - **Effects** — Typewriter, Fade, Color Lerp, Scale, Slide, Shake, Gradient Angle, Outline Pulse, Shadow Animate, Font Size, Letter Spacing
 - Per-step duration, delay, and ease curve
 - Loop support, editor preview, onStepComplete/onComplete events
 
+## Pre-Bake System
+
+Render any SkiaGraphic or HB TextBlock in the editor, save as a Sprite PNG, and batch via a shared SpriteAtlas — **zero SkiaSharp cost at runtime**.
+
+- One-click **Bake to PNG** button in the inspector
+- Auto-creates and manages `SpriteAtlas` for draw call batching (20 baked elements → 1-2 draw calls)
+- Swaps RawImage → Image component automatically
+- **Nine-slice** support for SkiaGraphic solid fills (resize freely without re-bake)
+- **Unbake** restores live rendering instantly
+- Inspector properties greyed out when baked to prevent accidental edits
+
+## Performance
+
+- **Dirty flag rendering** — HB TextBlock property changes coalesce into a single render per frame
+- **Gradient caching** — Hash-based dirty check avoids recreating gradient objects when nothing changed
+- **Layout rebuild throttling** — `LayoutRebuilder.MarkLayoutForRebuild` only called when size actually changes
+- **Typewriter cache** — HB Text Animator only allocates a new Substring when visible character count changes
+- **SKTypeface caching** — Reference-counted typeface cache shared across all text components
+- **SKSurface reuse** — Surfaces resized in-place instead of recreated each frame
+
 https://github.com/ammariqais/SkiaForUnity/assets/62248657/ac1a8c35-bb24-4b64-ac3e-85a5b06ed276
 
-## Watch the SkiaForUnity v1.0.0.Pre-2 Release Videos:
-## Editor Mode
+## Videos
+
+### Editor Mode
 https://github.com/ammariqais/SkiaForUnity/assets/62248657/ccf71cd1-17ae-4442-b42f-4d3d067849f1
 
-## Playing Animations
-
+### Playing Animations
 https://github.com/ammariqais/SkiaForUnity/assets/62248657/cc7a5d56-48e7-4e28-8e18-b8e8ec776eab
 
 ## Getting Started
@@ -87,7 +121,7 @@ To get started with SkiaSharp for Unity, follow these steps:
 
 1. Clone or download the SkiaSharp for Unity repository from [GitHub](git@github.com:ammariqais/SkiaForUnity.git). or you can use
 
-**Package Manager** 
+**Package Manager**
 1. Open your Unity project and navigate to `Windows`> `Package Manager`.
 2. Click the `+` button in the top-left corner and select Add package from git URL
 3. Enter the following URL and click `Add`
@@ -95,15 +129,15 @@ To get started with SkiaSharp for Unity, follow these steps:
 `https://github.com/ammariqais/SkiaForUnity.git?path=SkiaUnity/Assets/SkiaSharp`
 
 3. Import the SkiaSharp package into your Unity project.
-   
+
 4. if you're building your game for iOS. **This step is necessary to have the library work on iOS**
 
    4a. In Unity, go to Edit > Project Settings > Player and select the iOS platform.
-   
+
    4b. Scroll down to the Other Settings section and locate the Scripting Define Symbols field.
-   
+
    4c. Add  `__UNIFIED__` and `__IOS__` to the Scripting Define Symbols.
-   
+
    ![image](https://github.com/user-attachments/assets/f85ad50d-71e7-4276-9c26-f7044581ff0c)
 
 
@@ -135,4 +169,3 @@ SkiaSharp for Unity is built on top of the amazing SkiaSharp library and include
 ## Authors
 
 SkiaSharp for Unity is developed and maintained by [Qais Ammari](https://github.com/ammariqais).
-
