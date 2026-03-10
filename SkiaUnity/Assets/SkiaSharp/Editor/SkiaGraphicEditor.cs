@@ -57,6 +57,23 @@ public class SkiaGraphicEditor : Editor {
 	private static readonly GUIContent k_RaycastTargetLabel = new GUIContent("Raycast Target");
 	private static readonly GUIContent k_MaskableLabel = new GUIContent("Maskable");
 
+	private GameObject[] _cachedGameObjects;
+
+	private void OnDisable() {
+		// Clean up hidden components when SkiaGraphic is removed from inspector
+		if (_cachedGameObjects == null) return;
+		foreach (var go in _cachedGameObjects) {
+			if (go == null) continue;
+			if (go.GetComponent<SkiaGraphic>() != null) continue; // component still exists
+			var ri = go.GetComponent<RawImage>();
+			if (ri != null && (ri.hideFlags & HideFlags.HideInInspector) != 0)
+				Undo.DestroyObjectImmediate(ri);
+			var img = go.GetComponent<Image>();
+			if (img != null && (img.hideFlags & HideFlags.HideInInspector) != 0)
+				Undo.DestroyObjectImmediate(img);
+		}
+	}
+
 	private void OnEnable() {
 		shape = serializedObject.FindProperty("shape");
 		cornerRadii = serializedObject.FindProperty("cornerRadii");
@@ -85,6 +102,11 @@ public class SkiaGraphicEditor : Editor {
 		innerShadowBlur = serializedObject.FindProperty("innerShadowBlur");
 		resolutionScale = serializedObject.FindProperty("resolutionScale");
 		bakedSprite = serializedObject.FindProperty("bakedSprite");
+
+		// Cache GameObjects so we can clean up hidden components in OnDisable
+		_cachedGameObjects = new GameObject[targets.Length];
+		for (int i = 0; i < targets.Length; i++)
+			_cachedGameObjects[i] = ((Component)targets[i]).gameObject;
 
 		// Hide RawImage and Image from inspector — SkiaGraphic manages them internally
 		foreach (var t in targets) {
@@ -204,7 +226,47 @@ public class SkiaGraphicEditor : Editor {
 		// Bake
 		EditorGUILayout.LabelField("Bake", headerStyle);
 		EditorGUI.indentLevel++;
+		var prevBaked = bakedSprite.objectReferenceValue;
 		EditorGUILayout.PropertyField(bakedSprite, new GUIContent("Baked Sprite", "When assigned, uses this sprite via Image component + SpriteAtlas for batching. Zero SkiaSharp cost at runtime."));
+		var newBaked = bakedSprite.objectReferenceValue;
+
+		// Handle manual assignment/removal of baked sprite via the field
+		if (prevBaked != newBaked) {
+			serializedObject.ApplyModifiedProperties();
+			if (newBaked != null) {
+				// Manually assigned a sprite — swap RawImage → Image
+				foreach (var t in targets) {
+					var graphic = (SkiaGraphic)t;
+					var rawImg = graphic.GetComponent<RawImage>();
+					bool raycast = rawImg != null && rawImg.raycastTarget;
+					bool maskable = rawImg != null && rawImg.maskable;
+					if (rawImg != null) {
+						if (rawImg.texture != null) {
+							DestroyImmediate(rawImg.texture);
+							rawImg.texture = null;
+						}
+						Undo.DestroyObjectImmediate(rawImg);
+					}
+					var img = graphic.GetComponent<Image>();
+					if (img == null) {
+						img = graphic.gameObject.AddComponent<Image>();
+						Undo.RegisterCreatedObjectUndo(img, "Assign Baked Sprite");
+					}
+					img.sprite = (Sprite)newBaked;
+					img.type = img.sprite.border != Vector4.zero ? Image.Type.Sliced : Image.Type.Simple;
+					img.preserveAspect = false;
+					img.color = Color.white;
+					img.raycastTarget = raycast;
+					img.maskable = maskable;
+					img.hideFlags |= HideFlags.HideInInspector;
+				}
+			} else {
+				// Cleared baked sprite — swap Image → RawImage (unbake)
+				UnbakeSelectedGraphics();
+			}
+			GUIUtility.ExitGUI();
+		}
+
 		if (bakedSprite.objectReferenceValue != null) {
 			EditorGUILayout.HelpBox("Baked. Using Image + SpriteAtlas for draw call batching. Zero SkiaSharp cost at runtime.", MessageType.Info);
 			if (GUILayout.Button("Unbake (Return to Live Rendering)")) {

@@ -297,8 +297,12 @@ namespace SkiaSharp.Unity {
 				}
 				return;
 			}
-			if (rawImage == null)
+			if (rawImage == null) {
+				var existingGraphic = GetComponent<Graphic>();
+				if (existingGraphic != null)
+					DestroyImmediate(existingGraphic);
 				rawImage = gameObject.AddComponent<RawImage>();
+			}
 			rawImage.enabled = true;
 			paint = new SKPaint();
 			SetDirty();
@@ -311,6 +315,10 @@ namespace SkiaSharp.Unity {
 
 		void OnDestroy() {
 			Cleanup();
+			if (rawImage != null) {
+				DestroyImmediate(rawImage);
+				rawImage = null;
+			}
 		}
 
 		void Update() {

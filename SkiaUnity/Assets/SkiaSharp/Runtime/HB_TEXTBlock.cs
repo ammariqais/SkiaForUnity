@@ -440,8 +440,12 @@ namespace SkiaSharp.Unity.HB {
 			}
 
 			rawImage = GetComponent<RawImage>();
-			if (rawImage == null)
+			if (rawImage == null) {
+				var existingGraphic = GetComponent<Graphic>();
+				if (existingGraphic != null)
+					DestroyImmediate(existingGraphic);
 				rawImage = gameObject.AddComponent<RawImage>();
+			}
 			if (rawImage) {
 				rawImage.enabled = false;
 				#if UNITY_EDITOR
@@ -1140,6 +1144,10 @@ namespace SkiaSharp.Unity.HB {
 
 		protected virtual void OnDestroy() {
 			Dispose();
+			if (rawImage != null) {
+				DestroyImmediate(rawImage);
+				rawImage = null;
+			}
 			if (texture != null) {
 				DestroyImmediate(texture);
 				texture = null;

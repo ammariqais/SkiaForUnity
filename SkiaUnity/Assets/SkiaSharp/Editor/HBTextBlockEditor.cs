@@ -144,10 +144,32 @@ public class HBTextBlockEditor : Editor {
 
   // ===================== Lifecycle =====================
 
+  private GameObject[] _cachedGameObjects;
+
+  private void OnDisable() {
+    // Clean up hidden components when HB_TEXTBlock is removed from inspector
+    if (_cachedGameObjects == null) return;
+    foreach (var go in _cachedGameObjects) {
+      if (go == null) continue;
+      if (go.GetComponent<HB_TEXTBlock>() != null) continue; // component still exists
+      var ri = go.GetComponent<RawImage>();
+      if (ri != null && (ri.hideFlags & HideFlags.HideInInspector) != 0)
+        Undo.DestroyObjectImmediate(ri);
+      var img = go.GetComponent<Image>();
+      if (img != null && (img.hideFlags & HideFlags.HideInInspector) != 0)
+        Undo.DestroyObjectImmediate(img);
+    }
+  }
+
   private void OnEnable() {
     _needsInitialRender = true;
     _lastTrackedWidth = -1;
     _lastTrackedHeight = -1;
+
+    // Cache GameObjects so we can clean up hidden components in OnDisable
+    _cachedGameObjects = new GameObject[targets.Length];
+    for (int i = 0; i < targets.Length; i++)
+      _cachedGameObjects[i] = ((Component)targets[i]).gameObject;
 
     // Hide RawImage and Image from inspector — HB_TEXTBlock manages them internally
     foreach (var t in targets) {
