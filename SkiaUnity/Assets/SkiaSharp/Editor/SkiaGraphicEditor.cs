@@ -264,8 +264,7 @@ public class SkiaGraphicEditor : Editor {
 				continue;
 			}
 
-			string fileName = $"{graphic.gameObject.name}_baked.png";
-			string assetPath = $"{dir}/{fileName}";
+			string assetPath = GetUniqueBakePath(dir, graphic.gameObject.name, "_baked");
 
 			File.WriteAllBytes(assetPath, png);
 			AssetDatabase.ImportAsset(assetPath, ImportAssetOptions.ForceUpdate);
@@ -362,6 +361,21 @@ public class SkiaGraphicEditor : Editor {
 
 			EditorUtility.SetDirty(graphic);
 		}
+	}
+
+	private static string GetUniqueBakePath(string dir, string objectName, string suffix) {
+		// Sanitize object name for filesystem
+		foreach (char c in Path.GetInvalidFileNameChars())
+			objectName = objectName.Replace(c, '_');
+
+		string baseName = $"{objectName}{suffix}";
+		string path = $"{dir}/{baseName}.png";
+		if (!File.Exists(path)) return path;
+
+		int counter = 1;
+		while (File.Exists($"{dir}/{baseName}_{counter}.png"))
+			counter++;
+		return $"{dir}/{baseName}_{counter}.png";
 	}
 
 	[DrawGizmo(GizmoType.Selected | GizmoType.NonSelected)]

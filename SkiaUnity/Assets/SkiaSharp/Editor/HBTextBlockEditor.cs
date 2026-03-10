@@ -844,8 +844,7 @@ public class HBTextBlockEditor : Editor {
         continue;
       }
 
-      string fileName = $"{hbText.gameObject.name}_hb_baked.png";
-      string assetPath = $"{dir}/{fileName}";
+      string assetPath = GetUniqueBakePath(dir, hbText.gameObject.name, "_hb_baked");
 
       File.WriteAllBytes(assetPath, png);
       AssetDatabase.ImportAsset(assetPath, ImportAssetOptions.ForceUpdate);
@@ -903,6 +902,20 @@ public class HBTextBlockEditor : Editor {
 
     EditorUtility.SetDirty(atlas);
     AssetDatabase.SaveAssets();
+  }
+
+  private static string GetUniqueBakePath(string dir, string objectName, string suffix) {
+    foreach (char c in Path.GetInvalidFileNameChars())
+      objectName = objectName.Replace(c, '_');
+
+    string baseName = $"{objectName}{suffix}";
+    string path = $"{dir}/{baseName}.png";
+    if (!File.Exists(path)) return path;
+
+    int counter = 1;
+    while (File.Exists($"{dir}/{baseName}_{counter}.png"))
+      counter++;
+    return $"{dir}/{baseName}_{counter}.png";
   }
 
   private void UnbakeSelectedTexts() {
