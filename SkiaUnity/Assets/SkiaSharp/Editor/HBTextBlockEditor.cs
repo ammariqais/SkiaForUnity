@@ -870,12 +870,17 @@ public class HBTextBlockEditor : Editor {
 
       atlas.Add(new Object[] { AssetDatabase.LoadAssetAtPath<Object>(assetPath) });
 
-      // Swap RawImage → Image
+      // Swap RawImage → Image (destroy texture first to prevent leak)
       var rawImg = hbText.GetComponent<RawImage>();
       bool raycast = rawImg != null && rawImg.raycastTarget;
       bool maskable = rawImg != null && rawImg.maskable;
-      if (rawImg != null)
+      if (rawImg != null) {
+        if (rawImg.texture != null) {
+          DestroyImmediate(rawImg.texture);
+          rawImg.texture = null;
+        }
         Undo.DestroyObjectImmediate(rawImg);
+      }
 
       var img = hbText.GetComponent<Image>();
       if (img == null) {
