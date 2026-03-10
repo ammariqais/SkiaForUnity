@@ -138,6 +138,10 @@ namespace SkiaSharp.Unity.HB {
 		private AnimSnapshot _snapshot;
 		private Vector2 _stepBasePosition;
 
+		// Typewriter cache — avoid Substring allocation every frame
+		private int _lastTypewriterCharCount = -1;
+		private string _lastTypewriterText;
+
 		// --- Public accessors ---
 		public bool IsPlaying => _isPlaying;
 		public int CurrentStepIndex => _currentStepIndex;
@@ -198,6 +202,8 @@ namespace SkiaSharp.Unity.HB {
 		// ===================== Snapshot =====================
 
 		public void TakeSnapshot() {
+			_lastTypewriterCharCount = -1;
+			_lastTypewriterText = null;
 			var rt = RectTr;
 			_snapshot = new AnimSnapshot {
 				text = HBText.text,
@@ -266,8 +272,12 @@ namespace SkiaSharp.Unity.HB {
 			float? gradientAngle = null;
 
 			if (step.typewriterEnabled && _snapshot.valid) {
-				int charCount = Mathf.CeilToInt(t * _snapshot.text.Length);
-				displayText = _snapshot.text.Substring(0, Mathf.Min(charCount, _snapshot.text.Length));
+				int charCount = Mathf.Min(Mathf.CeilToInt(t * _snapshot.text.Length), _snapshot.text.Length);
+				if (charCount != _lastTypewriterCharCount) {
+					_lastTypewriterCharCount = charCount;
+					_lastTypewriterText = _snapshot.text.Substring(0, charCount);
+				}
+				displayText = _lastTypewriterText;
 			}
 
 			if (step.gradientAnimEnabled)

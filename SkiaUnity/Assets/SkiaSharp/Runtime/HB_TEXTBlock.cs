@@ -15,7 +15,6 @@ namespace SkiaSharp.Unity.HB {
 	}
 
 	[AddComponentMenu("Skia UI (Canvas)/HB TextBlock")]
-	[RequireComponent(typeof(RawImage))]
 	public class HB_TEXTBlock : MonoBehaviour, ILayoutElement {
 		[SerializeField]
 		[TextArea]
@@ -71,6 +70,9 @@ namespace SkiaSharp.Unity.HB {
 		[Range(0, 50)]
 		protected float paragraphSpacing;
 
+		[Header("Bake")]
+		[SerializeField] protected Sprite bakedSprite;
+
 		public UnityEvent onTextChanged = new();
 		public UnityEvent<string> onLinkClicked = new();
 
@@ -99,7 +101,33 @@ namespace SkiaSharp.Unity.HB {
 		private FontMapper _cachedFontMapper;
 		private int _cachedFontMapperKey;
 		private Style _linkStyle;
+		private Style _cachedSpacerStyle;
+		private float _cachedSpacerFontSize;
 		private static readonly Gradient _emptyGradient = new();
+
+		// Cached gradient to avoid per-render allocation
+		private SKColor[] _cachedGradColors;
+		private int _cachedGradColorHash;
+		private TextPaintOptions _cachedPaintOptions;
+
+		// Layout rebuild tracking
+		private float _lastLayoutWidth, _lastLayoutHeight;
+
+		// Dirty flag — coalesces multiple property changes into a single render per frame
+		private bool _renderDirty;
+
+		public bool IsBaked => bakedSprite != null;
+
+		private MaskableGraphic ActiveGraphic {
+			get {
+				if (bakedSprite != null) {
+					var img = GetComponent<Image>();
+					if (img != null) return img;
+				}
+				if (rawImage == null) rawImage = GetComponent<RawImage>();
+				return rawImage;
+			}
+		}
 
 		public virtual TextBlock Info => rs;
 
@@ -116,10 +144,7 @@ namespace SkiaSharp.Unity.HB {
 					rawImage = GetComponent<RawImage>();
 					rectTransform = transform as RectTransform;
 				}
-				if (rawImage) {
-					urls.Clear();
-					RenderText();
-				}
+				_renderDirty = true;
 			}
 		}
 
@@ -131,10 +156,7 @@ namespace SkiaSharp.Unity.HB {
 					rawImage = GetComponent<RawImage>();
 					rectTransform = transform as RectTransform;
 				}
-				if (rawImage) {
-					urls.Clear();
-					RenderText();
-				}
+				_renderDirty = true;
 			}
 		}
 
@@ -169,15 +191,15 @@ namespace SkiaSharp.Unity.HB {
 
 		public float alpha {
 			get {
-				if (rawImage == null) rawImage = GetComponent<RawImage>();
-				return rawImage != null ? rawImage.color.a : 1f;
+				var g = ActiveGraphic;
+				return g != null ? g.color.a : 1f;
 			}
 			set {
-				if (rawImage == null) rawImage = GetComponent<RawImage>();
-				if (rawImage != null) {
-					Color c = rawImage.color;
+				var g = ActiveGraphic;
+				if (g != null) {
+					Color c = g.color;
 					c.a = value;
-					rawImage.color = c;
+					g.color = c;
 				}
 			}
 		}
@@ -408,14 +430,24 @@ namespace SkiaSharp.Unity.HB {
 		}
 
 		protected virtual void Awake() {
+			rectTransform = transform as RectTransform;
+
+			if (bakedSprite != null) {
+				// Baked mode — no Skia rendering needed
+				rawImage = GetComponent<RawImage>();
+				if (rawImage != null) rawImage.enabled = false;
+				return;
+			}
+
 			rawImage = GetComponent<RawImage>();
+			if (rawImage == null)
+				rawImage = gameObject.AddComponent<RawImage>();
 			if (rawImage) {
 				rawImage.enabled = false;
 				#if UNITY_EDITOR
 				rawImage.hideFlags |= HideFlags.HideInInspector;
 				#endif
 			}
-			rectTransform = transform as RectTransform;
 
 			styleBoldItalic.FontSize = fontSize;
 			styleBoldItalic.TextColor = new SKColor(ColorToUint(fontColor));
@@ -443,10 +475,22 @@ namespace SkiaSharp.Unity.HB {
 		}
 
 		protected virtual void OnEnable() {
+			if (bakedSprite != null) {
+				if (rawImage != null) rawImage.enabled = false;
+				var img = GetComponent<Image>();
+				if (img != null) {
+					img.sprite = bakedSprite;
+					img.color = Color.white;
+				}
+				return;
+			}
+
 			if (String.IsNullOrEmpty(Text)){
 				return;
 			}
 
+			if (rawImage == null)
+				rawImage = GetComponent<RawImage>();
 			if (rawImage) {
 				urls.Clear();
 				RenderText();
@@ -483,17 +527,23 @@ namespace SkiaSharp.Unity.HB {
 			rs.MaxHeight = null;
 			rs.MaxWidth = null;
 			rs.MaxLines = maxLines == 0 ? null : maxLines;
-			if (colorType == HBColorFormat.alpha8) {
-				rawImage.color = fontColor;
-			} else {
-				rawImage.color = Color.white;
+			if (rawImage != null) {
+				if (colorType == HBColorFormat.alpha8) {
+					rawImage.color = fontColor;
+				} else {
+					rawImage.color = Color.white;
+				}
 			}
 			rs.Alignment = textAlignment;
 			rs.BaseDirection = textDirection;
 			rs.EllipsisEnabled = enableEllipsis;
 			if (paragraphSpacing > 0 && Text.Contains("\n")) {
 				string[] paragraphs = Text.Split('\n');
-				var spacerStyle = styleBoldItalic.Modify(fontSize: paragraphSpacing, lineHeight: 1f);
+				if (_cachedSpacerStyle == null || _cachedSpacerFontSize != paragraphSpacing) {
+					_cachedSpacerStyle = styleBoldItalic.Modify(fontSize: paragraphSpacing, lineHeight: 1f);
+					_cachedSpacerFontSize = paragraphSpacing;
+				}
+				var spacerStyle = _cachedSpacerStyle;
 				for (int i = 0; i < paragraphs.Length; i++) {
 					if (i > 0) {
 						rs.AddText("\n", styleBoldItalic);
@@ -649,7 +699,12 @@ namespace SkiaSharp.Unity.HB {
 
 			currentWidth = rectTransform.rect.width;
 			currentHeight = rectTransform.rect.height;
-			LayoutRebuilder.MarkLayoutForRebuild(rectTransform);
+			// Only trigger layout rebuild when size actually changed
+			if (currentWidth != _lastLayoutWidth || currentHeight != _lastLayoutHeight) {
+				_lastLayoutWidth = currentWidth;
+				_lastLayoutHeight = currentHeight;
+				LayoutRebuilder.MarkLayoutForRebuild(rectTransform);
+			}
 
 			if (currentWidth == 0 || currentHeight == 0) {
 				return;
@@ -708,16 +763,27 @@ namespace SkiaSharp.Unity.HB {
 				texture.Reinitialize(roundedWidth, roundedHeight, format, false);
 			}
 
-			if (enableGradiant && gradiantColors != null) {
-				SKColor[] colors = new SKColor[gradiantColors.Length];
+			if (enableGradiant && gradiantColors != null && gradiantColors.Length > 0) {
+				// Reuse gradient color array — only reallocate if color count changed
+				if (_cachedGradColors == null || _cachedGradColors.Length != gradiantColors.Length)
+					_cachedGradColors = new SKColor[gradiantColors.Length];
+				int hash = gradiantColors.Length;
 				for (int i = 0; i < gradiantColors.Length; i++) {
-					colors[i] = new SKColor(ColorToUint(gradiantColors[i]));
+					uint c = ColorToUint(gradiantColors[i]);
+					_cachedGradColors[i] = new SKColor(c);
+					hash = hash * 31 + (int)c;
 				}
-				blockGradient = TextGradient.Linear(colors, gradiantPositions, gradiantAngle);
-				var options = new TextPaintOptions() {
-					TextGradient = blockGradient
-				};
-				rs.Paint(canvas,options);
+				hash = hash * 31 + gradiantAngle.GetHashCode();
+
+				// Only recreate gradient/options when colors or angle changed
+				if (blockGradient == null || hash != _cachedGradColorHash) {
+					blockGradient = TextGradient.Linear(_cachedGradColors, gradiantPositions, gradiantAngle);
+					_cachedGradColorHash = hash;
+					if (_cachedPaintOptions == null)
+						_cachedPaintOptions = new TextPaintOptions();
+					_cachedPaintOptions.TextGradient = blockGradient;
+				}
+				rs.Paint(canvas, _cachedPaintOptions);
 			} else {
 				rs.Paint(canvas);
 			}
@@ -725,9 +791,11 @@ namespace SkiaSharp.Unity.HB {
 			pixmap = surface.PeekPixels();
 			texture.LoadRawTextureData(pixmap.GetPixels(), pixmap.RowBytes * pixmap.Height);
 			texture.Apply();
-			rawImage.texture = texture;
-			if (!rawImage.enabled) {
-				rawImage.enabled = true;
+			if (rawImage != null) {
+				rawImage.texture = texture;
+				if (!rawImage.enabled) {
+					rawImage.enabled = true;
+				}
 			}
 
 			// Dispose pixmap (it just references the surface's memory)
@@ -785,20 +853,29 @@ namespace SkiaSharp.Unity.HB {
 		}
 
 		protected virtual void FixedUpdate() {
+			if (bakedSprite != null) return;
 			if (currentWidth != rectTransform.rect.width || currentHeight != currentPreferdHeight) {
+				_renderDirty = true;
+			}
+		}
+
+		protected virtual void LateUpdate() {
+			if (bakedSprite != null) return;
+			if (_renderDirty) {
+				_renderDirty = false;
 				urls.Clear();
 				RenderText();
 			}
 		}
 
 		public virtual void ReUpdate() {
+			if (bakedSprite != null) return;
 			if (rawImage == null) {
 				rawImage = GetComponent<RawImage>();
 				rectTransform = transform as RectTransform;
 			}
 			SyncStyleFromFields();
-			urls.Clear();
-			RenderText();
+			_renderDirty = true;
 		}
 
 		public virtual float GradientAngle {
@@ -920,6 +997,7 @@ namespace SkiaSharp.Unity.HB {
 			float? gradientAngle = null,
 			float? maxWidth = null,
 			float? maxHeight = null) {
+			if (bakedSprite != null) return;
 			if (displayText != null) Text = displayText;
 			if (fontColor.HasValue) this.fontColor = fontColor.Value;
 			if (haloWidth.HasValue) outlineWidth = haloWidth.Value;
@@ -936,6 +1014,7 @@ namespace SkiaSharp.Unity.HB {
 				rectTransform = transform as RectTransform;
 			}
 			SyncStyleFromFields();
+			_renderDirty = false; // Rendering immediately — clear deferred flag
 			urls.Clear();
 			RenderText();
 		}
@@ -1012,7 +1091,26 @@ namespace SkiaSharp.Unity.HB {
 		}
 
 		#if UNITY_EDITOR
+		public byte[] BakeToTexture() {
+			if (rawImage == null) {
+				rawImage = GetComponent<RawImage>();
+			}
+			if (rectTransform == null) rectTransform = transform as RectTransform;
+
+			// Force RGB32 for bake output (Alpha8 doesn't encode to PNG)
+			var savedColorType = colorType;
+			colorType = HBColorFormat.rgb32;
+			SyncStyleFromFields();
+			urls.Clear();
+			RenderText();
+			colorType = savedColorType;
+
+			if (texture == null) return null;
+			return texture.EncodeToPNG();
+		}
+
 		public virtual void ReUpdateEditMode() {
+			if (bakedSprite != null) return;
 			if (rawImage == null) {
 				rawImage = GetComponent<RawImage>();
 				rectTransform = transform as RectTransform;

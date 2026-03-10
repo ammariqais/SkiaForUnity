@@ -1,0 +1,2847 @@
+fileFormatVersion: 2
+guid: 0a6547203edf64e00aab9b1945526ca5
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: -3275360564356520336
+    second: HB TextBlock (3)_hb_baked_0
+  - first:
+      213: -5979321563842517263
+    second: HB TextBlock (3)_hb_baked_1
+  - first:
+      213: -5258468096782339686
+    second: HB TextBlock (3)_hb_baked_2
+  - first:
+      213: -6826613260153270178
+    second: HB TextBlock (3)_hb_baked_3
+  - first:
+      213: 102015226658726695
+    second: HB TextBlock (3)_hb_baked_4
+  - first:
+      213: 4531356678890237483
+    second: HB TextBlock (3)_hb_baked_5
+  - first:
+      213: 1693981070627745111
+    second: HB TextBlock (3)_hb_baked_6
+  - first:
+      213: -1100322322884383957
+    second: HB TextBlock (3)_hb_baked_7
+  - first:
+      213: 6770486878077922299
+    second: HB TextBlock (3)_hb_baked_8
+  - first:
+      213: -2834759855346316973
+    second: HB TextBlock (3)_hb_baked_9
+  - first:
+      213: -6176154909119263954
+    second: HB TextBlock (3)_hb_baked_10
+  - first:
+      213: 846867000245560234
+    second: HB TextBlock (3)_hb_baked_11
+  - first:
+      213: 8240404853596736290
+    second: HB TextBlock (3)_hb_baked_12
+  - first:
+      213: -6158347116349711887
+    second: HB TextBlock (3)_hb_baked_13
+  - first:
+      213: 778576718095696700
+    second: HB TextBlock (3)_hb_baked_14
+  - first:
+      213: -90447093707419386
+    second: HB TextBlock (3)_hb_baked_15
+  - first:
+      213: 6176983848271034265
+    second: HB TextBlock (3)_hb_baked_16
+  - first:
+      213: 1471359760745592575
+    second: HB TextBlock (3)_hb_baked_17
+  - first:
+      213: 571215012844809866
+    second: HB TextBlock (3)_hb_baked_18
+  - first:
+      213: -982108752744572114
+    second: HB TextBlock (3)_hb_baked_19
+  - first:
+      213: 3936876198100346477
+    second: HB TextBlock (3)_hb_baked_20
+  - first:
+      213: -534442186487591605
+    second: HB TextBlock (3)_hb_baked_21
+  - first:
+      213: 5712934094284652504
+    second: HB TextBlock (3)_hb_baked_22
+  - first:
+      213: -1564325726786405733
+    second: HB TextBlock (3)_hb_baked_23
+  - first:
+      213: -8943783265489359693
+    second: HB TextBlock (3)_hb_baked_24
+  - first:
+      213: -7520701804297030724
+    second: HB TextBlock (3)_hb_baked_25
+  - first:
+      213: -8580419478877343417
+    second: HB TextBlock (3)_hb_baked_26
+  - first:
+      213: -6943968967594609825
+    second: HB TextBlock (3)_hb_baked_27
+  - first:
+      213: 8401699314114865573
+    second: HB TextBlock (3)_hb_baked_28
+  - first:
+      213: 6537519641724117358
+    second: HB TextBlock (3)_hb_baked_29
+  - first:
+      213: -5518662230052357610
+    second: HB TextBlock (3)_hb_baked_30
+  - first:
+      213: 2200028392140403528
+    second: HB TextBlock (3)_hb_baked_31
+  - first:
+      213: 916748063513612523
+    second: HB TextBlock (3)_hb_baked_32
+  - first:
+      213: -2251644323056513785
+    second: HB TextBlock (3)_hb_baked_33
+  - first:
+      213: -450009323541795592
+    second: HB TextBlock (3)_hb_baked_34
+  - first:
+      213: -7366190384390603419
+    second: HB TextBlock (3)_hb_baked_35
+  - first:
+      213: 2511575865305812496
+    second: HB TextBlock (3)_hb_baked_36
+  - first:
+      213: 1715676024207330022
+    second: HB TextBlock (3)_hb_baked_37
+  - first:
+      213: -4543110017228446797
+    second: HB TextBlock (3)_hb_baked_38
+  - first:
+      213: -5537967610800750651
+    second: HB TextBlock (3)_hb_baked_39
+  - first:
+      213: 8942028051732503277
+    second: HB TextBlock (3)_hb_baked_40
+  - first:
+      213: 504036635191119256
+    second: HB TextBlock (3)_hb_baked_41
+  - first:
+      213: -4920544038937171328
+    second: HB TextBlock (3)_hb_baked_42
+  - first:
+      213: -2658645395324130450
+    second: HB TextBlock (3)_hb_baked_43
+  - first:
+      213: 1455488127220779678
+    second: HB TextBlock (3)_hb_baked_44
+  - first:
+      213: 256548282325795479
+    second: HB TextBlock (3)_hb_baked_45
+  - first:
+      213: 7448406827295476621
+    second: HB TextBlock (3)_hb_baked_46
+  - first:
+      213: -7040692170737583616
+    second: HB TextBlock (3)_hb_baked_47
+  - first:
+      213: -1651530801272915597
+    second: HB TextBlock (3)_hb_baked_48
+  - first:
+      213: -8495952480467659639
+    second: HB TextBlock (3)_hb_baked_49
+  - first:
+      213: -6941979787970963457
+    second: HB TextBlock (3)_hb_baked_50
+  - first:
+      213: -5935659132119553111
+    second: HB TextBlock (3)_hb_baked_51
+  - first:
+      213: -8915595933176766907
+    second: HB TextBlock (3)_hb_baked_52
+  - first:
+      213: 2483079088593303989
+    second: HB TextBlock (3)_hb_baked_53
+  - first:
+      213: -2904435982185035096
+    second: HB TextBlock (3)_hb_baked_54
+  - first:
+      213: -2205839320684403685
+    second: HB TextBlock (3)_hb_baked_55
+  - first:
+      213: 4178357546545980452
+    second: HB TextBlock (3)_hb_baked_56
+  - first:
+      213: -2259993249451879252
+    second: HB TextBlock (3)_hb_baked_57
+  - first:
+      213: 7718694193196049071
+    second: HB TextBlock (3)_hb_baked_58
+  - first:
+      213: -6706138297070780237
+    second: HB TextBlock (3)_hb_baked_59
+  - first:
+      213: 3587564067336928906
+    second: HB TextBlock (3)_hb_baked_60
+  - first:
+      213: -3281507372754845760
+    second: HB TextBlock (3)_hb_baked_61
+  - first:
+      213: -5260239335918920738
+    second: HB TextBlock (3)_hb_baked_62
+  - first:
+      213: 9100553294398967540
+    second: HB TextBlock (3)_hb_baked_63
+  - first:
+      213: -1513293136191609537
+    second: HB TextBlock (3)_hb_baked_64
+  - first:
+      213: -4509647966190018876
+    second: HB TextBlock (3)_hb_baked_65
+  - first:
+      213: 4361045354206254263
+    second: HB TextBlock (3)_hb_baked_66
+  - first:
+      213: -1996165614549079455
+    second: HB TextBlock (3)_hb_baked_67
+  - first:
+      213: 7033459182537270348
+    second: HB TextBlock (3)_hb_baked_68
+  - first:
+      213: -6212792321046699757
+    second: HB TextBlock (3)_hb_baked_69
+  - first:
+      213: 7700796952409143648
+    second: HB TextBlock (3)_hb_baked_70
+  - first:
+      213: -483529544501686880
+    second: HB TextBlock (3)_hb_baked_71
+  - first:
+      213: -6536601010938580515
+    second: HB TextBlock (3)_hb_baked_72
+  - first:
+      213: 4477345377501938057
+    second: HB TextBlock (3)_hb_baked_73
+  - first:
+      213: -152377429539291494
+    second: HB TextBlock (3)_hb_baked_74
+  - first:
+      213: -3996023238252041477
+    second: HB TextBlock (3)_hb_baked_75
+  - first:
+      213: 5345702207601743201
+    second: HB TextBlock (3)_hb_baked_76
+  - first:
+      213: -8236838084866458144
+    second: HB TextBlock (3)_hb_baked_77
+  - first:
+      213: 8951816289555257489
+    second: HB TextBlock (3)_hb_baked_78
+  - first:
+      213: 7748147303015092077
+    second: HB TextBlock (3)_hb_baked_79
+  - first:
+      213: 6359446296387058721
+    second: HB TextBlock (3)_hb_baked_80
+  - first:
+      213: 1313716409971703597
+    second: HB TextBlock (3)_hb_baked_81
+  - first:
+      213: -4875335860116359394
+    second: HB TextBlock (3)_hb_baked_82
+  - first:
+      213: -1233643450833475993
+    second: HB TextBlock (3)_hb_baked_83
+  - first:
+      213: 3797766416239394933
+    second: HB TextBlock (3)_hb_baked_84
+  - first:
+      213: 5222731493086481914
+    second: HB TextBlock (3)_hb_baked_85
+  - first:
+      213: -6685137030667675223
+    second: HB TextBlock (3)_hb_baked_86
+  - first:
+      213: -6551705297550645615
+    second: HB TextBlock (3)_hb_baked_87
+  - first:
+      213: -498402519638685893
+    second: HB TextBlock (3)_hb_baked_88
+  - first:
+      213: -2121511695674620048
+    second: HB TextBlock (3)_hb_baked_89
+  - first:
+      213: -7745420358668868347
+    second: HB TextBlock (3)_hb_baked_90
+  - first:
+      213: 468597432664745941
+    second: HB TextBlock (3)_hb_baked_91
+  - first:
+      213: 2939719671567252404
+    second: HB TextBlock (3)_hb_baked_92
+  - first:
+      213: 4552266158570043222
+    second: HB TextBlock (3)_hb_baked_93
+  - first:
+      213: 839557638384701811
+    second: HB TextBlock (3)_hb_baked_94
+  - first:
+      213: 7103072793638786514
+    second: HB TextBlock (3)_hb_baked_95
+  - first:
+      213: -2836758028563194494
+    second: HB TextBlock (3)_hb_baked_96
+  - first:
+      213: -1646633772934390640
+    second: HB TextBlock (3)_hb_baked_97
+  - first:
+      213: 8644056282964724266
+    second: HB TextBlock (3)_hb_baked_98
+  - first:
+      213: 8667869186758326564
+    second: HB TextBlock (3)_hb_baked_99
+  - first:
+      213: 2245409227795503037
+    second: HB TextBlock (3)_hb_baked_100
+  - first:
+      213: -125758579120147864
+    second: HB TextBlock (3)_hb_baked_101
+  - first:
+      213: 6548498262497798811
+    second: HB TextBlock (3)_hb_baked_102
+  - first:
+      213: -6971204597082569939
+    second: HB TextBlock (3)_hb_baked_103
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 1
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 1
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 1
+  spriteExtrude: 1
+  spriteMeshType: 1
+  alignment: 0
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 100
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 1
+  spriteTessellationDetail: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Android
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: iOS
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: HB TextBlock (3)_hb_baked_0
+      rect:
+        serializedVersion: 2
+        x: 97
+        y: 328
+        width: 65
+        height: 51
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 076e43a9be49b82d0800000000000000
+      internalID: -3275360564356520336
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: HB TextBlock (3)_hb_baked_1
+      rect:
+        serializedVersion: 2
+        x: 161
+        y: 327
+        width: 36
+        height: 40
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 1f6655da7be250da0800000000000000
+      internalID: -5979321563842517263
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: HB TextBlock (3)_hb_baked_2
+      rect:
+        serializedVersion: 2
+        x: 200
+        y: 328
+        width: 10
+        height: 51
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: a917094602b2607b0800000000000000
+      internalID: -5258468096782339686
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: HB TextBlock (3)_hb_baked_3
+      rect:
+        serializedVersion: 2
+        x: 213
+        y: 327
+        width: 34
+        height: 40
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: e50d799a86ff241a0800000000000000
+      internalID: -6826613260153270178
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: HB TextBlock (3)_hb_baked_4
+      rect:
+        serializedVersion: 2
+        x: 246
+        y: 327
+        width: 37
+        height: 40
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 723aca2ee4e6a6100800000000000000
+      internalID: 102015226658726695
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: HB TextBlock (3)_hb_baked_5
+      rect:
+        serializedVersion: 2
+        x: 286
+        y: 328
+        width: 51
+        height: 39
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: b2ea8db24ec92ee30800000000000000
+      internalID: 4531356678890237483
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: HB TextBlock (3)_hb_baked_6
+      rect:
+        serializedVersion: 2
+        x: 340
+        y: 327
+        width: 36
+        height: 40
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 75da0030fca328710800000000000000
+      internalID: 1693981070627745111
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: HB TextBlock (3)_hb_baked_7
+      rect:
+        serializedVersion: 2
+        x: 394
+        y: 327
+        width: 21
+        height: 51
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: b2b2b065daedab0f0800000000000000
+      internalID: -1100322322884383957
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: HB TextBlock (3)_hb_baked_8
+      rect:
+        serializedVersion: 2
+        x: 414
+        y: 327
+        width: 36
+        height: 40
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: bfb274ca1f995fd50800000000000000
+      internalID: 6770486878077922299
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: HB TextBlock (3)_hb_baked_9
+      rect:
+        serializedVersion: 2
+        x: 470
+        y: 327
+        width: 43
+        height: 53
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 3598b864ee8e8a8d0800000000000000
+      internalID: -2834759855346316973
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: HB TextBlock (3)_hb_baked_10
+      rect:
+        serializedVersion: 2
+        x: 517
+        y: 328
+        width: 36
+        height: 51
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: e2b492435d3e94aa0800000000000000
+      internalID: -6176154909119263954
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: HB TextBlock (3)_hb_baked_11
+      rect:
+        serializedVersion: 2
+        x: 555
+        y: 367
+        width: 12
+        height: 12
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: aa323a1cc0da0cb00800000000000000
+      internalID: 846867000245560234
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: HB TextBlock (3)_hb_baked_12
+      rect:
+        serializedVersion: 2
+        x: 571
+        y: 327
+        width: 36
+        height: 40
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 22bc9080e8ccb5270800000000000000
+      internalID: 8240404853596736290
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: HB TextBlock (3)_hb_baked_13
+      rect:
+        serializedVersion: 2
+        x: 611
+        y: 328
+        width: 36
+        height: 51
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 1f99c6e0de7298aa0800000000000000
+      internalID: -6158347116349711887
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: HB TextBlock (3)_hb_baked_14
+      rect:
+        serializedVersion: 2
+        x: 649
+        y: 327
+        width: 40
+        height: 40
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: c33cb78666f0eca00800000000000000
+      internalID: 778576718095696700
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: HB TextBlock (3)_hb_baked_15
+      rect:
+        serializedVersion: 2
+        x: 692
+        y: 328
+        width: 26
+        height: 39
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 6015a94f8daaebef0800000000000000
+      internalID: -90447093707419386
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: HB TextBlock (3)_hb_baked_16
+      rect:
+        serializedVersion: 2
+        x: 719
+        y: 327
+        width: 41
+        height: 52
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 997358b351e09b550800000000000000
+      internalID: 6176983848271034265
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: HB TextBlock (3)_hb_baked_17
+      rect:
+        serializedVersion: 2
+        x: 767
+        y: 328
+        width: 35
+        height: 39
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: ff67b0428e15b6410800000000000000
+      internalID: 1471359760745592575
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: HB TextBlock (3)_hb_baked_18
+      rect:
+        serializedVersion: 2
+        x: 808
+        y: 367
+        width: 13
+        height: 12
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: a8e2cfa170d5de700800000000000000
+      internalID: 571215012844809866
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: HB TextBlock (3)_hb_baked_19
+      rect:
+        serializedVersion: 2
+        x: 823
+        y: 314
+        width: 61
+        height: 64
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: e2b9bd5fa49de52f0800000000000000
+      internalID: -982108752744572114
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: HB TextBlock (3)_hb_baked_20
+      rect:
+        serializedVersion: 2
+        x: 887
+        y: 340
+        width: 11
+        height: 39
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: d6626703b0892a630800000000000000
+      internalID: 3936876198100346477
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: HB TextBlock (3)_hb_baked_21
+      rect:
+        serializedVersion: 2
+        x: 555
+        y: 328
+        width: 12
+        height: 38
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: b4d8c69b9a74598f0800000000000000
+      internalID: -534442186487591605
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: HB TextBlock (3)_hb_baked_22
+      rect:
+        serializedVersion: 2
+        x: 808
+        y: 328
+        width: 13
+        height: 38
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 8dffd035a4b684f40800000000000000
+      internalID: 5712934094284652504
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: HB TextBlock (3)_hb_baked_23
+      rect:
+        serializedVersion: 2
+        x: 887
+        y: 328
+        width: 11
+        height: 10
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: b9a34e52a066a4ae0800000000000000
+      internalID: -1564325726786405733
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: HB TextBlock (3)_hb_baked_24
+      rect:
+        serializedVersion: 2
+        x: 167
+        y: 251
+        width: 41
+        height: 51
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 3bc6c68918c41e380800000000000000
+      internalID: -8943783265489359693
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: HB TextBlock (3)_hb_baked_25
+      rect:
+        serializedVersion: 2
+        x: 211
+        y: 251
+        width: 32
+        height: 51
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: cb37c3d2e8911a790800000000000000
+      internalID: -7520701804297030724
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: HB TextBlock (3)_hb_baked_26
+      rect:
+        serializedVersion: 2
+        x: 248
+        y: 292
+        width: 9
+        height: 10
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 7417ca9e1f93ce880800000000000000
+      internalID: -8580419478877343417
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: HB TextBlock (3)_hb_baked_27
+      rect:
+        serializedVersion: 2
+        x: 315
+        y: 292
+        width: 9
+        height: 10
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: f53ff23c30112af90800000000000000
+      internalID: -6943968967594609825
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: HB TextBlock (3)_hb_baked_28
+      rect:
+        serializedVersion: 2
+        x: 439
+        y: 250
+        width: 34
+        height: 52
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 5a9a5771305d89470800000000000000
+      internalID: 8401699314114865573
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: HB TextBlock (3)_hb_baked_29
+      rect:
+        serializedVersion: 2
+        x: 516
+        y: 250
+        width: 34
+        height: 52
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: e61ea151a7fe9ba50800000000000000
+      internalID: 6537519641724117358
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: HB TextBlock (3)_hb_baked_30
+      rect:
+        serializedVersion: 2
+        x: 553
+        y: 251
+        width: 9
+        height: 51
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 61a3d5ed0f5c963b0800000000000000
+      internalID: -5518662230052357610
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: HB TextBlock (3)_hb_baked_31
+      rect:
+        serializedVersion: 2
+        x: 752
+        y: 250
+        width: 34
+        height: 52
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 8437d499a22188e10800000000000000
+      internalID: 2200028392140403528
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: HB TextBlock (3)_hb_baked_32
+      rect:
+        serializedVersion: 2
+        x: 248
+        y: 251
+        width: 9
+        height: 38
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: be09142b181f8bc00800000000000000
+      internalID: 916748063513612523
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: HB TextBlock (3)_hb_baked_33
+      rect:
+        serializedVersion: 2
+        x: 260
+        y: 250
+        width: 33
+        height: 40
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 70d01bbfa6d80c0e0800000000000000
+      internalID: -2251644323056513785
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: HB TextBlock (3)_hb_baked_34
+      rect:
+        serializedVersion: 2
+        x: 315
+        y: 251
+        width: 9
+        height: 38
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 8fc6dac87ee31c9f0800000000000000
+      internalID: -450009323541795592
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: HB TextBlock (3)_hb_baked_35
+      rect:
+        serializedVersion: 2
+        x: 327
+        y: 250
+        width: 33
+        height: 40
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 56dff768fd806c990800000000000000
+      internalID: -7366190384390603419
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: HB TextBlock (3)_hb_baked_36
+      rect:
+        serializedVersion: 2
+        x: 382
+        y: 251
+        width: 22
+        height: 39
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 01e4ffd41f8ead220800000000000000
+      internalID: 2511575865305812496
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: HB TextBlock (3)_hb_baked_37
+      rect:
+        serializedVersion: 2
+        x: 402
+        y: 250
+        width: 36
+        height: 40
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 6ea4884014e4fc710800000000000000
+      internalID: 1715676024207330022
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: HB TextBlock (3)_hb_baked_38
+      rect:
+        serializedVersion: 2
+        x: 568
+        y: 250
+        width: 32
+        height: 39
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 3b3649f7281a3f0c0800000000000000
+      internalID: -4543110017228446797
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: HB TextBlock (3)_hb_baked_39
+      rect:
+        serializedVersion: 2
+        x: 603
+        y: 250
+        width: 36
+        height: 40
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 5cf3a94accf2523b0800000000000000
+      internalID: -5537967610800750651
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: HB TextBlock (3)_hb_baked_40
+      rect:
+        serializedVersion: 2
+        x: 678
+        y: 250
+        width: 35
+        height: 40
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: dea181bd227781c70800000000000000
+      internalID: 8942028051732503277
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: HB TextBlock (3)_hb_baked_41
+      rect:
+        serializedVersion: 2
+        x: 717
+        y: 251
+        width: 32
+        height: 39
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 89d895236a2bef600800000000000000
+      internalID: 504036635191119256
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: HB TextBlock (3)_hb_baked_42
+      rect:
+        serializedVersion: 2
+        x: 808
+        y: 251
+        width: 18
+        height: 26
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 08aeb794447b6bbb0800000000000000
+      internalID: -4920544038937171328
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: HB TextBlock (3)_hb_baked_43
+      rect:
+        serializedVersion: 2
+        x: 826
+        y: 271
+        width: 6
+        height: 6
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: e6b2afb59189a1bd0800000000000000
+      internalID: -2658645395324130450
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: HB TextBlock (3)_hb_baked_44
+      rect:
+        serializedVersion: 2
+        x: 826
+        y: 251
+        width: 6
+        height: 20
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: e9a0bcd7dbee23410800000000000000
+      internalID: 1455488127220779678
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: HB TextBlock (3)_hb_baked_45
+      rect:
+        serializedVersion: 2
+        x: 832
+        y: 244
+        width: 18
+        height: 27
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 79204c3bd417f8300800000000000000
+      internalID: 256548282325795479
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: HB TextBlock (3)_hb_baked_46
+      rect:
+        serializedVersion: 2
+        x: 480
+        y: 241
+        width: 11
+        height: 20
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: d8b8a8bcb8e0e5760800000000000000
+      internalID: 7448406827295476621
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: HB TextBlock (3)_hb_baked_47
+      rect:
+        serializedVersion: 2
+        x: 644
+        y: 241
+        width: 10
+        height: 20
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 00aff4e16cf6a4e90800000000000000
+      internalID: -7040692170737583616
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: HB TextBlock (3)_hb_baked_48
+      rect:
+        serializedVersion: 2
+        x: 855
+        y: 251
+        width: 10
+        height: 10
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 379f2868c759419e0800000000000000
+      internalID: -1651530801272915597
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: HB TextBlock (3)_hb_baked_49
+      rect:
+        serializedVersion: 2
+        x: 76
+        y: 172
+        width: 36
+        height: 51
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 98450258b30581a80800000000000000
+      internalID: -8495952480467659639
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: HB TextBlock (3)_hb_baked_50
+      rect:
+        serializedVersion: 2
+        x: 113
+        y: 171
+        width: 37
+        height: 40
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: ff79c0cb92229af90800000000000000
+      internalID: -6941979787970963457
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: HB TextBlock (3)_hb_baked_51
+      rect:
+        serializedVersion: 2
+        x: 153
+        y: 172
+        width: 22
+        height: 39
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 9abe532c77d40ada0800000000000000
+      internalID: -5935659132119553111
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: HB TextBlock (3)_hb_baked_52
+      rect:
+        serializedVersion: 2
+        x: 175
+        y: 172
+        width: 51
+        height: 39
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 54ed4125cb0754480800000000000000
+      internalID: -8915595933176766907
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: HB TextBlock (3)_hb_baked_53
+      rect:
+        serializedVersion: 2
+        x: 231
+        y: 171
+        width: 32
+        height: 39
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 5b9fdc0764ba57220800000000000000
+      internalID: 2483079088593303989
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: HB TextBlock (3)_hb_baked_54
+      rect:
+        serializedVersion: 2
+        x: 268
+        y: 172
+        width: 10
+        height: 51
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 8aa8ff0dcde51b7d0800000000000000
+      internalID: -2904435982185035096
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: HB TextBlock (3)_hb_baked_55
+      rect:
+        serializedVersion: 2
+        x: 281
+        y: 171
+        width: 36
+        height: 40
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: b14640b23d84361e0800000000000000
+      internalID: -2205839320684403685
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: HB TextBlock (3)_hb_baked_56
+      rect:
+        serializedVersion: 2
+        x: 322
+        y: 200
+        width: 11
+        height: 10
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 424227afc028cf930800000000000000
+      internalID: 4178357546545980452
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: HB TextBlock (3)_hb_baked_57
+      rect:
+        serializedVersion: 2
+        x: 359
+        y: 172
+        width: 39
+        height: 51
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: ca4d3a31d14e2a0e0800000000000000
+      internalID: -2259993249451879252
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: HB TextBlock (3)_hb_baked_58
+      rect:
+        serializedVersion: 2
+        x: 420
+        y: 200
+        width: 36
+        height: 9
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: fa2225b297f4e1b60800000000000000
+      internalID: 7718694193196049071
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: HB TextBlock (3)_hb_baked_59
+      rect:
+        serializedVersion: 2
+        x: 479
+        y: 172
+        width: 51
+        height: 39
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 3b0047cdfb20fe2a0800000000000000
+      internalID: -6706138297070780237
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: HB TextBlock (3)_hb_baked_60
+      rect:
+        serializedVersion: 2
+        x: 533
+        y: 171
+        width: 34
+        height: 40
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: a8eb292f28699c130800000000000000
+      internalID: 3587564067336928906
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: HB TextBlock (3)_hb_baked_61
+      rect:
+        serializedVersion: 2
+        x: 565
+        y: 195
+        width: 24
+        height: 35
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 0cf3f1f3e6eb572d0800000000000000
+      internalID: -3281507372754845760
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: HB TextBlock (3)_hb_baked_62
+      rect:
+        serializedVersion: 2
+        x: 626
+        y: 172
+        width: 65
+        height: 51
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: edb1405a130eff6b0800000000000000
+      internalID: -5260239335918920738
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: HB TextBlock (3)_hb_baked_63
+      rect:
+        serializedVersion: 2
+        x: 688
+        y: 171
+        width: 36
+        height: 40
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 4fe49242109ab4e70800000000000000
+      internalID: 9100553294398967540
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: HB TextBlock (3)_hb_baked_64
+      rect:
+        serializedVersion: 2
+        x: 724
+        y: 171
+        width: 21
+        height: 51
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: f35234019e3bffae0800000000000000
+      internalID: -1513293136191609537
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: HB TextBlock (3)_hb_baked_65
+      rect:
+        serializedVersion: 2
+        x: 744
+        y: 171
+        width: 36
+        height: 40
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 4ce5e2161138a61c0800000000000000
+      internalID: -4509647966190018876
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: HB TextBlock (3)_hb_baked_66
+      rect:
+        serializedVersion: 2
+        x: 784
+        y: 172
+        width: 22
+        height: 39
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 7b4d4d2d4ab858c30800000000000000
+      internalID: 4361045354206254263
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: HB TextBlock (3)_hb_baked_67
+      rect:
+        serializedVersion: 2
+        x: 808
+        y: 200
+        width: 10
+        height: 10
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 16ae3ff13f13c44e0800000000000000
+      internalID: -1996165614549079455
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: HB TextBlock (3)_hb_baked_68
+      rect:
+        serializedVersion: 2
+        x: 844
+        y: 172
+        width: 41
+        height: 51
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: c44e7559cdddb9160800000000000000
+      internalID: 7033459182537270348
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: HB TextBlock (3)_hb_baked_69
+      rect:
+        serializedVersion: 2
+        x: 888
+        y: 165
+        width: 25
+        height: 35
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 311acb00d4ab7c9a0800000000000000
+      internalID: -6212792321046699757
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: HB TextBlock (3)_hb_baked_70
+      rect:
+        serializedVersion: 2
+        x: 914
+        y: 171
+        width: 50
+        height: 53
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 069f1c3170abeda60800000000000000
+      internalID: 7700796952409143648
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: HB TextBlock (3)_hb_baked_71
+      rect:
+        serializedVersion: 2
+        x: 420
+        y: 186
+        width: 36
+        height: 9
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 0ad029de0782a49f0800000000000000
+      internalID: -483529544501686880
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: HB TextBlock (3)_hb_baked_72
+      rect:
+        serializedVersion: 2
+        x: 322
+        y: 172
+        width: 11
+        height: 10
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: dd1fb8053045945a0800000000000000
+      internalID: -6536601010938580515
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: HB TextBlock (3)_hb_baked_73
+      rect:
+        serializedVersion: 2
+        x: 594
+        y: 162
+        width: 10
+        height: 20
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 9818dba16e9b22e30800000000000000
+      internalID: 4477345377501938057
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: HB TextBlock (3)_hb_baked_74
+      rect:
+        serializedVersion: 2
+        x: 808
+        y: 172
+        width: 10
+        height: 10
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: a9ef5800985a2edf0800000000000000
+      internalID: -152377429539291494
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: HB TextBlock (3)_hb_baked_75
+      rect:
+        serializedVersion: 2
+        x: 100
+        y: 92
+        width: 48
+        height: 52
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: bfae7c169064b88c0800000000000000
+      internalID: -3996023238252041477
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: HB TextBlock (3)_hb_baked_76
+      rect:
+        serializedVersion: 2
+        x: 183
+        y: 92
+        width: 40
+        height: 52
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 1659f17c5dfbf2a40800000000000000
+      internalID: 5345702207601743201
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: HB TextBlock (3)_hb_baked_77
+      rect:
+        serializedVersion: 2
+        x: 278
+        y: 93
+        width: 20
+        height: 51
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 0ed3027076fd0bd80800000000000000
+      internalID: -8236838084866458144
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: HB TextBlock (3)_hb_baked_78
+      rect:
+        serializedVersion: 2
+        x: 302
+        y: 134
+        width: 11
+        height: 10
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 1981f719c7d3b3c70800000000000000
+      internalID: 8951816289555257489
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: HB TextBlock (3)_hb_baked_79
+      rect:
+        serializedVersion: 2
+        x: 384
+        y: 92
+        width: 40
+        height: 52
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: d6f8d9fabe2f68b60800000000000000
+      internalID: 7748147303015092077
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: HB TextBlock (3)_hb_baked_80
+      rect:
+        serializedVersion: 2
+        x: 447
+        y: 134
+        width: 11
+        height: 10
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 12cf25876ba414850800000000000000
+      internalID: 6359446296387058721
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: HB TextBlock (3)_hb_baked_81
+      rect:
+        serializedVersion: 2
+        x: 455
+        y: 92
+        width: 22
+        height: 52
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: d2ff6ff4d124b3210800000000000000
+      internalID: 1313716409971703597
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: HB TextBlock (3)_hb_baked_82
+      rect:
+        serializedVersion: 2
+        x: 509
+        y: 93
+        width: 20
+        height: 51
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: e177a09add3575cb0800000000000000
+      internalID: -4875335860116359394
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: HB TextBlock (3)_hb_baked_83
+      rect:
+        serializedVersion: 2
+        x: 533
+        y: 134
+        width: 11
+        height: 10
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 766659d41d731eee0800000000000000
+      internalID: -1233643450833475993
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: HB TextBlock (3)_hb_baked_84
+      rect:
+        serializedVersion: 2
+        x: 666
+        y: 92
+        width: 34
+        height: 52
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 5708bd32f6064b430800000000000000
+      internalID: 3797766416239394933
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: HB TextBlock (3)_hb_baked_85
+      rect:
+        serializedVersion: 2
+        x: 721
+        y: 92
+        width: 222
+        height: 52
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: afd4aaa2f9eda7840800000000000000
+      internalID: 5222731493086481914
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: HB TextBlock (3)_hb_baked_86
+      rect:
+        serializedVersion: 2
+        x: 144
+        y: 93
+        width: 37
+        height: 39
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 9a95e3c3a4f9933a0800000000000000
+      internalID: -6685137030667675223
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: HB TextBlock (3)_hb_baked_87
+      rect:
+        serializedVersion: 2
+        x: 220
+        y: 92
+        width: 36
+        height: 40
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 196e27a8ebaa315a0800000000000000
+      internalID: -6551705297550645615
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: HB TextBlock (3)_hb_baked_88
+      rect:
+        serializedVersion: 2
+        x: 256
+        y: 93
+        width: 30
+        height: 39
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: b37c6cd8c815519f0800000000000000
+      internalID: -498402519638685893
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: HB TextBlock (3)_hb_baked_89
+      rect:
+        serializedVersion: 2
+        x: 293
+        y: 93
+        width: 17
+        height: 38
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 0774a706a50ee82e0800000000000000
+      internalID: -2121511695674620048
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: HB TextBlock (3)_hb_baked_90
+      rect:
+        serializedVersion: 2
+        x: 308
+        y: 93
+        width: 37
+        height: 39
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 505a675883db28490800000000000000
+      internalID: -7745420358668868347
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: HB TextBlock (3)_hb_baked_91
+      rect:
+        serializedVersion: 2
+        x: 347
+        y: 92
+        width: 36
+        height: 40
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 5d764acd1eac08600800000000000000
+      internalID: 468597432664745941
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: HB TextBlock (3)_hb_baked_92
+      rect:
+        serializedVersion: 2
+        x: 439
+        y: 93
+        width: 16
+        height: 38
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 4bb7efa477bfbc820800000000000000
+      internalID: 2939719671567252404
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: HB TextBlock (3)_hb_baked_93
+      rect:
+        serializedVersion: 2
+        x: 473
+        y: 92
+        width: 36
+        height: 40
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 6577998c3f5ec2f30800000000000000
+      internalID: 4552266158570043222
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: HB TextBlock (3)_hb_baked_94
+      rect:
+        serializedVersion: 2
+        x: 524
+        y: 93
+        width: 17
+        height: 38
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 371d2645935b6ab00800000000000000
+      internalID: 839557638384701811
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: HB TextBlock (3)_hb_baked_95
+      rect:
+        serializedVersion: 2
+        x: 541
+        y: 92
+        width: 34
+        height: 40
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 2d5d496721f239260800000000000000
+      internalID: 7103072793638786514
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: HB TextBlock (3)_hb_baked_96
+      rect:
+        serializedVersion: 2
+        x: 592
+        y: 92
+        width: 35
+        height: 40
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 28dd0c15a9fc1a8d0800000000000000
+      internalID: -2836758028563194494
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: HB TextBlock (3)_hb_baked_97
+      rect:
+        serializedVersion: 2
+        x: 631
+        y: 93
+        width: 32
+        height: 39
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 09c9519ce4bf529e0800000000000000
+      internalID: -1646633772934390640
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: HB TextBlock (3)_hb_baked_98
+      rect:
+        serializedVersion: 2
+        x: 95
+        y: 85
+        width: 479
+        height: 7
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: a2a8894246bd5f770800000000000000
+      internalID: 8644056282964724266
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: HB TextBlock (3)_hb_baked_99
+      rect:
+        serializedVersion: 2
+        x: 436
+        y: 15
+        width: 21
+        height: 51
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 429b84cd9157a4870800000000000000
+      internalID: 8667869186758326564
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: HB TextBlock (3)_hb_baked_100
+      rect:
+        serializedVersion: 2
+        x: 456
+        y: 15
+        width: 36
+        height: 40
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: db79226cbcb492f10800000000000000
+      internalID: 2245409227795503037
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: HB TextBlock (3)_hb_baked_101
+      rect:
+        serializedVersion: 2
+        x: 491
+        y: 16
+        width: 36
+        height: 38
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 862f5141d37314ef0800000000000000
+      internalID: -125758579120147864
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: HB TextBlock (3)_hb_baked_102
+      rect:
+        serializedVersion: 2
+        x: 525
+        y: 15
+        width: 21
+        height: 51
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: b9aa17c6970f0ea50800000000000000
+      internalID: 6548498262497798811
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: HB TextBlock (3)_hb_baked_103
+      rect:
+        serializedVersion: 2
+        x: 549
+        y: 16
+        width: 10
+        height: 10
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: d23c25e9a5e414f90800000000000000
+      internalID: -6971204597082569939
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    customData: 
+    physicsShape: []
+    bones: []
+    spriteID: 5e97eb03825dee720800000000000000
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries: []
+    nameFileIdTable:
+      HB TextBlock (3)_hb_baked_0: -3275360564356520336
+      HB TextBlock (3)_hb_baked_1: -5979321563842517263
+      HB TextBlock (3)_hb_baked_10: -6176154909119263954
+      HB TextBlock (3)_hb_baked_100: 2245409227795503037
+      HB TextBlock (3)_hb_baked_101: -125758579120147864
+      HB TextBlock (3)_hb_baked_102: 6548498262497798811
+      HB TextBlock (3)_hb_baked_103: -6971204597082569939
+      HB TextBlock (3)_hb_baked_11: 846867000245560234
+      HB TextBlock (3)_hb_baked_12: 8240404853596736290
+      HB TextBlock (3)_hb_baked_13: -6158347116349711887
+      HB TextBlock (3)_hb_baked_14: 778576718095696700
+      HB TextBlock (3)_hb_baked_15: -90447093707419386
+      HB TextBlock (3)_hb_baked_16: 6176983848271034265
+      HB TextBlock (3)_hb_baked_17: 1471359760745592575
+      HB TextBlock (3)_hb_baked_18: 571215012844809866
+      HB TextBlock (3)_hb_baked_19: -982108752744572114
+      HB TextBlock (3)_hb_baked_2: -5258468096782339686
+      HB TextBlock (3)_hb_baked_20: 3936876198100346477
+      HB TextBlock (3)_hb_baked_21: -534442186487591605
+      HB TextBlock (3)_hb_baked_22: 5712934094284652504
+      HB TextBlock (3)_hb_baked_23: -1564325726786405733
+      HB TextBlock (3)_hb_baked_24: -8943783265489359693
+      HB TextBlock (3)_hb_baked_25: -7520701804297030724
+      HB TextBlock (3)_hb_baked_26: -8580419478877343417
+      HB TextBlock (3)_hb_baked_27: -6943968967594609825
+      HB TextBlock (3)_hb_baked_28: 8401699314114865573
+      HB TextBlock (3)_hb_baked_29: 6537519641724117358
+      HB TextBlock (3)_hb_baked_3: -6826613260153270178
+      HB TextBlock (3)_hb_baked_30: -5518662230052357610
+      HB TextBlock (3)_hb_baked_31: 2200028392140403528
+      HB TextBlock (3)_hb_baked_32: 916748063513612523
+      HB TextBlock (3)_hb_baked_33: -2251644323056513785
+      HB TextBlock (3)_hb_baked_34: -450009323541795592
+      HB TextBlock (3)_hb_baked_35: -7366190384390603419
+      HB TextBlock (3)_hb_baked_36: 2511575865305812496
+      HB TextBlock (3)_hb_baked_37: 1715676024207330022
+      HB TextBlock (3)_hb_baked_38: -4543110017228446797
+      HB TextBlock (3)_hb_baked_39: -5537967610800750651
+      HB TextBlock (3)_hb_baked_4: 102015226658726695
+      HB TextBlock (3)_hb_baked_40: 8942028051732503277
+      HB TextBlock (3)_hb_baked_41: 504036635191119256
+      HB TextBlock (3)_hb_baked_42: -4920544038937171328
+      HB TextBlock (3)_hb_baked_43: -2658645395324130450
+      HB TextBlock (3)_hb_baked_44: 1455488127220779678
+      HB TextBlock (3)_hb_baked_45: 256548282325795479
+      HB TextBlock (3)_hb_baked_46: 7448406827295476621
+      HB TextBlock (3)_hb_baked_47: -7040692170737583616
+      HB TextBlock (3)_hb_baked_48: -1651530801272915597
+      HB TextBlock (3)_hb_baked_49: -8495952480467659639
+      HB TextBlock (3)_hb_baked_5: 4531356678890237483
+      HB TextBlock (3)_hb_baked_50: -6941979787970963457
+      HB TextBlock (3)_hb_baked_51: -5935659132119553111
+      HB TextBlock (3)_hb_baked_52: -8915595933176766907
+      HB TextBlock (3)_hb_baked_53: 2483079088593303989
+      HB TextBlock (3)_hb_baked_54: -2904435982185035096
+      HB TextBlock (3)_hb_baked_55: -2205839320684403685
+      HB TextBlock (3)_hb_baked_56: 4178357546545980452
+      HB TextBlock (3)_hb_baked_57: -2259993249451879252
+      HB TextBlock (3)_hb_baked_58: 7718694193196049071
+      HB TextBlock (3)_hb_baked_59: -6706138297070780237
+      HB TextBlock (3)_hb_baked_6: 1693981070627745111
+      HB TextBlock (3)_hb_baked_60: 3587564067336928906
+      HB TextBlock (3)_hb_baked_61: -3281507372754845760
+      HB TextBlock (3)_hb_baked_62: -5260239335918920738
+      HB TextBlock (3)_hb_baked_63: 9100553294398967540
+      HB TextBlock (3)_hb_baked_64: -1513293136191609537
+      HB TextBlock (3)_hb_baked_65: -4509647966190018876
+      HB TextBlock (3)_hb_baked_66: 4361045354206254263
+      HB TextBlock (3)_hb_baked_67: -1996165614549079455
+      HB TextBlock (3)_hb_baked_68: 7033459182537270348
+      HB TextBlock (3)_hb_baked_69: -6212792321046699757
+      HB TextBlock (3)_hb_baked_7: -1100322322884383957
+      HB TextBlock (3)_hb_baked_70: 7700796952409143648
+      HB TextBlock (3)_hb_baked_71: -483529544501686880
+      HB TextBlock (3)_hb_baked_72: -6536601010938580515
+      HB TextBlock (3)_hb_baked_73: 4477345377501938057
+      HB TextBlock (3)_hb_baked_74: -152377429539291494
+      HB TextBlock (3)_hb_baked_75: -3996023238252041477
+      HB TextBlock (3)_hb_baked_76: 5345702207601743201
+      HB TextBlock (3)_hb_baked_77: -8236838084866458144
+      HB TextBlock (3)_hb_baked_78: 8951816289555257489
+      HB TextBlock (3)_hb_baked_79: 7748147303015092077
+      HB TextBlock (3)_hb_baked_8: 6770486878077922299
+      HB TextBlock (3)_hb_baked_80: 6359446296387058721
+      HB TextBlock (3)_hb_baked_81: 1313716409971703597
+      HB TextBlock (3)_hb_baked_82: -4875335860116359394
+      HB TextBlock (3)_hb_baked_83: -1233643450833475993
+      HB TextBlock (3)_hb_baked_84: 3797766416239394933
+      HB TextBlock (3)_hb_baked_85: 5222731493086481914
+      HB TextBlock (3)_hb_baked_86: -6685137030667675223
+      HB TextBlock (3)_hb_baked_87: -6551705297550645615
+      HB TextBlock (3)_hb_baked_88: -498402519638685893
+      HB TextBlock (3)_hb_baked_89: -2121511695674620048
+      HB TextBlock (3)_hb_baked_9: -2834759855346316973
+      HB TextBlock (3)_hb_baked_90: -7745420358668868347
+      HB TextBlock (3)_hb_baked_91: 468597432664745941
+      HB TextBlock (3)_hb_baked_92: 2939719671567252404
+      HB TextBlock (3)_hb_baked_93: 4552266158570043222
+      HB TextBlock (3)_hb_baked_94: 839557638384701811
+      HB TextBlock (3)_hb_baked_95: 7103072793638786514
+      HB TextBlock (3)_hb_baked_96: -2836758028563194494
+      HB TextBlock (3)_hb_baked_97: -1646633772934390640
+      HB TextBlock (3)_hb_baked_98: 8644056282964724266
+      HB TextBlock (3)_hb_baked_99: 8667869186758326564
+  mipmapLimitGroupName: 
+  pSDRemoveMatte: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

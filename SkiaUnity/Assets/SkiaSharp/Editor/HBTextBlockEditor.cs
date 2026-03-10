@@ -2,8 +2,12 @@
 
 using SkiaSharp.Unity.HB;
 using UnityEngine;
+using UnityEngine.UI;
+using UnityEngine.U2D;
 using UnityEditor;
+using UnityEditor.U2D;
 using UnityEditor.SceneManagement;
+using System.IO;
 using TextAlignment = Topten.RichTextKit.TextAlignment;
 
 [CanEditMultipleObjects]
@@ -94,6 +98,9 @@ public class HBTextBlockEditor : Editor {
   static readonly GUIContent k_OnTextChangedLabel = new GUIContent("On Text Changed", "Fired when the text content changes at runtime.");
   static readonly GUIContent k_OnLinkClickedLabel = new GUIContent("On Link Clicked", "Fired when a detected URL link is clicked. Passes the URL string.");
 
+  static readonly GUIContent k_BakeHeader = new GUIContent("<b>Bake</b>");
+  static readonly GUIContent k_BakedSpriteLabel = new GUIContent("Baked Sprite", "When assigned, uses Image + SpriteAtlas for batching. Zero SkiaSharp cost at runtime.");
+
   static readonly string[] k_CollapseExpandHint = { "<i>(Click to collapse)</i>", "<i>(Click to expand)</i>" };
 
   // --- Cached GUIStyles ---
@@ -127,7 +134,8 @@ public class HBTextBlockEditor : Editor {
     strikeThroughStyleProperty, textProperty, textAlignmentProperty, textVerticalAlignmentProperty, colorTypeProperty, autoFitHorizontalProperty, maxWidthProperty, maxHeightProperty, gradiantColorsProperty,
     gradiantPositionsProperty, enableGradiantProperty, gradiantAngleProperty, ellipsisProperty, maxLines, linkColorProperty,
     textDirectionProperty, fontWeightProperty, fontVariantProperty, paddingProperty, richTextProperty,
-    fallbackFontsProperty, paragraphSpacingProperty, onTextChangedProperty, onLinkClickedProperty;
+    fallbackFontsProperty, paragraphSpacingProperty, onTextChangedProperty, onLinkClickedProperty,
+    bakedSpriteProperty;
 
   private string currentFontFace = null;
   private bool _needsInitialRender = true;
@@ -141,12 +149,14 @@ public class HBTextBlockEditor : Editor {
     _lastTrackedWidth = -1;
     _lastTrackedHeight = -1;
 
-    // Hide RawImage from inspector — HB_TEXTBlock manages it internally
+    // Hide RawImage and Image from inspector — HB_TEXTBlock manages them internally
     foreach (var t in targets) {
-      var ri = ((Component)t).GetComponent<UnityEngine.UI.RawImage>();
-      if (ri != null && (ri.hideFlags & HideFlags.HideInInspector) == 0) {
+      var ri = ((Component)t).GetComponent<RawImage>();
+      if (ri != null && (ri.hideFlags & HideFlags.HideInInspector) == 0)
         ri.hideFlags |= HideFlags.HideInInspector;
-      }
+      var img = ((Component)t).GetComponent<Image>();
+      if (img != null && (img.hideFlags & HideFlags.HideInInspector) == 0)
+        img.hideFlags |= HideFlags.HideInInspector;
     }
 
     fontSizeProperty = serializedObject.FindProperty("fontSize");
@@ -193,6 +203,7 @@ public class HBTextBlockEditor : Editor {
     paragraphSpacingProperty = serializedObject.FindProperty("paragraphSpacing");
     onTextChangedProperty = serializedObject.FindProperty("onTextChanged");
     onLinkClickedProperty = serializedObject.FindProperty("onLinkClicked");
+    bakedSpriteProperty = serializedObject.FindProperty("bakedSprite");
 
     if (fontProperty.propertyType == SerializedPropertyType.ObjectReference && fontProperty.objectReferenceValue != null) {
       currentFontFace = AssetDatabase.GetAssetPath(fontProperty.objectReferenceValue);
@@ -205,11 +216,18 @@ public class HBTextBlockEditor : Editor {
     InitStyles();
     serializedObject.Update();
 
+    bool isBaked = bakedSpriteProperty.objectReferenceValue != null;
+
+    // Grey out all settings when baked
+    EditorGUI.BeginDisabledGroup(isBaked);
     DrawTextInput();
     DrawMainSettings();
     DrawEffects();
     DrawExtraSettings();
+    EditorGUI.EndDisabledGroup();
+
     DrawTextInfo();
+    DrawBakeSection(isBaked);
 
     ApplyAndRender();
   }
@@ -678,25 +696,26 @@ public class HBTextBlockEditor : Editor {
   }
 
   private void DrawRawImageProperties() {
-    var hb = (HB_TEXTBlock)target;
-    var rawImage = hb.GetComponent<UnityEngine.UI.RawImage>();
-    if (rawImage == null) return;
-
-    // Use a shared SerializedObject across all target RawImages
-    var rawTargets = new UnityEngine.Object[targets.Length];
+    bool isBaked = bakedSpriteProperty.objectReferenceValue != null;
+    var uiTargets = new Object[targets.Length];
     for (int i = 0; i < targets.Length; i++) {
-      rawTargets[i] = ((Component)targets[i]).GetComponent<UnityEngine.UI.RawImage>();
+      if (isBaked)
+        uiTargets[i] = ((Component)targets[i]).GetComponent<Image>();
+      else
+        uiTargets[i] = ((Component)targets[i]).GetComponent<RawImage>();
     }
-    var rawSo = new SerializedObject(rawTargets);
-    rawSo.Update();
+    if (uiTargets[0] == null) return;
 
-    var raycastProp = rawSo.FindProperty("m_RaycastTarget");
-    var maskableProp = rawSo.FindProperty("m_Maskable");
+    var uiSo = new SerializedObject(uiTargets);
+    uiSo.Update();
+
+    var raycastProp = uiSo.FindProperty("m_RaycastTarget");
+    var maskableProp = uiSo.FindProperty("m_Maskable");
 
     EditorGUILayout.PropertyField(raycastProp, k_RaycastTargetLabel);
     EditorGUILayout.PropertyField(maskableProp, k_MaskableLabel);
 
-    rawSo.ApplyModifiedProperties();
+    uiSo.ApplyModifiedProperties();
   }
 
   private void DrawFontField() {
@@ -756,10 +775,165 @@ public class HBTextBlockEditor : Editor {
     EditorGUI.EndProperty();
   }
 
+  // ===================== Bake =====================
+
+  private void DrawBakeSection(bool isBaked) {
+    DrawSectionHeader(k_BakeHeader);
+    EditorGUI.indentLevel++;
+    EditorGUILayout.PropertyField(bakedSpriteProperty, k_BakedSpriteLabel);
+
+    // Warn if HBTextAnimator is attached
+    bool hasAnimator = false;
+    foreach (var t in targets) {
+      if (((Component)t).GetComponent<HBTextAnimator>() != null) {
+        hasAnimator = true;
+        break;
+      }
+    }
+    if (hasAnimator && !isBaked) {
+      EditorGUILayout.HelpBox("HBTextAnimator is attached. Baking disables animation — only bake static text.", MessageType.Warning);
+    }
+
+    if (isBaked) {
+      EditorGUILayout.HelpBox("Baked. Using Image + SpriteAtlas for draw call batching. Zero SkiaSharp cost at runtime.", MessageType.Info);
+      if (GUILayout.Button("Unbake (Return to Live Rendering)")) {
+        serializedObject.ApplyModifiedProperties();
+        UnbakeSelectedTexts();
+        GUIUtility.ExitGUI();
+      }
+    } else {
+      if (GUILayout.Button("Bake to PNG (Auto Atlas)")) {
+        serializedObject.ApplyModifiedProperties();
+        BakeSelectedTexts();
+        GUIUtility.ExitGUI();
+      }
+    }
+    EditorGUI.indentLevel--;
+    EditorGUILayout.Space();
+  }
+
+  private void BakeSelectedTexts() {
+    string dir = "Assets/BakedSkiaGraphics";
+    if (!AssetDatabase.IsValidFolder(dir))
+      AssetDatabase.CreateFolder("Assets", "BakedSkiaGraphics");
+
+    // Share SpriteAtlas with SkiaGraphic for maximum batching
+    string atlasPath = $"{dir}/SkiaGraphicAtlas.spriteatlas";
+    SpriteAtlas atlas = AssetDatabase.LoadAssetAtPath<SpriteAtlas>(atlasPath);
+    if (atlas == null) {
+      atlas = new SpriteAtlas();
+      atlas.SetPackingSettings(new SpriteAtlasPackingSettings {
+        enableRotation = false,
+        enableTightPacking = false,
+        padding = 4
+      });
+      atlas.SetTextureSettings(new SpriteAtlasTextureSettings {
+        readable = false,
+        generateMipMaps = false,
+        sRGB = true,
+        filterMode = FilterMode.Bilinear
+      });
+      AssetDatabase.CreateAsset(atlas, atlasPath);
+    }
+
+    foreach (var t in targets) {
+      var hbText = (HB_TEXTBlock)t;
+      byte[] png = hbText.BakeToTexture();
+      if (png == null || png.Length == 0) {
+        Debug.LogWarning($"HB_TEXTBlock: Bake failed for {hbText.name}");
+        continue;
+      }
+
+      string fileName = $"{hbText.gameObject.name}_hb_baked.png";
+      string assetPath = $"{dir}/{fileName}";
+
+      File.WriteAllBytes(assetPath, png);
+      AssetDatabase.ImportAsset(assetPath, ImportAssetOptions.ForceUpdate);
+
+      TextureImporter importer = (TextureImporter)AssetImporter.GetAtPath(assetPath);
+      if (importer != null) {
+        importer.textureType = TextureImporterType.Sprite;
+        importer.spriteImportMode = SpriteImportMode.Single;
+        importer.textureCompression = TextureImporterCompression.Compressed;
+        importer.alphaIsTransparency = true;
+        importer.npotScale = TextureImporterNPOTScale.None;
+        importer.mipmapEnabled = false;
+        importer.sRGBTexture = true;
+        importer.SaveAndReimport();
+      }
+
+      Sprite spriteAsset = AssetDatabase.LoadAssetAtPath<Sprite>(assetPath);
+      if (spriteAsset == null) {
+        Debug.LogWarning($"HB_TEXTBlock: Could not load baked sprite at {assetPath}");
+        continue;
+      }
+
+      atlas.Add(new Object[] { AssetDatabase.LoadAssetAtPath<Object>(assetPath) });
+
+      // Swap RawImage → Image
+      var rawImg = hbText.GetComponent<RawImage>();
+      bool raycast = rawImg != null && rawImg.raycastTarget;
+      bool maskable = rawImg != null && rawImg.maskable;
+      if (rawImg != null)
+        Undo.DestroyObjectImmediate(rawImg);
+
+      var img = hbText.GetComponent<Image>();
+      if (img == null) {
+        img = hbText.gameObject.AddComponent<Image>();
+        Undo.RegisterCreatedObjectUndo(img, "Bake HB TextBlock");
+      }
+      img.sprite = spriteAsset;
+      img.type = Image.Type.Simple;
+      img.preserveAspect = false;
+      img.color = Color.white;
+      img.raycastTarget = raycast;
+      img.maskable = maskable;
+      img.hideFlags |= HideFlags.HideInInspector;
+
+      var so = new SerializedObject(hbText);
+      so.FindProperty("bakedSprite").objectReferenceValue = spriteAsset;
+      so.ApplyModifiedProperties();
+      EditorUtility.SetDirty(hbText);
+    }
+
+    EditorUtility.SetDirty(atlas);
+    AssetDatabase.SaveAssets();
+  }
+
+  private void UnbakeSelectedTexts() {
+    foreach (var t in targets) {
+      var hbText = (HB_TEXTBlock)t;
+
+      var img = hbText.GetComponent<Image>();
+      if (img != null) Undo.DestroyObjectImmediate(img);
+
+      var rawImg = hbText.GetComponent<RawImage>();
+      if (rawImg == null) {
+        rawImg = hbText.gameObject.AddComponent<RawImage>();
+        Undo.RegisterCreatedObjectUndo(rawImg, "Unbake HB TextBlock");
+      }
+      rawImg.enabled = true;
+      rawImg.hideFlags |= HideFlags.HideInInspector;
+
+      var so = new SerializedObject(hbText);
+      so.FindProperty("bakedSprite").objectReferenceValue = null;
+      so.ApplyModifiedProperties();
+
+      // Re-trigger OnDisable → OnEnable to reinitialize
+      hbText.enabled = false;
+      hbText.enabled = true;
+
+      EditorUtility.SetDirty(hbText);
+    }
+  }
+
   // ===================== Change Detection & Rendering =====================
 
   private void ApplyAndRender() {
     bool propertiesChanged = serializedObject.ApplyModifiedProperties();
+
+    // Skip rendering when baked
+    if (bakedSpriteProperty.objectReferenceValue != null) return;
 
     // Check if font asset changed
     bool fontFaceChanged = false;
@@ -815,7 +989,14 @@ public class HBTextBlockEditor : Editor {
 
   public override void OnPreviewGUI(Rect r, GUIStyle background) {
     var hb = (HB_TEXTBlock)target;
-    var rawImage = hb.GetComponent<UnityEngine.UI.RawImage>();
+    if (hb.IsBaked) {
+      var img = hb.GetComponent<Image>();
+      if (img != null && img.sprite != null) {
+        EditorGUI.DrawPreviewTexture(r, img.sprite.texture, null, ScaleMode.ScaleToFit);
+        return;
+      }
+    }
+    var rawImage = hb.GetComponent<RawImage>();
     if (rawImage != null && rawImage.texture != null) {
       EditorGUI.DrawPreviewTexture(r, rawImage.texture, null, ScaleMode.ScaleToFit);
     } else {
@@ -946,6 +1127,7 @@ public class HBTextBlockOpenCallback {
       // Skip prefab assets — only render objects in loaded scenes
       if (EditorUtility.IsPersistent(textBlock)) continue;
       if (!textBlock.gameObject.scene.isLoaded) continue;
+      if (textBlock.IsBaked) continue;
       if (string.IsNullOrEmpty(textBlock.text)) continue;
       textBlock.ReUpdateEditMode();
     }
