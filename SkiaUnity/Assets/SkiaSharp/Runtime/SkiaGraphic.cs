@@ -315,10 +315,6 @@ namespace SkiaSharp.Unity {
 
 		void OnDestroy() {
 			Cleanup();
-			if (rawImage != null) {
-				DestroyImmediate(rawImage);
-				rawImage = null;
-			}
 		}
 
 		void Update() {
