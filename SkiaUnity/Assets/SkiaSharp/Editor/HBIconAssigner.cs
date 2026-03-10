@@ -13,6 +13,7 @@ namespace SkiaSharp.Unity.HB.Editor {
             ("HB_TEXTBlock", "HB", new Color(0.16f, 0.50f, 0.73f, 1f), Color.white),
             ("HBTextAnimator", "A", new Color(0.20f, 0.60f, 0.36f, 1f), Color.white),
             ("HBInputField", "IF", new Color(0.80f, 0.45f, 0.10f, 1f), Color.white),
+            ("SkiaGraphic", "SG", new Color(0.55f, 0.10f, 0.70f, 1f), Color.white),
         };
 
         static HBIconAssigner() {
@@ -177,6 +178,24 @@ namespace SkiaSharp.Unity.HB.Editor {
                     0b10000_000,
                     0b10000_000,
                     0b10000_000,
+                },
+                ['S'] = new byte[] {
+                    0b01111_000,
+                    0b10000_000,
+                    0b10000_000,
+                    0b01110_000,
+                    0b00001_000,
+                    0b00001_000,
+                    0b11110_000,
+                },
+                ['G'] = new byte[] {
+                    0b01110_000,
+                    0b10001_000,
+                    0b10000_000,
+                    0b10011_000,
+                    0b10001_000,
+                    0b10001_000,
+                    0b01110_000,
                 },
             };
 
