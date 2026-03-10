@@ -6,25 +6,26 @@ SkiaSharp is a .NET binding to the Skia library, which is utilized by popular pl
 
 ## Features
 
-- **High-performance graphics:** Hardware-accelerated rendering with SKSurface reuse, SKTypeface caching with reference counting, dirty-flag rendering, and reduced per-render allocations.
+### Vector Shapes (SkiaGraphic)
+Draw rectangles, rounded rects, circles, and ellipses directly on Unity Canvas. Supports solid colors, linear/radial/sweep gradients, image fills, strokes (solid, dashed, gradient), drop shadows, and inner shadows — all configurable from the inspector with no code required.
 
-- **Cross-platform support:** Windows, macOS, Linux, iOS, and Android.
+### Text Rendering (HarfBuzz)
+Advanced text rendering powered by HarfBuzz and SkiaSharp. Supports native system fonts, emoji, RTL/bidirectional text, rich text tags (`<b>`, `<i>`, `<color>`, `<size>`, etc.), fallback fonts for multi-language, paragraph spacing, padding, link detection, and vertical alignment. Includes a full-featured input field with selection, clipboard, auto-resize, and mobile support.
 
-- **Extensive API:** Rich set of APIs for drawing paths, shapes, text, and images.
+### Lottie & Skottie Animations
+Import and play Lottie JSON animations using the Skottie library. Control playback with play, pause, stop, and seek. Supports animation markers for state-based playback and looping.
 
-- **Custom shaders:** Write custom shaders using the Skia graphics API for unique visual effects.
+### SVG Support
+Render scalable vector graphics using SVG.Skia. SVGs scale to any resolution without losing quality, making them ideal for icons, illustrations, and resolution-independent UI elements across all platforms.
 
-- **Lottie animations:** Import and play Lottie animations via the Skottie library.
+### Pre-Bake System
+Bake any SkiaGraphic or HB TextBlock in the editor to a Sprite PNG and automatically add it to a shared SpriteAtlas. Baked elements have zero SkiaSharp runtime cost and batch draw calls efficiently (20 baked elements can render in 1–2 draw calls). Supports nine-slice for solid-fill shapes. One-click unbake restores live rendering.
 
-- **SVG support:** Render scalable vector graphics using SVG.Skia — scale to any size without losing quality, cross-platform compatible.
+### High Performance
+Dirty-flag rendering coalesces multiple property changes into a single render per frame. SKSurface and SKTypeface are cached and reused. Gradient objects are hash-checked to avoid unnecessary recreation. Layout rebuilds only trigger when size actually changes.
 
-- **HarfBuzz text rendering:** Native fonts, emoji, RTL/bidirectional text, and advanced text shaping.
-
-- **SkiaGraphic:** Vector shape UI component for Canvas — rectangles, rounded rects, circles, ellipses with fills, strokes, shadows, and gradients.
-
-- **Pre-Bake System:** Bake any SkiaGraphic or HB TextBlock to a Sprite PNG with auto SpriteAtlas for draw call batching and zero runtime cost.
-
-- **Integration with Unity:** Seamlessly integrates with the Unity Editor and Canvas UI system.
+### Cross-Platform
+Windows, macOS, Linux, iOS, and Android. Integrates with Unity Canvas UI system including layout groups, masks, and draw call batching.
 
 https://github.com/user-attachments/assets/a28f7218-6a5a-46c6-9a2b-f21c516a9a1e
 
