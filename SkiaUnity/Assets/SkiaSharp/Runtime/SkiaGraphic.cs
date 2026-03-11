@@ -458,12 +458,15 @@ namespace SkiaSharp.Unity {
 					paint.Color = ToSKColor(fillColor);
 					break;
 				case SkiaFillType.LinearGradient:
+					paint.IsDither = true;
 					paint.Shader = CreateLinearGradient(rect);
 					break;
 				case SkiaFillType.RadialGradient:
+					paint.IsDither = true;
 					paint.Shader = CreateRadialGradient(rect);
 					break;
 				case SkiaFillType.SweepGradient:
+					paint.IsDither = true;
 					paint.Shader = CreateSweepGradient(rect);
 					break;
 				case SkiaFillType.Image:
@@ -483,6 +486,7 @@ namespace SkiaSharp.Unity {
 			paint.StrokeWidth = strokeWidth;
 
 			if (enableGradientStroke) {
+				paint.IsDither = true;
 				paint.Shader = CreateStrokeGradient(rect);
 			} else {
 				paint.Color = ToSKColor(strokeColor);
