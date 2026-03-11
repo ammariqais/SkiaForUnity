@@ -1175,7 +1175,7 @@ namespace SkiaSharp.Unity.HB {
 		protected virtual void OnDisable() {
 			Dispose();
 			if (rawImage != null) {
-				DestroyImmediate(rawImage.texture);
+				rawImage.texture = null;
 			}
 
 			if (texture != null) {
