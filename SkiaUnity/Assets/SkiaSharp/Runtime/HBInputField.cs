@@ -88,6 +88,8 @@ namespace SkiaSharp.Unity.HB {
 		private Vector2 m_ScrollOffset;
 		private RectTransform m_TextRT;
 		private RectTransform m_PlaceholderRT;
+		private bool m_UpdatingDisplay;
+		private string m_PrevKeyboardText;
 
 		// Public API
 		public string text {
@@ -144,6 +146,15 @@ namespace SkiaSharp.Unity.HB {
 
 		protected override void Start() {
 			base.Start();
+			// Input field controls sizing — prevent text component from resizing itself
+			if (textComponent != null) {
+				textComponent.AutoFitVertical = false;
+				textComponent.AutoFitHorizontal = false;
+			}
+			if (placeholder != null) {
+				placeholder.AutoFitVertical = false;
+				placeholder.AutoFitHorizontal = false;
+			}
 			SyncTextSettings();
 			SyncMaxWidthToRect();
 			UpdateDisplay();
@@ -170,6 +181,7 @@ namespace SkiaSharp.Unity.HB {
 
 		protected override void OnRectTransformDimensionsChange() {
 			base.OnRectTransformDimensionsChange();
+			if (m_UpdatingDisplay) return;
 			SyncMaxWidthToRect();
 		}
 
@@ -299,14 +311,14 @@ namespace SkiaSharp.Unity.HB {
 		private void ApplyScrollOffset() {
 			if (m_TextRT == null) return;
 
-			// The text RT anchors stretch to viewport. Offset via offsetMin/offsetMax.
-			m_TextRT.offsetMin = new Vector2(m_ScrollOffset.x, m_TextRT.offsetMin.y);
-			m_TextRT.offsetMax = new Vector2(m_ScrollOffset.x, m_TextRT.offsetMax.y);
+			var newMin = new Vector2(m_ScrollOffset.x,
+				lineType == LineType.MultiLine ? m_ScrollOffset.y : m_TextRT.offsetMin.y);
+			var newMax = new Vector2(m_ScrollOffset.x,
+				lineType == LineType.MultiLine ? m_ScrollOffset.y : m_TextRT.offsetMax.y);
 
-			if (lineType == LineType.MultiLine) {
-				m_TextRT.offsetMin = new Vector2(m_TextRT.offsetMin.x, m_ScrollOffset.y);
-				m_TextRT.offsetMax = new Vector2(m_TextRT.offsetMax.x, m_ScrollOffset.y);
-			}
+			// Only set if changed to avoid triggering layout rebuild
+			if (m_TextRT.offsetMin != newMin) m_TextRT.offsetMin = newMin;
+			if (m_TextRT.offsetMax != newMax) m_TextRT.offsetMax = newMax;
 		}
 
 		private void ResetScroll() {
@@ -357,6 +369,7 @@ namespace SkiaSharp.Unity.HB {
 				bool secure = contentType == ContentType.Password;
 				bool multiline = lineType == LineType.MultiLine;
 				m_Keyboard = TouchScreenKeyboard.Open(m_Text, keyboardType, true, multiline, secure);
+				m_PrevKeyboardText = m_Text;
 			}
 
 			if (selectAllOnFocus && m_Text.Length > 0) {
@@ -444,31 +457,88 @@ namespace SkiaSharp.Unity.HB {
 			if (m_Keyboard == null) return;
 
 			string kbText = m_Keyboard.text;
-			if (kbText != m_Text) {
-				// Validate characters
-				if (contentType != ContentType.Standard && contentType != ContentType.Password) {
-					string validated = "";
-					foreach (char c in kbText) {
-						if (ValidateChar(c)) validated += c;
-					}
-					kbText = validated;
+
+			// Skip if keyboard text hasn't changed since we last processed it
+			if (kbText == m_PrevKeyboardText) {
+				if (m_Keyboard.status == TouchScreenKeyboard.Status.Done) {
+					onSubmit?.Invoke(m_Text);
+					Deactivate();
+				} else if (m_Keyboard.status == TouchScreenKeyboard.Status.Canceled) {
+					Deactivate();
 				}
-				if (characterLimit > 0 && kbText.Length > characterLimit)
-					kbText = kbText.Substring(0, characterLimit);
+				return;
+			}
 
-				// Sync validated text back to keyboard if it changed
-				if (kbText != m_Keyboard.text)
-					m_Keyboard.text = kbText;
+			string prevKb = m_PrevKeyboardText ?? m_Text;
+			m_PrevKeyboardText = kbText;
 
-				// Compute new caret position from what actually changed
+			// Keyboard text changed — figure out what it did and apply at OUR caret
+			int prevLen = prevKb.Length;
+			int newLen = kbText.Length;
+			bool changed = false;
+
+			if (newLen < prevLen) {
+				// Deletion: keyboard removed characters (backspace)
+				int deletedCount = prevLen - newLen;
+				// Apply at our caret position, not the keyboard's
+				if (HasSelection) {
+					DeleteSelection();
+					changed = true;
+				} else {
+					int deleteStart = Mathf.Max(0, m_CaretPosition - deletedCount);
+					int actualDelete = m_CaretPosition - deleteStart;
+					if (actualDelete > 0) {
+						m_Text = m_Text.Remove(deleteStart, actualDelete);
+						m_CaretPosition = deleteStart;
+						changed = true;
+					}
+				}
+			} else if (newLen > prevLen) {
+				// Insertion: keyboard added characters
+				// Find what was inserted by diffing prevKb vs kbText
+				int prefixLen = 0;
+				int minLen = Mathf.Min(prevLen, newLen);
+				while (prefixLen < minLen && prevKb[prefixLen] == kbText[prefixLen])
+					prefixLen++;
+				int insertedCount = newLen - prevLen;
+				string inserted = kbText.Substring(prefixLen, insertedCount);
+
+				// Validate inserted characters
+				if (contentType != ContentType.Standard && contentType != ContentType.Password) {
+					string valid = "";
+					foreach (char c in inserted) {
+						if (ValidateChar(c)) valid += c;
+					}
+					inserted = valid;
+				}
+				if (characterLimit > 0) {
+					int space = characterLimit - m_Text.Length;
+					if (inserted.Length > space)
+						inserted = inserted.Substring(0, Mathf.Max(0, space));
+				}
+
+				if (inserted.Length > 0) {
+					if (HasSelection) DeleteSelection();
+					m_Text = m_Text.Insert(m_CaretPosition, inserted);
+					m_CaretPosition += inserted.Length;
+					changed = true;
+				}
+			} else {
+				// Same length — replacement (e.g. autocorrect)
 				m_CaretPosition = ComputeCaretFromDiff(m_Text, kbText);
 				m_Text = kbText;
+				changed = true;
+			}
+
+			if (changed) {
 				m_SelectionAnchor = m_CaretPosition;
+				// Sync our corrected text back to the keyboard
+				if (m_Keyboard.text != m_Text) {
+					m_Keyboard.text = m_Text;
+					m_PrevKeyboardText = m_Text;
+				}
 				UpdateDisplay();
 				onValueChanged?.Invoke(m_Text);
-
-				// Keep native keyboard cursor in sync with our caret
-				SyncKeyboardSelection();
 			}
 
 			if (m_Keyboard.status == TouchScreenKeyboard.Status.Done) {
@@ -820,26 +890,33 @@ namespace SkiaSharp.Unity.HB {
 		// ===================== Display =====================
 
 		private void UpdateDisplay() {
-			string displayText = m_Text;
-			if (contentType == ContentType.Password && !string.IsNullOrEmpty(displayText)) {
-				displayText = new string(asteriskChar, displayText.Length);
-			}
+			if (m_UpdatingDisplay) return;
+			m_UpdatingDisplay = true;
 
-			if (textComponent != null) {
-				if (richText)
-					textComponent.SetRichText(displayText);
-				else
-					textComponent.text = displayText;
-			}
+			try {
+				string displayText = m_Text;
+				if (contentType == ContentType.Password && !string.IsNullOrEmpty(displayText)) {
+					displayText = new string(asteriskChar, displayText.Length);
+				}
 
-			if (placeholder != null) {
-				placeholder.gameObject.SetActive(string.IsNullOrEmpty(m_Text));
-			}
+				if (textComponent != null) {
+					if (richText)
+						textComponent.SetRichText(displayText);
+					else
+						textComponent.text = displayText;
+				}
 
-			AutoResizeHeight();
-			UpdateCaretVisual();
-			ScrollToCaret();
-			UpdateSelectionVisual();
+				if (placeholder != null) {
+					placeholder.gameObject.SetActive(string.IsNullOrEmpty(m_Text));
+				}
+
+				AutoResizeHeight();
+				UpdateCaretVisual();
+				ScrollToCaret();
+				UpdateSelectionVisual();
+			} finally {
+				m_UpdatingDisplay = false;
+			}
 		}
 
 		private void UpdateCaretVisual() {

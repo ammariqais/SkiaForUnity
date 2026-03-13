@@ -858,7 +858,9 @@ namespace SkiaSharp.Unity.HB {
 
 		protected virtual void FixedUpdate() {
 			if (bakedSprite != null) return;
-			if (currentWidth != rectTransform.rect.width || currentHeight != currentPreferdHeight) {
+			float w = rectTransform.rect.width;
+			float h = rectTransform.rect.height;
+			if (Mathf.Abs(currentWidth - w) > 0.5f || Mathf.Abs(currentHeight - h) > 0.5f) {
 				_renderDirty = true;
 			}
 		}

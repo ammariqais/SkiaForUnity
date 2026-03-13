@@ -55,29 +55,41 @@ SpriteAtlas:
     - 0a6547203edf64e00aab9b1945526ca5: 21300000
     - 360073a1e8f154eec9e40f40aabcd4f1: 21300000
     - fd7375e18079c42668f5fccbf16b596e: 21300000
+    - b3350343e9c49404c9e3e76fcaf6a398: 21300000
     - bd0ca225de2f24062808ac04e03bf2d1: 21300000
+    - 7935d9374efa249af974dd510b260075: 21300000
     - ef74500871b284773a54186ce86816d7: 21300000
     - 4c9a44f9df2584858a600f440e0f38b0: 21300000
+    - 24a4101b0b90643b0898413337f8598f: 21300000
     - 4bae8e3b3e6d94e94935ad0975935c6f: 21300000
+    - 8289be2cca5104f169670059a0bc16b9: 21300000
     - d3ff4f9fdda7c4fbf905e5fdeb956736: 21300000
   m_MasterAtlas: {fileID: 0}
   m_PackedSprites:
   - {fileID: 21300000, guid: 0a6547203edf64e00aab9b1945526ca5, type: 3}
   - {fileID: 21300000, guid: 360073a1e8f154eec9e40f40aabcd4f1, type: 3}
   - {fileID: 21300000, guid: fd7375e18079c42668f5fccbf16b596e, type: 3}
+  - {fileID: 21300000, guid: b3350343e9c49404c9e3e76fcaf6a398, type: 3}
   - {fileID: 21300000, guid: bd0ca225de2f24062808ac04e03bf2d1, type: 3}
+  - {fileID: 21300000, guid: 7935d9374efa249af974dd510b260075, type: 3}
   - {fileID: 21300000, guid: ef74500871b284773a54186ce86816d7, type: 3}
   - {fileID: 21300000, guid: 4c9a44f9df2584858a600f440e0f38b0, type: 3}
+  - {fileID: 21300000, guid: 24a4101b0b90643b0898413337f8598f, type: 3}
   - {fileID: 21300000, guid: 4bae8e3b3e6d94e94935ad0975935c6f, type: 3}
+  - {fileID: 21300000, guid: 8289be2cca5104f169670059a0bc16b9, type: 3}
   - {fileID: 21300000, guid: d3ff4f9fdda7c4fbf905e5fdeb956736, type: 3}
   m_PackedSpriteNamesToIndex:
   - HB TextBlock (3)_hb_baked
   - Image_baked_2
   - Image_baked
+  - Image (8)_baked
   - Image_baked_1
+  - Image_baked_4
   - HB TextBlock (1)_hb_baked
   - Image (1)_baked_1
+  - Image_baked_3
   - Skia Graphic_baked
+  - Image (1)_baked_2
   - Image (1)_baked
   m_RenderDataMap: {}
   m_Tag: SkiaGraphicAtlas
