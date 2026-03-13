@@ -41,5 +41,8 @@ namespace SkiaSharp.Unity {
 
 		// Performance
 		public float resolutionScale = 1f;
+
+		// Bake
+		public Sprite bakedSprite;
 	}
 }

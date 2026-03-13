@@ -53,7 +53,7 @@ public class SkiaGraphicEditor : Editor {
 	private SerializedProperty bakedSprite;
 
 	// Style Preset
-	private SkiaGraphicStyle stylePreset;
+	private SerializedProperty stylePreset;
 
 	private GUIStyle headerStyle;
 
@@ -104,6 +104,7 @@ public class SkiaGraphicEditor : Editor {
 		innerShadowOffset = serializedObject.FindProperty("innerShadowOffset");
 		innerShadowBlur = serializedObject.FindProperty("innerShadowBlur");
 		resolutionScale = serializedObject.FindProperty("resolutionScale");
+		stylePreset = serializedObject.FindProperty("stylePreset");
 		bakedSprite = serializedObject.FindProperty("bakedSprite");
 
 		// Cache GameObjects so we can clean up hidden components in OnDisable
@@ -291,35 +292,52 @@ public class SkiaGraphicEditor : Editor {
 		// Style Preset
 		EditorGUILayout.LabelField("Style Preset", headerStyle);
 		EditorGUI.indentLevel++;
-		stylePreset = (SkiaGraphicStyle)EditorGUILayout.ObjectField("Preset", stylePreset, typeof(SkiaGraphicStyle), false);
-		if (stylePreset != null) {
+		EditorGUILayout.PropertyField(stylePreset, new GUIContent("Preset"));
+		var currentStyle = (SkiaGraphicStyle)stylePreset.objectReferenceValue;
+		if (currentStyle != null) {
 			EditorGUILayout.BeginHorizontal();
 			if (GUILayout.Button("Apply Style")) {
 				serializedObject.ApplyModifiedProperties();
 				foreach (var t in targets) {
 					Undo.RecordObject((SkiaGraphic)t, "Apply Style Preset");
-					ApplyStyleToGraphic((SkiaGraphic)t, stylePreset);
+					ApplyStyleToGraphic((SkiaGraphic)t, currentStyle);
 					EditorUtility.SetDirty((SkiaGraphic)t);
 				}
+				serializedObject.Update();
+				SceneView.RepaintAll();
+				UnityEditorInternal.InternalEditorUtility.RepaintAllViews();
 				GUIUtility.ExitGUI();
 			}
 			if (GUILayout.Button("Save to Style")) {
-				Undo.RecordObject(stylePreset, "Save Style Preset");
-				SaveGraphicToStyle((SkiaGraphic)target, stylePreset);
-				EditorUtility.SetDirty(stylePreset);
+				Undo.RecordObject(currentStyle, "Save Style Preset");
+				SaveGraphicToStyle((SkiaGraphic)target, currentStyle);
+				EditorUtility.SetDirty(currentStyle);
 				AssetDatabase.SaveAssets();
+				GUIUtility.ExitGUI();
 			}
 			EditorGUILayout.EndHorizontal();
 		}
 		if (GUILayout.Button("Create New Style from Current")) {
-			string path = EditorUtility.SaveFilePanelInProject("Save Style Preset", "NewStyle", "asset", "Save style preset");
-			if (!string.IsNullOrEmpty(path)) {
-				var newStyle = ScriptableObject.CreateInstance<SkiaGraphicStyle>();
-				SaveGraphicToStyle((SkiaGraphic)target, newStyle);
-				AssetDatabase.CreateAsset(newStyle, path);
-				AssetDatabase.SaveAssets();
-				stylePreset = newStyle;
-				EditorGUIUtility.PingObject(newStyle);
+			string absPath = EditorUtility.SaveFilePanel("Save Style Preset", Application.dataPath, "NewStyle", "asset");
+			if (!string.IsNullOrEmpty(absPath)) {
+				// Convert absolute path to project-relative Assets/ path
+				string projectPath = Application.dataPath; // ends with /Assets
+				if (!absPath.StartsWith(projectPath)) {
+					Debug.LogError("Style must be saved inside the Assets folder.");
+				} else {
+					string path = "Assets" + absPath.Substring(projectPath.Length);
+					var newStyle = ScriptableObject.CreateInstance<SkiaGraphicStyle>();
+					SaveGraphicToStyle((SkiaGraphic)target, newStyle);
+					AssetDatabase.CreateAsset(newStyle, path);
+					AssetDatabase.SaveAssets();
+					foreach (var t in targets) {
+						var so = new SerializedObject(t);
+						so.FindProperty("stylePreset").objectReferenceValue = newStyle;
+						so.ApplyModifiedProperties();
+					}
+					EditorGUIUtility.PingObject(newStyle);
+					GUIUtility.ExitGUI();
+				}
 			}
 		}
 		EditorGUI.indentLevel--;
@@ -540,12 +558,57 @@ public class SkiaGraphicEditor : Editor {
 		soGraphic.CopyFromSerializedPropertyIfDifferent(soStyle.FindProperty("gradient"));
 		soGraphic.CopyFromSerializedPropertyIfDifferent(soStyle.FindProperty("strokeGradient"));
 		soGraphic.ApplyModifiedProperties();
+
+		// Handle baked sprite swap (RawImage ↔ Image)
+		bool wasBaked = graphic.IsBaked;
+		bool willBake = style.bakedSprite != null;
+
+		soGraphic = new SerializedObject(graphic);
+		soGraphic.FindProperty("bakedSprite").objectReferenceValue = style.bakedSprite;
+		soGraphic.ApplyModifiedProperties();
+
+		if (willBake) {
+			// Swap RawImage → Image
+			var rawImg = graphic.GetComponent<RawImage>();
+			bool raycast = rawImg != null && rawImg.raycastTarget;
+			bool maskable = rawImg != null && rawImg.maskable;
+			if (rawImg != null) {
+				if (rawImg.texture != null) {
+					DestroyImmediate(rawImg.texture);
+					rawImg.texture = null;
+				}
+				Undo.DestroyObjectImmediate(rawImg);
+			}
+			var img = graphic.GetComponent<Image>();
+			if (img == null) {
+				img = graphic.gameObject.AddComponent<Image>();
+				Undo.RegisterCreatedObjectUndo(img, "Apply Style Baked Sprite");
+			}
+			img.sprite = style.bakedSprite;
+			img.type = img.sprite.border != Vector4.zero ? Image.Type.Sliced : Image.Type.Simple;
+			img.preserveAspect = false;
+			img.color = Color.white;
+			img.raycastTarget = raycast;
+			img.maskable = maskable;
+			img.hideFlags |= HideFlags.HideInInspector;
+		} else if (wasBaked && !willBake) {
+			// Swap Image → RawImage (unbake)
+			var img = graphic.GetComponent<Image>();
+			if (img != null) Undo.DestroyObjectImmediate(img);
+			var rawImg = graphic.GetComponent<RawImage>();
+			if (rawImg == null) {
+				rawImg = graphic.gameObject.AddComponent<RawImage>();
+				Undo.RegisterCreatedObjectUndo(rawImg, "Apply Style Unbake");
+			}
+			rawImg.enabled = true;
+			rawImg.hideFlags |= HideFlags.HideInInspector;
+			graphic.enabled = false;
+			graphic.enabled = true;
+		}
 	}
 
 	private static void SaveGraphicToStyle(SkiaGraphic graphic, SkiaGraphicStyle style) {
-		var soGraphic = new SerializedObject(graphic);
-		var soStyle = new SerializedObject(style);
-
+		// Direct assignments first
 		style.shape = graphic.Shape;
 		style.cornerRadii = graphic.CornerRadii;
 		style.fillType = graphic.FillType;
@@ -571,7 +634,12 @@ public class SkiaGraphicEditor : Editor {
 		style.innerShadowBlur = graphic.InnerShadowBlur;
 		style.resolutionScale = graphic.ResolutionScale;
 
-		// Copy gradients via serialized properties
+		// Read baked sprite
+		var soGraphic = new SerializedObject(graphic);
+		style.bakedSprite = soGraphic.FindProperty("bakedSprite").objectReferenceValue as Sprite;
+
+		// Create SerializedObject AFTER direct assignments so buffer has correct values
+		var soStyle = new SerializedObject(style);
 		soStyle.CopyFromSerializedPropertyIfDifferent(soGraphic.FindProperty("gradient"));
 		soStyle.CopyFromSerializedPropertyIfDifferent(soGraphic.FindProperty("strokeGradient"));
 		soStyle.ApplyModifiedProperties();

@@ -69,6 +69,9 @@ namespace SkiaSharp.Unity {
 		[Header("Performance")]
 		[SerializeField, Range(0.25f, 1f)] protected float resolutionScale = 1f;
 
+		[Header("Style")]
+		[SerializeField] protected SkiaGraphicStyle stylePreset;
+
 		[Header("Bake")]
 		[SerializeField] protected Sprite bakedSprite;
 
