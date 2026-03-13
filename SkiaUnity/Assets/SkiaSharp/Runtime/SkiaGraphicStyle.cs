@@ -39,12 +39,6 @@ namespace SkiaSharp.Unity {
 		public Vector2 innerShadowOffset = new Vector2(0, 2);
 		public float innerShadowBlur = 4f;
 
-		// Blur
-		public bool enableBlur;
-		public int blurIterations = 4;
-		public int blurDownsample = 4;
-		public Color blurTint = new Color(1f, 1f, 1f, 0.8f);
-
 		// Performance
 		public float resolutionScale = 1f;
 	}

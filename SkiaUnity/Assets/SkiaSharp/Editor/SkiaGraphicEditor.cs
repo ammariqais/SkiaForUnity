@@ -52,6 +52,9 @@ public class SkiaGraphicEditor : Editor {
 	// Bake
 	private SerializedProperty bakedSprite;
 
+	// Style Preset
+	private SkiaGraphicStyle stylePreset;
+
 	private GUIStyle headerStyle;
 
 	private static readonly GUIContent k_RaycastTargetLabel = new GUIContent("Raycast Target");
@@ -285,6 +288,44 @@ public class SkiaGraphicEditor : Editor {
 
 		EditorGUILayout.Space(4);
 
+		// Style Preset
+		EditorGUILayout.LabelField("Style Preset", headerStyle);
+		EditorGUI.indentLevel++;
+		stylePreset = (SkiaGraphicStyle)EditorGUILayout.ObjectField("Preset", stylePreset, typeof(SkiaGraphicStyle), false);
+		if (stylePreset != null) {
+			EditorGUILayout.BeginHorizontal();
+			if (GUILayout.Button("Apply Style")) {
+				serializedObject.ApplyModifiedProperties();
+				foreach (var t in targets) {
+					Undo.RecordObject((SkiaGraphic)t, "Apply Style Preset");
+					ApplyStyleToGraphic((SkiaGraphic)t, stylePreset);
+					EditorUtility.SetDirty((SkiaGraphic)t);
+				}
+				GUIUtility.ExitGUI();
+			}
+			if (GUILayout.Button("Save to Style")) {
+				Undo.RecordObject(stylePreset, "Save Style Preset");
+				SaveGraphicToStyle((SkiaGraphic)target, stylePreset);
+				EditorUtility.SetDirty(stylePreset);
+				AssetDatabase.SaveAssets();
+			}
+			EditorGUILayout.EndHorizontal();
+		}
+		if (GUILayout.Button("Create New Style from Current")) {
+			string path = EditorUtility.SaveFilePanelInProject("Save Style Preset", "NewStyle", "asset", "Save style preset");
+			if (!string.IsNullOrEmpty(path)) {
+				var newStyle = ScriptableObject.CreateInstance<SkiaGraphicStyle>();
+				SaveGraphicToStyle((SkiaGraphic)target, newStyle);
+				AssetDatabase.CreateAsset(newStyle, path);
+				AssetDatabase.SaveAssets();
+				stylePreset = newStyle;
+				EditorGUIUtility.PingObject(newStyle);
+			}
+		}
+		EditorGUI.indentLevel--;
+
+		EditorGUILayout.Space(4);
+
 		// UI Settings (RawImage proxy properties)
 		EditorGUILayout.LabelField("UI Settings", headerStyle);
 		EditorGUI.indentLevel++;
@@ -465,6 +506,75 @@ public class SkiaGraphicEditor : Editor {
 			float size = Vector3.Distance(corners[0], corners[2]) * 0.02f;
 			Handles.DrawSolidDisc(center, rt.forward, Mathf.Max(size, 2f));
 		}
+	}
+
+	private static void ApplyStyleToGraphic(SkiaGraphic graphic, SkiaGraphicStyle style) {
+		graphic.Shape = style.shape;
+		graphic.CornerRadii = style.cornerRadii;
+		graphic.FillType = style.fillType;
+		graphic.FillColor = style.fillColor;
+		graphic.GradientAngle = style.gradientAngle;
+		graphic.FillImage = style.fillImage;
+		graphic.ImageFit = style.imageFit;
+		graphic.EnableStroke = style.enableStroke;
+		graphic.StrokeColor = style.strokeColor;
+		graphic.StrokeWidth = style.strokeWidth;
+		graphic.EnableDashedStroke = style.enableDashedStroke;
+		graphic.DashLength = style.dashLength;
+		graphic.DashGap = style.dashGap;
+		graphic.EnableGradientStroke = style.enableGradientStroke;
+		graphic.StrokeGradientAngle = style.strokeGradientAngle;
+		graphic.EnableShadow = style.enableShadow;
+		graphic.ShadowColor = style.shadowColor;
+		graphic.ShadowOffset = style.shadowOffset;
+		graphic.ShadowBlur = style.shadowBlur;
+		graphic.EnableInnerShadow = style.enableInnerShadow;
+		graphic.InnerShadowColor = style.innerShadowColor;
+		graphic.InnerShadowOffset = style.innerShadowOffset;
+		graphic.InnerShadowBlur = style.innerShadowBlur;
+		graphic.ResolutionScale = style.resolutionScale;
+
+		// Copy gradients via serialized properties
+		var soGraphic = new SerializedObject(graphic);
+		var soStyle = new SerializedObject(style);
+		soGraphic.CopyFromSerializedPropertyIfDifferent(soStyle.FindProperty("gradient"));
+		soGraphic.CopyFromSerializedPropertyIfDifferent(soStyle.FindProperty("strokeGradient"));
+		soGraphic.ApplyModifiedProperties();
+	}
+
+	private static void SaveGraphicToStyle(SkiaGraphic graphic, SkiaGraphicStyle style) {
+		var soGraphic = new SerializedObject(graphic);
+		var soStyle = new SerializedObject(style);
+
+		style.shape = graphic.Shape;
+		style.cornerRadii = graphic.CornerRadii;
+		style.fillType = graphic.FillType;
+		style.fillColor = graphic.FillColor;
+		style.gradientAngle = graphic.GradientAngle;
+		style.fillImage = graphic.FillImage;
+		style.imageFit = graphic.ImageFit;
+		style.enableStroke = graphic.EnableStroke;
+		style.strokeColor = graphic.StrokeColor;
+		style.strokeWidth = graphic.StrokeWidth;
+		style.enableDashedStroke = graphic.EnableDashedStroke;
+		style.dashLength = graphic.DashLength;
+		style.dashGap = graphic.DashGap;
+		style.enableGradientStroke = graphic.EnableGradientStroke;
+		style.strokeGradientAngle = graphic.StrokeGradientAngle;
+		style.enableShadow = graphic.EnableShadow;
+		style.shadowColor = graphic.ShadowColor;
+		style.shadowOffset = graphic.ShadowOffset;
+		style.shadowBlur = graphic.ShadowBlur;
+		style.enableInnerShadow = graphic.EnableInnerShadow;
+		style.innerShadowColor = graphic.InnerShadowColor;
+		style.innerShadowOffset = graphic.InnerShadowOffset;
+		style.innerShadowBlur = graphic.InnerShadowBlur;
+		style.resolutionScale = graphic.ResolutionScale;
+
+		// Copy gradients via serialized properties
+		soStyle.CopyFromSerializedPropertyIfDifferent(soGraphic.FindProperty("gradient"));
+		soStyle.CopyFromSerializedPropertyIfDifferent(soGraphic.FindProperty("strokeGradient"));
+		soStyle.ApplyModifiedProperties();
 	}
 
 	private void DrawRawImageProperties() {
