@@ -57,6 +57,16 @@ namespace SkiaSharp.Unity.HB {
 		protected float[] gradiantPositions;
 		[SerializeField]
 		protected TextDirection textDirection = TextDirection.Auto;
+
+		public virtual TextDirection TextDir {
+			get => textDirection;
+			set {
+				if (textDirection != value) {
+					textDirection = value;
+					_renderDirty = true;
+				}
+			}
+		}
 		[SerializeField]
 		[Range(100, 900)]
 		protected int fontWeight = 400;
@@ -899,6 +909,7 @@ namespace SkiaSharp.Unity.HB {
 		/// return results for the current text. Does NOT re-render to texture.
 		/// </summary>
 		public virtual void FlushLayout() {
+			SyncStyleFromFields();
 			if (rs == null) rs = new Topten.RichTextKit.TextBlock();
 			rs.Clear();
 			rs.MaxHeight = null;

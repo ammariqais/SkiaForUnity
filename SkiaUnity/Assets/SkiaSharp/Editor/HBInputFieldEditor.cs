@@ -63,7 +63,7 @@ public class HBInputFieldEditor : Editor {
 	// Properties
 	SerializedProperty textComponentProp, placeholderProp, textViewportProp, caretImageProp;
 	SerializedProperty textProp, charLimitProp, contentTypeProp, lineTypeProp, readOnlyProp, asteriskProp;
-	SerializedProperty fontAssetProp, fontSizeProp, fontColorProp, boldProp, italicProp, alignmentProp, richTextProp;
+	SerializedProperty fontAssetProp, fontSizeProp, fontColorProp, boldProp, italicProp, alignmentProp, textDirectionProp, richTextProp;
 	SerializedProperty placeholderTextProp, placeholderColorProp;
 	SerializedProperty selectAllOnFocusProp, tabNavigationProp;
 	SerializedProperty readOnlyColorProp, readOnlyFontColorProp;
@@ -71,6 +71,7 @@ public class HBInputFieldEditor : Editor {
 	SerializedProperty hideMobileInputProp;
 	SerializedProperty hideCaretProp, caretColorProp, caretBlinkProp, caretWidthProp, selectionColorProp;
 	SerializedProperty autoResizeProp, minHeightProp, maxAutoHeightProp;
+	SerializedProperty skiaBackgroundProp, trackpadSensitivityProp;
 	SerializedProperty onValueChangedProp, onSubmitProp, onEndEditProp, onFocusProp, onUnfocusProp;
 
 	void OnEnable() {
@@ -92,6 +93,7 @@ public class HBInputFieldEditor : Editor {
 		boldProp = serializedObject.FindProperty("bold");
 		italicProp = serializedObject.FindProperty("italic");
 		alignmentProp = serializedObject.FindProperty("textAlignment");
+		textDirectionProp = serializedObject.FindProperty("textDirection");
 		richTextProp = serializedObject.FindProperty("richText");
 
 		placeholderTextProp = serializedObject.FindProperty("placeholderText");
@@ -118,6 +120,9 @@ public class HBInputFieldEditor : Editor {
 		minHeightProp = serializedObject.FindProperty("minHeight");
 		maxAutoHeightProp = serializedObject.FindProperty("maxAutoHeight");
 
+		skiaBackgroundProp = serializedObject.FindProperty("skiaBackground");
+		trackpadSensitivityProp = serializedObject.FindProperty("trackpadSensitivity");
+
 		onValueChangedProp = serializedObject.FindProperty("onValueChanged");
 		onSubmitProp = serializedObject.FindProperty("onSubmit");
 		onEndEditProp = serializedObject.FindProperty("onEndEdit");
@@ -134,6 +139,7 @@ public class HBInputFieldEditor : Editor {
 		EditorGUILayout.PropertyField(placeholderProp, k_Placeholder);
 		EditorGUILayout.PropertyField(textViewportProp, k_TextViewport);
 		EditorGUILayout.PropertyField(caretImageProp, k_CaretImage);
+		EditorGUILayout.PropertyField(skiaBackgroundProp, new GUIContent("Skia Background", "Optional SkiaGraphic for background (replaces Image)."));
 		EditorGUILayout.Space();
 
 		// --- Input Settings ---
@@ -160,6 +166,7 @@ public class HBInputFieldEditor : Editor {
 		EditorGUILayout.EndHorizontal();
 
 		EditorGUILayout.PropertyField(alignmentProp, k_Alignment);
+		EditorGUILayout.PropertyField(textDirectionProp, new GUIContent("Text Direction", "Auto, LTR, or RTL. Use RTL for Arabic/Hebrew."));
 		EditorGUILayout.PropertyField(richTextProp, k_RichText);
 		EditorGUILayout.Space();
 
@@ -210,6 +217,7 @@ public class HBInputFieldEditor : Editor {
 		// --- Mobile ---
 		EditorGUILayout.LabelField("Mobile", EditorStyles.boldLabel);
 		EditorGUILayout.PropertyField(hideMobileInputProp, k_HideMobileInput);
+		EditorGUILayout.PropertyField(trackpadSensitivityProp, new GUIContent("Trackpad Sensitivity", "Pixels per character when dragging to move caret."));
 		EditorGUILayout.Space();
 
 		// --- Caret ---

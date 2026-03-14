@@ -12,7 +12,8 @@ namespace SkiaSharp.Unity.HB {
 	[AddComponentMenu("Skia UI (Canvas)/HB InputField")]
 	public class HBInputField : Selectable,
 		IUpdateSelectedHandler, IPointerClickHandler, ISubmitHandler,
-		IBeginDragHandler, IDragHandler, IEndDragHandler {
+		IBeginDragHandler, IDragHandler, IEndDragHandler,
+		IPointerDownHandler, IPointerUpHandler {
 
 		public enum ContentType { Standard, Integer, Decimal, Alphanumeric, Name, EmailAddress, Password }
 		public enum LineType { SingleLine, MultiLine }
@@ -42,6 +43,7 @@ namespace SkiaSharp.Unity.HB {
 		[SerializeField] bool italic;
 		[SerializeField] bool richText;
 		[SerializeField] TextAlignment textAlignment = TextAlignment.Left;
+		[SerializeField] TextDirection textDirection = TextDirection.Auto;
 		[SerializeField] string placeholderText = "Enter text...";
 		[SerializeField] Color placeholderColor = new Color(0.5f, 0.5f, 0.5f, 0.5f);
 
@@ -96,6 +98,22 @@ namespace SkiaSharp.Unity.HB {
 		private RectTransform m_PlaceholderRT;
 		private bool m_UpdatingDisplay;
 		private string m_PrevKeyboardText;
+
+		// Long-press & context menu
+		private float m_PointerDownTime;
+		private bool m_LongPressTriggered;
+		private bool m_PointerIsDown;
+		private Vector2 m_PointerDownPos;
+		private GameObject m_ContextMenu;
+		private const float LongPressDuration = 0.5f;
+		private const float LongPressMoveThreshold = 10f;
+
+		// Trackpad caret dragging
+		private bool m_TrackpadMode;
+		private float m_TrackpadAccumX;
+		private float m_TrackpadAccumY;
+		private Vector2 m_LastDragPos;
+		[SerializeField] float trackpadSensitivity = 8f;
 
 		// Public API
 		public string text {
@@ -187,6 +205,10 @@ namespace SkiaSharp.Unity.HB {
 		}
 #endif
 
+		private void Update() {
+			CheckLongPress();
+		}
+
 		protected override void OnRectTransformDimensionsChange() {
 			base.OnRectTransformDimensionsChange();
 			if (m_UpdatingDisplay) return;
@@ -231,7 +253,7 @@ namespace SkiaSharp.Unity.HB {
 				textComponent.Bold = bold;
 				textComponent.Italic = italic;
 				textComponent.TextAlignment = textAlignment;
-				// richText mode is applied in UpdateDisplay via SetRichText
+				textComponent.TextDir = textDirection;
 			}
 			if (placeholder != null) {
 				if (fontAsset != null) placeholder.Font = fontAsset;
@@ -240,6 +262,7 @@ namespace SkiaSharp.Unity.HB {
 				placeholder.Bold = false;
 				placeholder.Italic = italic;
 				placeholder.TextAlignment = textAlignment;
+				placeholder.TextDir = textDirection;
 				placeholder.text = placeholderText;
 			}
 			ApplyReadOnlyAppearance();
@@ -349,8 +372,19 @@ namespace SkiaSharp.Unity.HB {
 		}
 
 		public override void OnDeselect(BaseEventData eventData) {
+			if (m_ContextMenu != null) {
+				// Context menu is open — don't deactivate, re-select on next frame
+				StartCoroutine(ReselectAfterContextMenu());
+				return;
+			}
 			base.OnDeselect(eventData);
 			Deactivate();
+		}
+
+		private System.Collections.IEnumerator ReselectAfterContextMenu() {
+			yield return null;
+			if (EventSystem.current != null)
+				EventSystem.current.SetSelectedGameObject(gameObject);
 		}
 
 		private void Activate() {
@@ -400,6 +434,7 @@ namespace SkiaSharp.Unity.HB {
 		private void Deactivate() {
 			if (!m_HasFocus) return;
 			m_HasFocus = false;
+			DismissContextMenu();
 			if (caretImage != null) caretImage.gameObject.SetActive(false);
 			if (m_SelectionContainer != null) m_SelectionContainer.gameObject.SetActive(false);
 			if (m_Keyboard != null) {
@@ -663,6 +698,7 @@ namespace SkiaSharp.Unity.HB {
 
 		private bool InsertChar(char c) {
 			if (!ValidateChar(c)) return false;
+			DismissContextMenu();
 
 			DeleteSelection();
 
@@ -708,7 +744,7 @@ namespace SkiaSharp.Unity.HB {
 		}
 
 		private bool Paste() {
-			string clipboard = GUIUtility.systemCopyBuffer;
+			string clipboard = GetClipboard();
 			if (string.IsNullOrEmpty(clipboard)) return false;
 
 			DeleteSelection();
@@ -737,16 +773,18 @@ namespace SkiaSharp.Unity.HB {
 
 		// ===================== Navigation =====================
 
+		/// <summary>
+		/// Moves the caret visually left. In RTL text this moves forward in the string,
+		/// in LTR text this moves backward. Uses hit-testing for correct bidi behavior.
+		/// </summary>
 		private void MoveCaretLeft(bool shift, bool ctrl) {
 			int newPos = m_CaretPosition;
 			if (ctrl) {
 				newPos = FindPreviousWordStart(m_CaretPosition);
+			} else if (!shift && HasSelection) {
+				newPos = Mathf.Min(m_CaretPosition, m_SelectionAnchor);
 			} else {
-				if (!shift && HasSelection) {
-					newPos = Mathf.Min(m_CaretPosition, m_SelectionAnchor);
-				} else {
-					newPos = Mathf.Max(0, m_CaretPosition - 1);
-				}
+				newPos = GetVisualNeighbor(m_CaretPosition, -1);
 			}
 			m_CaretPosition = newPos;
 			if (!shift) m_SelectionAnchor = m_CaretPosition;
@@ -754,21 +792,74 @@ namespace SkiaSharp.Unity.HB {
 			RefreshCaretView();
 		}
 
+		/// <summary>
+		/// Moves the caret visually right. Uses hit-testing for correct bidi behavior.
+		/// </summary>
 		private void MoveCaretRight(bool shift, bool ctrl) {
 			int newPos = m_CaretPosition;
 			if (ctrl) {
 				newPos = FindNextWordEnd(m_CaretPosition);
+			} else if (!shift && HasSelection) {
+				newPos = Mathf.Max(m_CaretPosition, m_SelectionAnchor);
 			} else {
-				if (!shift && HasSelection) {
-					newPos = Mathf.Max(m_CaretPosition, m_SelectionAnchor);
-				} else {
-					newPos = Mathf.Min(m_Text.Length, m_CaretPosition + 1);
-				}
+				newPos = GetVisualNeighbor(m_CaretPosition, 1);
 			}
 			m_CaretPosition = newPos;
 			if (!shift) m_SelectionAnchor = m_CaretPosition;
 			ResetBlink();
 			RefreshCaretView();
+		}
+
+		/// <summary>
+		/// Returns the code point index of the character visually to the left (dir=-1) or right (dir=1).
+		/// Checks both logical neighbors (index±1) and picks the one whose caret X is in the desired
+		/// visual direction. Works correctly for RTL, LTR, and mixed bidi text.
+		/// </summary>
+		private int GetVisualNeighbor(int fromIndex, int visualDir) {
+			if (textComponent == null || textComponent.Info == null || m_Text.Length == 0)
+				return Mathf.Clamp(fromIndex + visualDir, 0, m_Text.Length);
+
+			var info = textComponent.Info;
+			var current = info.GetCaretInfo(new CaretPosition(fromIndex));
+			if (current.IsNone)
+				return Mathf.Clamp(fromIndex + visualDir, 0, m_Text.Length);
+
+			float currentX = current.CaretXCoord;
+			int bestIndex = -1;
+			float bestDist = float.MaxValue;
+
+			// Check index - 1
+			if (fromIndex - 1 >= 0) {
+				var prev = info.GetCaretInfo(new CaretPosition(fromIndex - 1));
+				if (!prev.IsNone) {
+					float dx = prev.CaretXCoord - currentX;
+					// Is this neighbor in the desired visual direction?
+					if ((visualDir > 0 && dx > 0.1f) || (visualDir < 0 && dx < -0.1f)) {
+						float dist = Mathf.Abs(dx);
+						if (dist < bestDist) { bestDist = dist; bestIndex = fromIndex - 1; }
+					}
+				}
+			}
+
+			// Check index + 1
+			if (fromIndex + 1 <= m_Text.Length) {
+				var next = info.GetCaretInfo(new CaretPosition(fromIndex + 1));
+				if (!next.IsNone) {
+					float dx = next.CaretXCoord - currentX;
+					if ((visualDir > 0 && dx > 0.1f) || (visualDir < 0 && dx < -0.1f)) {
+						float dist = Mathf.Abs(dx);
+						if (dist < bestDist) { bestDist = dist; bestIndex = fromIndex + 1; }
+					}
+				}
+			}
+
+			// If found a visual neighbor, use it
+			if (bestIndex >= 0) return bestIndex;
+
+			// Fallback: at line boundaries, try moving to next/prev line
+			if (visualDir > 0 && fromIndex < m_Text.Length) return fromIndex + 1;
+			if (visualDir < 0 && fromIndex > 0) return fromIndex - 1;
+			return fromIndex;
 		}
 
 		private void MoveCaretUp(bool shift) {
@@ -825,19 +916,35 @@ namespace SkiaSharp.Unity.HB {
 
 		private bool HasSelection => m_CaretPosition != m_SelectionAnchor;
 
+		private static string s_InternalClipboard = "";
+
 		private void CopyToClipboard() {
 			if (!HasSelection) return;
+			if (contentType == ContentType.Password) return;
 			int start = Mathf.Min(m_CaretPosition, m_SelectionAnchor);
 			int end = Mathf.Max(m_CaretPosition, m_SelectionAnchor);
 			string selected = m_Text.Substring(start, end - start);
-			if (contentType == ContentType.Password) return;
+			s_InternalClipboard = selected;
 			GUIUtility.systemCopyBuffer = selected;
+		}
+
+		private static string GetClipboard() {
+			string sys = GUIUtility.systemCopyBuffer;
+			return !string.IsNullOrEmpty(sys) ? sys : s_InternalClipboard;
 		}
 
 		// ===================== Click / Drag =====================
 
+		private bool m_WasDragging;
+
 		public void OnPointerClick(PointerEventData eventData) {
 			if (eventData.button != PointerEventData.InputButton.Left) return;
+
+			// Skip if we just finished a drag selection
+			if (m_WasDragging) {
+				m_WasDragging = false;
+				return;
+			}
 
 			if (!m_HasFocus) {
 				EventSystem.current.SetSelectedGameObject(gameObject);
@@ -848,30 +955,348 @@ namespace SkiaSharp.Unity.HB {
 
 			if (eventData.clickCount == 2) {
 				SelectWordAtCaret();
+				ShowContextMenu(eventData.position);
 			} else if (eventData.clickCount == 3) {
 				SelectAll();
+				ShowContextMenu(eventData.position);
+			} else {
+				// Single tap dismisses context menu
+				DismissContextMenu();
 			}
 		}
 
 		public void OnBeginDrag(PointerEventData eventData) {
 			if (!m_HasFocus) return;
-			m_DragSelecting = true;
-			PositionCaretFromPointer(eventData);
-			m_SelectionAnchor = m_CaretPosition;
+
+			DismissContextMenu();
+
+			// If long-press already triggered → selection drag mode
+			// Otherwise → trackpad caret mode
+			if (m_LongPressTriggered) {
+				m_DragSelecting = true;
+				m_TrackpadMode = false;
+				PositionCaretFromPointer(eventData);
+				m_SelectionAnchor = m_CaretPosition;
+			} else {
+				m_TrackpadMode = true;
+				m_DragSelecting = false;
+				m_TrackpadAccumX = 0f;
+				m_TrackpadAccumY = 0f;
+				m_LastDragPos = eventData.position;
+				// Clear any existing selection
+				m_SelectionAnchor = m_CaretPosition;
+				RefreshCaretView();
+			}
 		}
 
 		public void OnDrag(PointerEventData eventData) {
-			if (!m_DragSelecting) return;
-			PositionCaretFromPointer(eventData, keepAnchor: true);
+			if (m_DragSelecting) {
+				PositionCaretFromPointer(eventData, keepAnchor: true);
+			} else if (m_TrackpadMode) {
+				// Trackpad mode: move caret to finger position, no selection
+				PositionCaretFromPointer(eventData, keepAnchor: false);
+			}
 		}
 
 		public void OnEndDrag(PointerEventData eventData) {
+			if (m_DragSelecting && HasSelection) {
+				ShowContextMenu(eventData.position);
+			}
 			m_DragSelecting = false;
+			m_TrackpadMode = false;
+			m_WasDragging = true;
+		}
+
+		private void TrackpadDrag(PointerEventData eventData) {
+			Vector2 delta = eventData.position - m_LastDragPos;
+			m_LastDragPos = eventData.position;
+
+			m_TrackpadAccumX += delta.x;
+			m_TrackpadAccumY += delta.y;
+
+			// Horizontal: move caret visually left/right (bidi-aware)
+			while (Mathf.Abs(m_TrackpadAccumX) >= trackpadSensitivity) {
+				if (m_TrackpadAccumX > 0) {
+					m_CaretPosition = GetVisualNeighbor(m_CaretPosition, 1); // visually right
+					m_TrackpadAccumX -= trackpadSensitivity;
+				} else {
+					m_CaretPosition = GetVisualNeighbor(m_CaretPosition, -1); // visually left
+					m_TrackpadAccumX += trackpadSensitivity;
+				}
+			}
+
+			// Vertical: move caret up/down lines (multiline only)
+			if (lineType == LineType.MultiLine) {
+				while (Mathf.Abs(m_TrackpadAccumY) >= trackpadSensitivity * 3f) {
+					if (m_TrackpadAccumY < 0) {
+						MoveCaretDown(false);
+						m_TrackpadAccumY += trackpadSensitivity * 3f;
+					} else {
+						MoveCaretUp(false);
+						m_TrackpadAccumY -= trackpadSensitivity * 3f;
+					}
+				}
+			}
+
+			m_SelectionAnchor = m_CaretPosition;
+			ResetBlink();
+			RefreshCaretView();
 		}
 
 		public void OnSubmit(BaseEventData eventData) {
 			if (!m_HasFocus) {
 				EventSystem.current.SetSelectedGameObject(gameObject);
+			}
+		}
+
+		// ===================== Long Press & Context Menu =====================
+
+		public override void OnPointerDown(PointerEventData eventData) {
+			base.OnPointerDown(eventData);
+			m_PointerIsDown = true;
+			m_PointerDownTime = Time.unscaledTime;
+			m_PointerDownPos = eventData.position;
+			m_LongPressTriggered = false;
+			DismissContextMenu();
+		}
+
+		public override void OnPointerUp(PointerEventData eventData) {
+			base.OnPointerUp(eventData);
+			m_PointerIsDown = false;
+		}
+
+		private void CheckLongPress() {
+			if (!m_PointerIsDown || m_LongPressTriggered || m_DragSelecting) return;
+			if (Time.unscaledTime - m_PointerDownTime < LongPressDuration) return;
+
+			// Check finger hasn't moved too far
+			Vector2 currentPos = Input.touchCount > 0
+				? (Vector2)Input.GetTouch(0).position
+				: (Vector2)Input.mousePosition;
+			if (Vector2.Distance(currentPos, m_PointerDownPos) > LongPressMoveThreshold) return;
+
+			m_LongPressTriggered = true;
+
+			// Select word at touch position if no selection
+			if (!HasSelection) {
+				SelectWordAtCaret();
+			}
+
+			ShowContextMenu(currentPos);
+		}
+
+		private void ShowContextMenu(Vector2 screenPos) {
+			DismissContextMenu();
+
+			// Snapshot selection state NOW before anything can change it
+			int savedCaretPos = m_CaretPosition;
+			int savedAnchor = m_SelectionAnchor;
+			string savedText = m_Text;
+			bool hasSelection = savedCaretPos != savedAnchor;
+			string selectedText = "";
+			if (hasSelection) {
+				int s = Mathf.Min(savedCaretPos, savedAnchor);
+				int e = Mathf.Max(savedCaretPos, savedAnchor);
+				selectedText = savedText.Substring(s, e - s);
+			}
+
+			Canvas rootCanvas = GetComponentInParent<Canvas>();
+			if (rootCanvas == null) return;
+			Canvas root = rootCanvas;
+			while (root.transform.parent != null) {
+				Canvas p = root.transform.parent.GetComponentInParent<Canvas>();
+				if (p == null) break;
+				root = p;
+			}
+
+			Camera cam = root.renderMode == RenderMode.ScreenSpaceOverlay ? null : root.worldCamera;
+
+			// Blocker to dismiss on outside tap
+			var blockerGO = new GameObject("InputFieldContextMenu", typeof(RectTransform), typeof(CanvasRenderer), typeof(Image));
+			blockerGO.transform.SetParent(root.transform, false);
+			var blockerRT = blockerGO.GetComponent<RectTransform>();
+			blockerRT.anchorMin = Vector2.zero;
+			blockerRT.anchorMax = Vector2.one;
+			blockerRT.offsetMin = Vector2.zero;
+			blockerRT.offsetMax = Vector2.zero;
+			blockerGO.GetComponent<Image>().color = Color.clear;
+			AddClickTrigger(blockerGO, () => DismissContextMenu());
+			m_ContextMenu = blockerGO;
+
+			// Menu panel
+			var panelGO = new GameObject("Panel", typeof(RectTransform), typeof(CanvasRenderer), typeof(Image));
+			panelGO.transform.SetParent(blockerGO.transform, false);
+			panelGO.GetComponent<Image>().color = new Color(0.15f, 0.15f, 0.15f, 0.95f);
+			panelGO.GetComponent<Image>().raycastTarget = true;
+
+			// Position above the input field
+			var panelRT = panelGO.GetComponent<RectTransform>();
+			RectTransform canvasRT = root.GetComponent<RectTransform>();
+
+			Vector3[] corners = new Vector3[4];
+			GetComponent<RectTransform>().GetWorldCorners(corners);
+			Vector2 topCenterScreen = RectTransformUtility.WorldToScreenPoint(cam, (corners[1] + corners[2]) * 0.5f);
+			RectTransformUtility.ScreenPointToLocalPointInRectangle(canvasRT, topCenterScreen, cam, out Vector2 localPos);
+
+			panelRT.anchorMin = panelRT.anchorMax = new Vector2(0.5f, 0.5f);
+			panelRT.pivot = new Vector2(0.5f, 0f);
+			panelRT.anchoredPosition = new Vector2(localPos.x, localPos.y + 12f);
+
+			// Shadow
+			var shadow = panelGO.AddComponent<Shadow>();
+			shadow.effectColor = new Color(0, 0, 0, 0.3f);
+			shadow.effectDistance = new Vector2(0, -2);
+
+			// Build actions using snapshot
+			bool isPassword = contentType == ContentType.Password;
+			var items = new List<(string label, System.Action action)>();
+
+			Debug.Log($"[ContextMenu] hasSelection={hasSelection}, selectedText='{selectedText}', readOnly={readOnly}, clipboard='{GetClipboard()}'");
+
+			if (hasSelection && !isPassword)
+				items.Add(("Copy", () => {
+					Debug.Log($"[ContextMenu] COPY: '{selectedText}'");
+					s_InternalClipboard = selectedText;
+					GUIUtility.systemCopyBuffer = selectedText;
+					DismissContextMenu();
+				}));
+
+			if (hasSelection && !readOnly)
+				items.Add(("Cut", () => {
+					Debug.Log($"[ContextMenu] CUT: '{selectedText}', removing from pos {Mathf.Min(savedCaretPos, savedAnchor)} to {Mathf.Max(savedCaretPos, savedAnchor)}");
+					s_InternalClipboard = selectedText;
+					GUIUtility.systemCopyBuffer = selectedText;
+					int s = Mathf.Min(savedCaretPos, savedAnchor);
+					int e = Mathf.Max(savedCaretPos, savedAnchor);
+					m_Text = m_Text.Remove(s, e - s);
+					m_CaretPosition = s;
+					m_SelectionAnchor = s;
+					Debug.Log($"[ContextMenu] CUT result: '{m_Text}'");
+					DismissContextMenu();
+					UpdateDisplay();
+					onValueChanged?.Invoke(m_Text);
+				}));
+
+			string clipContent = GetClipboard();
+			if (!readOnly && !string.IsNullOrEmpty(clipContent))
+				items.Add(("Paste", () => {
+					string clip = GetClipboard();
+					Debug.Log($"[ContextMenu] PASTE: clipboard='{clip}', caretPos={m_CaretPosition}");
+					if (string.IsNullOrEmpty(clip)) { DismissContextMenu(); return; }
+					if (hasSelection) {
+						int s = Mathf.Min(m_CaretPosition, m_SelectionAnchor);
+						int e = Mathf.Max(m_CaretPosition, m_SelectionAnchor);
+						m_Text = m_Text.Remove(s, e - s);
+						m_CaretPosition = s;
+						m_SelectionAnchor = s;
+					}
+					if (lineType == LineType.SingleLine)
+						clip = clip.Replace("\n", "").Replace("\r", "");
+					if (characterLimit > 0) {
+						int space = characterLimit - m_Text.Length;
+						if (clip.Length > space) clip = clip.Substring(0, Mathf.Max(0, space));
+					}
+					m_Text = m_Text.Insert(m_CaretPosition, clip);
+					m_CaretPosition += clip.Length;
+					m_SelectionAnchor = m_CaretPosition;
+					Debug.Log($"[ContextMenu] PASTE result: '{m_Text}'");
+					DismissContextMenu();
+					UpdateDisplay();
+					onValueChanged?.Invoke(m_Text);
+				}));
+
+			if (!hasSelection && m_Text.Length > 0)
+				items.Add(("Select All", () => {
+					Debug.Log("[ContextMenu] SELECT ALL");
+					DismissContextMenu();
+					SelectAll();
+					RefreshCaretView();
+				}));
+
+			Debug.Log($"[ContextMenu] Showing {items.Count} items: {string.Join(", ", items.ConvertAll(x => x.label))}");
+			if (items.Count == 0) { DismissContextMenu(); return; }
+
+			float btnWidth = 120f;
+			float btnHeight = 60f;
+			panelRT.sizeDelta = new Vector2(items.Count * btnWidth + 16, btnHeight + 16);
+
+			for (int i = 0; i < items.Count; i++) {
+				var item = items[i];
+				var btnGO = new GameObject(item.label, typeof(RectTransform), typeof(CanvasRenderer), typeof(Image));
+				btnGO.transform.SetParent(panelGO.transform, false);
+
+				var btnRT = btnGO.GetComponent<RectTransform>();
+				btnRT.anchorMin = new Vector2(0, 0.5f);
+				btnRT.anchorMax = new Vector2(0, 0.5f);
+				btnRT.pivot = new Vector2(0, 0.5f);
+				btnRT.anchoredPosition = new Vector2(8 + i * btnWidth, 0);
+				btnRT.sizeDelta = new Vector2(btnWidth, btnHeight);
+
+				var btnImg = btnGO.GetComponent<Image>();
+				btnImg.color = new Color(1, 1, 1, 0);
+				btnImg.alphaHitTestMinimumThreshold = 0f;
+
+				AddClickTrigger(btnGO, item.action);
+
+				// Separator
+				if (i > 0) {
+					var sepGO = new GameObject("Sep", typeof(RectTransform), typeof(CanvasRenderer), typeof(Image));
+					sepGO.transform.SetParent(btnGO.transform, false);
+					var sepRT = sepGO.GetComponent<RectTransform>();
+					sepRT.anchorMin = new Vector2(0, 0.1f);
+					sepRT.anchorMax = new Vector2(0, 0.9f);
+					sepRT.pivot = new Vector2(0, 0.5f);
+					sepRT.anchoredPosition = Vector2.zero;
+					sepRT.sizeDelta = new Vector2(1, 0);
+					sepGO.GetComponent<Image>().color = new Color(1, 1, 1, 0.2f);
+					sepGO.GetComponent<Image>().raycastTarget = false;
+				}
+
+				// Label
+				var labelGO = new GameObject("Label", typeof(RectTransform), typeof(CanvasRenderer), typeof(RawImage));
+				labelGO.transform.SetParent(btnGO.transform, false);
+				var labelRT = labelGO.GetComponent<RectTransform>();
+				labelRT.anchorMin = Vector2.zero;
+				labelRT.anchorMax = Vector2.one;
+				labelRT.offsetMin = Vector2.zero;
+				labelRT.offsetMax = Vector2.zero;
+				labelGO.GetComponent<RawImage>().color = new Color(1, 1, 1, 0);
+				labelGO.GetComponent<RawImage>().raycastTarget = false;
+
+				var lbl = labelGO.AddComponent<HB_TEXTBlock>();
+				lbl.text = item.label;
+				lbl.FontSize = 22;
+				lbl.FontColor = Color.white;
+				lbl.TextAlignment = Topten.RichTextKit.TextAlignment.Center;
+				lbl.VAlign = HB_TEXTBlock.VerticalAlignment.Middle;
+			}
+
+			// Flip below if no room above
+			float canvasTop = canvasRT.rect.height * (1f - canvasRT.pivot.y);
+			if (localPos.y + 12f + btnHeight + 16 > canvasTop) {
+				Vector2 botScreen = RectTransformUtility.WorldToScreenPoint(cam, (corners[0] + corners[3]) * 0.5f);
+				RectTransformUtility.ScreenPointToLocalPointInRectangle(canvasRT, botScreen, cam, out Vector2 localBot);
+				panelRT.pivot = new Vector2(0.5f, 1f);
+				panelRT.anchoredPosition = new Vector2(localBot.x, localBot.y - 12f);
+			}
+		}
+
+		private static void AddClickTrigger(GameObject go, System.Action action) {
+			var handler = go.AddComponent<SimpleClickHandler>();
+			handler.action = action;
+		}
+
+		private void DismissContextMenu() {
+			if (m_ContextMenu != null) {
+				if (Application.isPlaying)
+					Destroy(m_ContextMenu);
+				else
+					DestroyImmediate(m_ContextMenu);
+				m_ContextMenu = null;
+
+				// Re-select the input field so it stays focused
+				if (m_HasFocus && EventSystem.current != null)
+					EventSystem.current.SetSelectedGameObject(gameObject);
 			}
 		}
 
@@ -1037,32 +1462,47 @@ namespace SkiaSharp.Unity.HB {
 			int endLine = endCaret.LineIndex;
 			int rectIndex = 0;
 
-			for (int line = startLine; line <= endLine; line++) {
-				float lineLeft, lineRight;
+				for (int line = startLine; line <= endLine; line++) {
 
 				if (line == startLine && line == endLine) {
-					// Single line selection
+					// Single line selection — use min/max X for bidi support
 					if (!textComponent.GetCaretLocalRect(start, out Rect sRect) ||
 						!textComponent.GetCaretLocalRect(end, out Rect eRect))
 						continue;
-					lineLeft = sRect.x;
-					lineRight = eRect.x;
-					PlaceSelectionRect(rectIndex++, lineLeft, sRect.y, lineRight - lineLeft, sRect.height, parentRect);
+					float left = Mathf.Min(sRect.x, eRect.x);
+					float right = Mathf.Max(sRect.x, eRect.x);
+					PlaceSelectionRect(rectIndex++, left, sRect.y, right - left, sRect.height, parentRect);
 				} else if (line == startLine) {
-					// First line: from start caret to end of line
+					// First line: from start caret to line boundary
 					if (!textComponent.GetCaretLocalRect(start, out Rect sRect))
 						continue;
-					lineRight = parentRect.xMax;
-					PlaceSelectionRect(rectIndex++, sRect.x, sRect.y, lineRight - sRect.x, sRect.height, parentRect);
+					// Get end-of-line caret position
+					var lineInfo = info.Lines[line];
+					int lineEndIdx = Mathf.Min(lineInfo.Start + lineInfo.Length, m_Text.Length);
+					float lineEdgeX;
+					if (textComponent.GetCaretLocalRect(lineEndIdx, out Rect leRect))
+						lineEdgeX = leRect.x;
+					else
+						lineEdgeX = parentRect.xMax;
+					float left = Mathf.Min(sRect.x, lineEdgeX);
+					float right = Mathf.Max(sRect.x, lineEdgeX);
+					PlaceSelectionRect(rectIndex++, left, sRect.y, right - left, sRect.height, parentRect);
 				} else if (line == endLine) {
-					// Last line: from start of line to end caret
+					// Last line: from line boundary to end caret
 					if (!textComponent.GetCaretLocalRect(end, out Rect eRect))
 						continue;
-					lineLeft = parentRect.xMin;
-					PlaceSelectionRect(rectIndex++, lineLeft, eRect.y, eRect.x - lineLeft, eRect.height, parentRect);
+					// Get start-of-line caret position
+					var lineInfo = info.Lines[line];
+					float lineEdgeX;
+					if (textComponent.GetCaretLocalRect(lineInfo.Start, out Rect lsRect))
+						lineEdgeX = lsRect.x;
+					else
+						lineEdgeX = parentRect.xMin;
+					float left = Mathf.Min(eRect.x, lineEdgeX);
+					float right = Mathf.Max(eRect.x, lineEdgeX);
+					PlaceSelectionRect(rectIndex++, left, eRect.y, right - left, eRect.height, parentRect);
 				} else {
 					// Middle line: full width
-					// Get any caret on this line for y/height
 					var lineInfo = info.Lines[line];
 					int midIndex = lineInfo.Start;
 					if (!textComponent.GetCaretLocalRect(midIndex, out Rect mRect))
@@ -1146,6 +1586,18 @@ namespace SkiaSharp.Unity.HB {
 			// Skip whitespace
 			while (i < m_Text.Length && char.IsWhiteSpace(m_Text[i])) i++;
 			return i;
+		}
+	}
+
+	internal class SimpleClickHandler : MonoBehaviour, IPointerDownHandler, IPointerClickHandler {
+		public System.Action action;
+		public void OnPointerDown(PointerEventData e) {
+			Debug.Log($"[ContextMenu] OnPointerDown on {gameObject.name}");
+		}
+		public void OnPointerClick(PointerEventData e) {
+			Debug.Log($"[ContextMenu] OnPointerClick on {gameObject.name}, action null? {action == null}");
+			action?.Invoke();
+			Debug.Log($"[ContextMenu] Action executed on {gameObject.name}");
 		}
 	}
 }
