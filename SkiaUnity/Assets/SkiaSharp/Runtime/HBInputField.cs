@@ -123,7 +123,7 @@ namespace SkiaSharp.Unity.HB {
 				m_Text = value ?? "";
 				if (characterLimit > 0 && m_Text.Length > characterLimit)
 					m_Text = m_Text.Substring(0, characterLimit);
-				m_CaretPosition = Mathf.Min(m_CaretPosition, m_Text.Length);
+				m_CaretPosition = SnapToClusterBoundary(m_Text, Mathf.Min(m_CaretPosition, m_Text.Length));
 				m_SelectionAnchor = m_CaretPosition;
 				UpdateDisplay();
 				onValueChanged?.Invoke(m_Text);
@@ -532,17 +532,16 @@ namespace SkiaSharp.Unity.HB {
 
 			if (newLen < prevLen) {
 				// Deletion: keyboard removed characters (backspace)
-				int deletedCount = prevLen - newLen;
-				// Apply at our caret position, not the keyboard's
+				// Delete entire grapheme cluster, not just the chars the keyboard removed
 				if (HasSelection) {
 					DeleteSelection();
 					changed = true;
-				} else {
-					int deleteStart = Mathf.Max(0, m_CaretPosition - deletedCount);
-					int actualDelete = m_CaretPosition - deleteStart;
-					if (actualDelete > 0) {
-						m_Text = m_Text.Remove(deleteStart, actualDelete);
-						m_CaretPosition = deleteStart;
+				} else if (m_CaretPosition > 0) {
+					int clusterStart = PrevCluster(m_Text, m_CaretPosition);
+					int clusterLen = m_CaretPosition - clusterStart;
+					if (clusterLen > 0) {
+						m_Text = m_Text.Remove(clusterStart, clusterLen);
+						m_CaretPosition = clusterStart;
 						changed = true;
 					}
 				}
@@ -715,8 +714,10 @@ namespace SkiaSharp.Unity.HB {
 			if (HasSelection) return DeleteSelection();
 			if (m_CaretPosition <= 0) return false;
 
-			m_CaretPosition--;
-			m_Text = m_Text.Remove(m_CaretPosition, 1);
+			int clusterStart = PrevCluster(m_Text, m_CaretPosition);
+			int removeCount = m_CaretPosition - clusterStart;
+			m_Text = m_Text.Remove(clusterStart, removeCount);
+			m_CaretPosition = clusterStart;
 			m_SelectionAnchor = m_CaretPosition;
 			ResetBlink();
 			return true;
@@ -726,7 +727,9 @@ namespace SkiaSharp.Unity.HB {
 			if (HasSelection) return DeleteSelection();
 			if (m_CaretPosition >= m_Text.Length) return false;
 
-			m_Text = m_Text.Remove(m_CaretPosition, 1);
+			int clusterEnd = NextCluster(m_Text, m_CaretPosition);
+			int removeCount = clusterEnd - m_CaretPosition;
+			m_Text = m_Text.Remove(m_CaretPosition, removeCount);
 			ResetBlink();
 			return true;
 		}
@@ -828,27 +831,28 @@ namespace SkiaSharp.Unity.HB {
 			int bestIndex = -1;
 			float bestDist = float.MaxValue;
 
-			// Check index - 1
-			if (fromIndex - 1 >= 0) {
-				var prev = info.GetCaretInfo(new CaretPosition(fromIndex - 1));
+			// Check previous grapheme cluster boundary
+			int prevIdx = PrevCluster(m_Text, fromIndex);
+			if (prevIdx != fromIndex) {
+				var prev = info.GetCaretInfo(new CaretPosition(prevIdx));
 				if (!prev.IsNone) {
 					float dx = prev.CaretXCoord - currentX;
-					// Is this neighbor in the desired visual direction?
 					if ((visualDir > 0 && dx > 0.1f) || (visualDir < 0 && dx < -0.1f)) {
 						float dist = Mathf.Abs(dx);
-						if (dist < bestDist) { bestDist = dist; bestIndex = fromIndex - 1; }
+						if (dist < bestDist) { bestDist = dist; bestIndex = prevIdx; }
 					}
 				}
 			}
 
-			// Check index + 1
-			if (fromIndex + 1 <= m_Text.Length) {
-				var next = info.GetCaretInfo(new CaretPosition(fromIndex + 1));
+			// Check next grapheme cluster boundary
+			int nextIdx = NextCluster(m_Text, fromIndex);
+			if (nextIdx != fromIndex) {
+				var next = info.GetCaretInfo(new CaretPosition(nextIdx));
 				if (!next.IsNone) {
 					float dx = next.CaretXCoord - currentX;
 					if ((visualDir > 0 && dx > 0.1f) || (visualDir < 0 && dx < -0.1f)) {
 						float dist = Mathf.Abs(dx);
-						if (dist < bestDist) { bestDist = dist; bestIndex = fromIndex + 1; }
+						if (dist < bestDist) { bestDist = dist; bestIndex = nextIdx; }
 					}
 				}
 			}
@@ -856,9 +860,9 @@ namespace SkiaSharp.Unity.HB {
 			// If found a visual neighbor, use it
 			if (bestIndex >= 0) return bestIndex;
 
-			// Fallback: at line boundaries, try moving to next/prev line
-			if (visualDir > 0 && fromIndex < m_Text.Length) return fromIndex + 1;
-			if (visualDir < 0 && fromIndex > 0) return fromIndex - 1;
+			// Fallback: at line boundaries, move by cluster
+			if (visualDir > 0 && fromIndex < m_Text.Length) return NextCluster(m_Text, fromIndex);
+			if (visualDir < 0 && fromIndex > 0) return PrevCluster(m_Text, fromIndex);
 			return fromIndex;
 		}
 
@@ -1307,7 +1311,7 @@ namespace SkiaSharp.Unity.HB {
 			if (RectTransformUtility.ScreenPointToLocalPointInRectangle(
 				rt, eventData.position, eventData.pressEventCamera, out Vector2 localPoint)) {
 				int index = textComponent.HitTestLocal(localPoint);
-				m_CaretPosition = Mathf.Clamp(index, 0, m_Text.Length);
+				m_CaretPosition = SnapToClusterBoundary(m_Text, Mathf.Clamp(index, 0, m_Text.Length));
 				if (!keepAnchor) m_SelectionAnchor = m_CaretPosition;
 				ResetBlink();
 				RefreshCaretView();
@@ -1567,6 +1571,131 @@ namespace SkiaSharp.Unity.HB {
 		}
 
 		// ===================== Word Navigation =====================
+
+		// ===================== Grapheme Cluster Helpers =====================
+		// Unicode-based implementation that handles ZWJ sequences, surrogate pairs,
+		// combining marks, variation selectors, skin tone modifiers, and flag emojis.
+		// Font-independent — works even when the font doesn't have combined glyphs.
+
+		private static int CPLen(string t, int i) {
+			return (i < t.Length && char.IsHighSurrogate(t[i]) && i + 1 < t.Length && char.IsLowSurrogate(t[i + 1])) ? 2 : 1;
+		}
+
+		private static int CP(string t, int i) {
+			if (i >= t.Length) return -1;
+			return (char.IsHighSurrogate(t[i]) && i + 1 < t.Length && char.IsLowSurrogate(t[i + 1]))
+				? char.ConvertToUtf32(t[i], t[i + 1]) : t[i];
+		}
+
+		private static bool IsExtender(int cp) =>
+			cp == 0x200D ||                                       // ZWJ
+			(cp >= 0xFE00 && cp <= 0xFE0F) ||                    // Variation selectors
+			(cp >= 0xE0100 && cp <= 0xE01EF) ||                  // Variation selectors supplement
+			(cp >= 0x1F3FB && cp <= 0x1F3FF) ||                   // Skin tone modifiers
+			(cp >= 0x0300 && cp <= 0x036F) ||                     // Combining diacritical marks
+			(cp >= 0x1AB0 && cp <= 0x1AFF) ||                     // Combining marks extended
+			(cp >= 0x1DC0 && cp <= 0x1DFF) ||                     // Combining marks supplement
+			(cp >= 0x20D0 && cp <= 0x20FF) ||                     // Combining marks for symbols
+			(cp >= 0xFE20 && cp <= 0xFE2F) ||                     // Combining half marks
+			cp == 0x20E3;                                          // Combining enclosing keycap
+
+		private static bool IsRegional(int cp) => cp >= 0x1F1E6 && cp <= 0x1F1FF;
+		private static bool IsTag(int cp) => cp >= 0xE0020 && cp <= 0xE007F;
+
+		/// <summary>
+		/// Returns the char index after the next grapheme cluster.
+		/// Handles all emoji sequences: ZWJ families, flags, skin tones, keycaps, tag sequences.
+		/// </summary>
+		private static int NextCluster(string text, int charIndex) {
+			if (string.IsNullOrEmpty(text) || charIndex >= text.Length) return text?.Length ?? 0;
+
+			int i = charIndex;
+			int cp = CP(text, i);
+
+			// Regional indicator pair (flags 🇯🇴)
+			if (IsRegional(cp)) {
+				i += CPLen(text, i);
+				if (i < text.Length && IsRegional(CP(text, i)))
+					i += CPLen(text, i);
+				// Consume trailing VS
+				while (i < text.Length && IsExtender(CP(text, i)))
+					i += CPLen(text, i);
+				return i;
+			}
+
+			// Tag sequences (🏴󠁧󠁢󠁥󠁮󠁧󠁿)
+			if (cp == 0x1F3F4) {
+				i += CPLen(text, i);
+				while (i < text.Length && IsTag(CP(text, i)))
+					i += CPLen(text, i);
+				if (i < text.Length && CP(text, i) == 0xE007F) // cancel tag
+					i += CPLen(text, i);
+				return i;
+			}
+
+			// Skip base code point
+			i += CPLen(text, i);
+
+			// Consume all extenders (ZWJ + next CP, variation selectors, skin tones, combining marks)
+			while (i < text.Length) {
+				cp = CP(text, i);
+
+				if (cp == 0x200D) {
+					// ZWJ: consume ZWJ + next code point
+					int zjLen = CPLen(text, i);
+					if (i + zjLen < text.Length) {
+						i += zjLen; // skip ZWJ
+						i += CPLen(text, i); // skip next code point
+						continue; // loop to consume that code point's modifiers too
+					}
+					break;
+				}
+
+				if (IsExtender(cp)) {
+					i += CPLen(text, i);
+					continue;
+				}
+
+				break;
+			}
+
+			return i;
+		}
+
+		/// <summary>
+		/// Returns the start of the grapheme cluster before charIndex.
+		/// </summary>
+		private static int PrevCluster(string text, int charIndex) {
+			if (string.IsNullOrEmpty(text) || charIndex <= 0) return 0;
+
+			// Build cluster boundaries forward, find the one before charIndex
+			int prev = 0;
+			int cur = 0;
+			while (cur < text.Length) {
+				int next = NextCluster(text, cur);
+				if (next >= charIndex) return cur;
+				prev = cur;
+				cur = next;
+			}
+			return cur;
+		}
+
+		/// <summary>
+		/// Snaps to the nearest cluster boundary (start of the cluster containing charIndex).
+		/// </summary>
+		private static int SnapToClusterBoundary(string text, int charIndex) {
+			if (string.IsNullOrEmpty(text) || charIndex <= 0) return 0;
+			if (charIndex >= text.Length) return text.Length;
+
+			int cur = 0;
+			while (cur < text.Length) {
+				int next = NextCluster(text, cur);
+				if (cur == charIndex) return charIndex;
+				if (next > charIndex) return cur;
+				cur = next;
+			}
+			return text.Length;
+		}
 
 		private int FindPreviousWordStart(int from) {
 			if (from <= 0) return 0;
