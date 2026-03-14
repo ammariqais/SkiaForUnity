@@ -82,6 +82,11 @@ namespace SkiaSharp.Unity {
 		private int lastWidth, lastHeight;
 		private bool isDirty = true;
 
+		// Child render target — extends beyond parent for shadow
+		private GameObject renderChild;
+		private RectTransform renderRT;
+		private float lastPad;
+
 		// Pooled paint — avoids GC alloc per draw call
 		private SKPaint paint;
 
@@ -112,7 +117,7 @@ namespace SkiaSharp.Unity {
 					var img = GetComponent<Image>();
 					if (img != null) return img;
 				}
-				if (rawImage == null) rawImage = GetComponent<RawImage>();
+				EnsureRenderChild();
 				return rawImage;
 			}
 		}
@@ -280,33 +285,104 @@ namespace SkiaSharp.Unity {
 			isDirty = true;
 		}
 
+		// --- Render Child Management ---
+
+		private const string RenderChildName = "_SkiaRender";
+
+		void EnsureRenderChild() {
+			if (renderChild != null && rawImage != null) return;
+
+			// Look for existing render child, clean up duplicates
+			bool found = false;
+			for (int i = transform.childCount - 1; i >= 0; i--) {
+				var child = transform.GetChild(i);
+				if (child.name == RenderChildName) {
+					if (!found) {
+						renderChild = child.gameObject;
+						renderRT = child as RectTransform;
+						rawImage = child.GetComponent<RawImage>();
+						if (rawImage != null) found = true;
+					} else {
+						// Destroy duplicate
+						if (Application.isPlaying)
+							Destroy(child.gameObject);
+						else
+							DestroyImmediate(child.gameObject);
+					}
+				}
+			}
+			if (found) return;
+
+			// Create new render child
+			renderChild = new GameObject(RenderChildName, typeof(RectTransform), typeof(CanvasRenderer), typeof(RawImage));
+			renderChild.transform.SetParent(transform, false);
+			renderChild.transform.SetAsFirstSibling();
+
+			renderRT = renderChild.GetComponent<RectTransform>();
+			renderRT.anchorMin = Vector2.zero;
+			renderRT.anchorMax = Vector2.one;
+			renderRT.offsetMin = Vector2.zero;
+			renderRT.offsetMax = Vector2.zero;
+
+			rawImage = renderChild.GetComponent<RawImage>();
+			rawImage.raycastTarget = true;
+		}
+
+		void MigrateOldRawImage() {
+			// If there's a RawImage on self (old approach), remove it
+			var selfRI = GetComponent<RawImage>();
+			if (selfRI != null) {
+				if (Application.isPlaying)
+					Destroy(selfRI);
+				else
+					DestroyImmediate(selfRI);
+			}
+		}
+
+		void UpdateRenderChildPadding(float pad) {
+			if (renderRT == null) return;
+			if (Mathf.Approximately(pad, lastPad)) return;
+			lastPad = pad;
+			renderRT.offsetMin = new Vector2(-pad, -pad);
+			renderRT.offsetMax = new Vector2(pad, pad);
+		}
+
+		float CalculateShadowPadding() {
+			if (!enableShadow) return 0f;
+			return shadowBlur + Mathf.Max(Mathf.Abs(shadowOffset.x), Mathf.Abs(shadowOffset.y));
+		}
+
 		// --- Lifecycle ---
 
 		void OnEnable() {
-			rawImage = GetComponent<RawImage>();
-#if UNITY_EDITOR
-			if (rawImage != null)
-				rawImage.hideFlags |= HideFlags.HideInInspector;
-			var editorImg = GetComponent<Image>();
-			if (editorImg != null)
-				editorImg.hideFlags |= HideFlags.HideInInspector;
-#endif
 			if (bakedSprite != null) {
-				if (rawImage != null) rawImage.enabled = false;
+				// Baked mode: use Image on self
+				var selfRI = GetComponent<RawImage>();
+				if (selfRI != null) selfRI.enabled = false;
 				var img = GetComponent<Image>();
 				if (img != null) {
 					img.sprite = bakedSprite;
 					img.color = Color.white;
 				}
+				if (renderChild != null) renderChild.SetActive(false);
 				return;
 			}
-			if (rawImage == null) {
-				var existingGraphic = GetComponent<Graphic>();
-				if (existingGraphic != null)
-					DestroyImmediate(existingGraphic);
-				rawImage = gameObject.AddComponent<RawImage>();
-			}
-			rawImage.enabled = true;
+
+			MigrateOldRawImage();
+			// Reset references so EnsureRenderChild re-scans (handles play/stop transitions)
+			renderChild = null;
+			renderRT = null;
+			rawImage = null;
+			lastPad = -1;
+			EnsureRenderChild();
+
+			if (renderChild != null) renderChild.SetActive(true);
+
+#if UNITY_EDITOR
+			if (rawImage != null)
+				rawImage.hideFlags |= HideFlags.HideInInspector;
+#endif
+
 			paint = new SKPaint();
 			SetDirty();
 			Render();
@@ -318,13 +394,23 @@ namespace SkiaSharp.Unity {
 
 		void OnDestroy() {
 			Cleanup();
+			// Destroy render child
+			if (renderChild != null) {
+				if (Application.isPlaying)
+					Destroy(renderChild);
+				else
+					DestroyImmediate(renderChild);
+				renderChild = null;
+			}
 		}
 
 		void Update() {
 			if (rawImage == null) return;
 			if (bakedSprite != null) return;
 
-			RectTransform rt = rawImage.rectTransform;
+			RectTransform rt = GetComponent<RectTransform>();
+			if (rt == null) return;
+
 			int w = ScaledRoundTo4(rt.rect.width);
 			int h = ScaledRoundTo4(rt.rect.height);
 
@@ -344,23 +430,40 @@ namespace SkiaSharp.Unity {
 			RectTransform rt = GetComponent<RectTransform>();
 			if (rt == null) return;
 
-			int w = ScaledRoundTo4(rt.rect.width);
-			int h = ScaledRoundTo4(rt.rect.height);
-			if (w < 4 || h < 4) return;
+			float shapeW = rt.rect.width;
+			float shapeH = rt.rect.height;
+			if (shapeW < 4 || shapeH < 4) return;
 
-			// Create surface only for this render, dispose after — saves ~w*h*4 bytes idle memory
-			var info = new SKImageInfo(w, h, SKColorType.Rgba8888, SKAlphaType.Premul);
+			// Calculate shadow padding — extends the surface beyond the shape
+			float pad = CalculateShadowPadding();
+
+			// Total surface includes padding on all sides
+			int totalW = ScaledRoundTo4(shapeW + pad * 2);
+			int totalH = ScaledRoundTo4(shapeH + pad * 2);
+			if (totalW < 4 || totalH < 4) return;
+
+			// Update render child to extend beyond parent by padding
+			EnsureRenderChild();
+			UpdateRenderChildPadding(pad);
+
+			// Scale padding to match surface scaling
+			float scaledPad = pad * resolutionScale;
+			int scaledShapeW = ScaledRoundTo4(shapeW);
+			int scaledShapeH = ScaledRoundTo4(shapeH);
+
+			var info = new SKImageInfo(totalW, totalH, SKColorType.Rgba8888, SKAlphaType.Premul);
 			using (var surface = SKSurface.Create(info)) {
 				if (surface == null) return;
 
 				var skCanvas = surface.Canvas;
 				skCanvas.Clear(SKColors.Transparent);
 				skCanvas.Scale(1, -1);
-				skCanvas.Translate(0, -h);
+				skCanvas.Translate(0, -totalH);
 
-				// Shadow padding
-				float pad = enableShadow ? shadowBlur + Mathf.Max(Mathf.Abs(shadowOffset.x), Mathf.Abs(shadowOffset.y)) : 0;
-				SKRect shapeRect = new SKRect(pad, pad, w - pad, h - pad);
+				// Shape rect is at the center of the surface, full logical size
+				float padX = (totalW - scaledShapeW) * 0.5f;
+				float padY = (totalH - scaledShapeH) * 0.5f;
+				SKRect shapeRect = new SKRect(padX, padY, padX + scaledShapeW, padY + scaledShapeH);
 
 				// Half stroke goes outside the shape
 				if (enableStroke) {
@@ -386,20 +489,19 @@ namespace SkiaSharp.Unity {
 
 				// Extract pixels
 				using (var pixmap = surface.PeekPixels()) {
-					EnsureTexture(w, h);
+					EnsureTexture(totalW, totalH);
 					texture.LoadRawTextureData(pixmap.GetPixels(), pixmap.RowBytes * pixmap.Height);
 					texture.Apply();
 				}
 			}
 
-			if (rawImage == null) rawImage = GetComponent<RawImage>();
 			if (rawImage != null) {
 				rawImage.texture = texture;
 				rawImage.color = Color.white;
 			}
 
-			lastWidth = w;
-			lastHeight = h;
+			lastWidth = ScaledRoundTo4(shapeW);
+			lastHeight = ScaledRoundTo4(shapeH);
 			isDirty = false;
 		}
 
@@ -870,7 +972,7 @@ namespace SkiaSharp.Unity {
 			RectTransform rt = GetComponent<RectTransform>();
 			if (rt == null) return Vector4.zero;
 
-			float pad = enableShadow ? shadowBlur + Mathf.Max(Mathf.Abs(shadowOffset.x), Mathf.Abs(shadowOffset.y)) : 0;
+			float pad = CalculateShadowPadding();
 			float halfStroke = enableStroke ? strokeWidth * 0.5f : 0;
 
 			float cornerTL = shape == SkiaShapeType.RoundedRect ? cornerRadii.x : 0;

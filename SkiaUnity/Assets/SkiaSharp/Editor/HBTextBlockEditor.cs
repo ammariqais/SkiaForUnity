@@ -1251,16 +1251,27 @@ static class HBTextBlockMenuItems {
       ? parent.transform
       : canvas.transform;
 
-    // Root: HB InputField (Image background + HBInputField)
+    // Root: HB InputField with SkiaGraphic background
     var root = new GameObject("HB InputField");
     var rootRT = root.AddComponent<RectTransform>();
+
+    // SkiaGraphic for visual background
+    var skiaBG = root.AddComponent<SkiaSharp.Unity.SkiaGraphic>();
+
+    // Hidden Image for Selectable targetGraphic (required by HBInputField)
     var bgImage = root.AddComponent<UnityEngine.UI.Image>();
-    bgImage.color = new Color(1f, 1f, 1f, 1f);
-    bgImage.sprite = AssetDatabase.GetBuiltinExtraResource<Sprite>("UI/Skin/InputFieldBackground.psd");
-    bgImage.type = UnityEngine.UI.Image.Type.Sliced;
+    bgImage.color = Color.clear;
+    bgImage.raycastTarget = true;
+#if UNITY_EDITOR
+    bgImage.hideFlags |= HideFlags.HideInInspector;
+#endif
+
     var inputField = root.AddComponent<HBInputField>();
     GameObjectUtility.SetParentAndAlign(root, parentTransform.gameObject);
-    rootRT.sizeDelta = new Vector2(300, 40);
+    rootRT.anchorMin = new Vector2(0.5f, 0.5f);
+    rootRT.anchorMax = new Vector2(0.5f, 0.5f);
+    rootRT.anchoredPosition = Vector2.zero;
+    rootRT.sizeDelta = new Vector2(900, 120);
 
     // Text Viewport (RectMask2D for clipping)
     var viewport = new GameObject("Text Area");
@@ -1269,8 +1280,8 @@ static class HBTextBlockMenuItems {
     viewport.transform.SetParent(root.transform, false);
     viewportRT.anchorMin = Vector2.zero;
     viewportRT.anchorMax = Vector2.one;
-    viewportRT.offsetMin = new Vector2(10, 6);
-    viewportRT.offsetMax = new Vector2(-10, -6);
+    viewportRT.offsetMin = new Vector2(30, 18);
+    viewportRT.offsetMax = new Vector2(-30, -18);
 
     // Placeholder
     var placeholderGO = new GameObject("Placeholder");
@@ -1301,7 +1312,7 @@ static class HBTextBlockMenuItems {
     caretImg.color = new Color(0.2f, 0.2f, 0.2f, 1f);
     caretImg.raycastTarget = false;
     caretGO.transform.SetParent(textGO.transform, false);
-    caretRT.sizeDelta = new Vector2(2, 20);
+    caretRT.sizeDelta = new Vector2(3, 48);
     caretGO.SetActive(false);
 
     // Wire references via SerializedObject
@@ -1311,21 +1322,42 @@ static class HBTextBlockMenuItems {
     so.FindProperty("placeholder").objectReferenceValue = placeholderText;
     so.FindProperty("textViewport").objectReferenceValue = viewportRT;
     so.FindProperty("caretImage").objectReferenceValue = caretImg;
+    so.FindProperty("skiaBackground").objectReferenceValue = skiaBG;
+    so.FindProperty("fontSize").intValue = 48;
+    so.FindProperty("caretWidth").intValue = 3;
+    so.FindProperty("autoResize").boolValue = true;
+    so.FindProperty("minHeight").floatValue = 120f;
+    so.FindProperty("maxAutoHeight").floatValue = 900f;
     so.ApplyModifiedPropertiesWithoutUndo();
 
-    // Configure text components for input field layout
-    float textWidth = 300f - 20f; // root width minus viewport padding
+    // Configure SkiaGraphic background
+    var skiaBGSO = new SerializedObject(skiaBG);
+    skiaBGSO.FindProperty("shape").enumValueIndex = 1; // RoundedRect
+    skiaBGSO.FindProperty("cornerRadii").vector4Value = new Vector4(24, 24, 24, 24);
+    skiaBGSO.FindProperty("fillType").enumValueIndex = 1; // Solid
+    skiaBGSO.FindProperty("fillColor").colorValue = Color.white;
+    skiaBGSO.FindProperty("enableStroke").boolValue = true;
+    skiaBGSO.FindProperty("strokeColor").colorValue = new Color(0.8f, 0.8f, 0.8f, 1f);
+    skiaBGSO.FindProperty("strokeWidth").floatValue = 2.5f;
+    skiaBGSO.ApplyModifiedPropertiesWithoutUndo();
+
+    // Configure text components
+    float textWidth = 900f - 60f; // root width minus viewport padding
     var textSO = new SerializedObject(textComp);
     textSO.FindProperty("maxWidth").floatValue = textWidth;
+    textSO.FindProperty("fontSize").intValue = 48;
     textSO.FindProperty("textAlignment").enumValueIndex = 0; // Left
+    textSO.FindProperty("verticalAlignment").enumValueIndex = 1; // Middle
     textSO.FindProperty("autoFitVertical").boolValue = true;
     textSO.ApplyModifiedPropertiesWithoutUndo();
 
     var placeholderSO = new SerializedObject(placeholderText);
     placeholderSO.FindProperty("Text").stringValue = "Enter text...";
     placeholderSO.FindProperty("fontColor").colorValue = new Color(0.5f, 0.5f, 0.5f, 0.5f);
+    placeholderSO.FindProperty("fontSize").intValue = 48;
     placeholderSO.FindProperty("maxWidth").floatValue = textWidth;
     placeholderSO.FindProperty("textAlignment").enumValueIndex = 0; // Left
+    placeholderSO.FindProperty("verticalAlignment").enumValueIndex = 1; // Middle
     placeholderSO.FindProperty("autoFitVertical").boolValue = true;
     placeholderSO.ApplyModifiedPropertiesWithoutUndo();
 

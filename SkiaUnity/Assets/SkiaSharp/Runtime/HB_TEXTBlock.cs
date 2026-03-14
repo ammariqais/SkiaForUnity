@@ -131,9 +131,19 @@ namespace SkiaSharp.Unity.HB {
 
 		public virtual TextBlock Info => rs;
 
-		protected enum VerticalAlignment { Top, Middle, Bottom }
+		public enum VerticalAlignment { Top, Middle, Bottom }
 		[SerializeField]
 		protected VerticalAlignment verticalAlignment = VerticalAlignment.Top; // Default alignment
+
+		public virtual VerticalAlignment VAlign {
+			get => verticalAlignment;
+			set {
+				if (verticalAlignment != value) {
+					verticalAlignment = value;
+					_renderDirty = true;
+				}
+			}
+		}
 
 
 		public virtual float MaxWidth {
@@ -882,6 +892,24 @@ namespace SkiaSharp.Unity.HB {
 			}
 			SyncStyleFromFields();
 			_renderDirty = true;
+		}
+
+		/// <summary>
+		/// Rebuilds the TextBlock layout immediately so caret/hit-test queries
+		/// return results for the current text. Does NOT re-render to texture.
+		/// </summary>
+		public virtual void FlushLayout() {
+			if (rs == null) rs = new Topten.RichTextKit.TextBlock();
+			rs.Clear();
+			rs.MaxHeight = null;
+			rs.MaxWidth = maxWidth > 0 ? (float?)maxWidth : null;
+			rs.MaxLines = maxLines == 0 ? null : (int?)maxLines;
+			rs.Alignment = textAlignment;
+			rs.BaseDirection = textDirection;
+			if (richText)
+				HBRichTextParser.Parse(rs, Text, styleBoldItalic);
+			else
+				rs.AddText(Text, styleBoldItalic);
 		}
 
 		public virtual float GradientAngle {

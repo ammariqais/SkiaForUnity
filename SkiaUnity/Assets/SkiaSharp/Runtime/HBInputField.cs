@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using Topten.RichTextKit;
 using UnityEngine;
 using UnityEngine.Events;
@@ -56,6 +57,9 @@ namespace SkiaSharp.Unity.HB {
 		[SerializeField] bool useFocusColor;
 		[SerializeField] Color focusBackgroundColor = new Color(1f, 1f, 1f, 1f);
 
+		// Skia background (optional — used instead of Image when assigned)
+		[SerializeField] SkiaGraphic skiaBackground;
+
 		// Mobile
 		[SerializeField] bool hideMobileInput = true;
 
@@ -81,7 +85,9 @@ namespace SkiaSharp.Unity.HB {
 		private bool m_CaretVisible;
 		private bool m_DragSelecting;
 		private RectTransform m_CaretRect;
-		private Image m_SelectionHighlight;
+		private Image m_SelectionHighlight; // kept for single-line fallback
+		private readonly List<Image> m_SelectionRects = new List<Image>();
+		private Transform m_SelectionContainer;
 		private TouchScreenKeyboard m_Keyboard;
 		private Image m_BackgroundImage;
 		private Color m_OriginalBackgroundColor;
@@ -132,7 +138,9 @@ namespace SkiaSharp.Unity.HB {
 			}
 
 			m_BackgroundImage = GetComponent<Image>();
-			if (m_BackgroundImage != null)
+			if (skiaBackground != null)
+				m_OriginalBackgroundColor = skiaBackground.FillColor;
+			else if (m_BackgroundImage != null)
 				m_OriginalBackgroundColor = m_BackgroundImage.color;
 
 			if (textComponent != null)
@@ -238,12 +246,16 @@ namespace SkiaSharp.Unity.HB {
 		}
 
 		private void ApplyReadOnlyAppearance() {
-			if (m_BackgroundImage != null) {
-				if (readOnly) {
+			if (skiaBackground != null) {
+				if (readOnly)
+					skiaBackground.FillColor = readOnlyColor;
+				else if (!m_HasFocus || !useFocusColor)
+					skiaBackground.FillColor = m_OriginalBackgroundColor;
+			} else if (m_BackgroundImage != null) {
+				if (readOnly)
 					m_BackgroundImage.color = readOnlyColor;
-				} else if (!m_HasFocus || !useFocusColor) {
+				else if (!m_HasFocus || !useFocusColor)
 					m_BackgroundImage.color = m_OriginalBackgroundColor;
-				}
 			}
 		}
 
@@ -351,8 +363,12 @@ namespace SkiaSharp.Unity.HB {
 				caretImage.gameObject.SetActive(true);
 
 			// Focus background color
-			if (useFocusColor && !readOnly && m_BackgroundImage != null)
-				m_BackgroundImage.color = focusBackgroundColor;
+			if (useFocusColor && !readOnly) {
+				if (skiaBackground != null)
+					skiaBackground.FillColor = focusBackgroundColor;
+				else if (m_BackgroundImage != null)
+					m_BackgroundImage.color = focusBackgroundColor;
+			}
 
 			// Open native keyboard on mobile platforms
 			if (TouchScreenKeyboard.isSupported && !readOnly) {
@@ -385,7 +401,7 @@ namespace SkiaSharp.Unity.HB {
 			if (!m_HasFocus) return;
 			m_HasFocus = false;
 			if (caretImage != null) caretImage.gameObject.SetActive(false);
-			if (m_SelectionHighlight != null) m_SelectionHighlight.gameObject.SetActive(false);
+			if (m_SelectionContainer != null) m_SelectionContainer.gameObject.SetActive(false);
 			if (m_Keyboard != null) {
 				m_Keyboard.active = false;
 				m_Keyboard = null;
@@ -393,7 +409,9 @@ namespace SkiaSharp.Unity.HB {
 
 			// Reset scroll and restore background
 			ResetScroll();
-			if (m_BackgroundImage != null) {
+			if (skiaBackground != null) {
+				skiaBackground.FillColor = readOnly ? readOnlyColor : m_OriginalBackgroundColor;
+			} else if (m_BackgroundImage != null) {
 				m_BackgroundImage.color = readOnly ? readOnlyColor : m_OriginalBackgroundColor;
 			}
 
@@ -904,6 +922,8 @@ namespace SkiaSharp.Unity.HB {
 						textComponent.SetRichText(displayText);
 					else
 						textComponent.text = displayText;
+					// Flush layout so caret queries use updated text
+					textComponent.FlushLayout();
 				}
 
 				if (placeholder != null) {
@@ -951,23 +971,42 @@ namespace SkiaSharp.Unity.HB {
 		}
 
 		private void CreateSelectionHighlight() {
-			if (m_SelectionHighlight != null) return;
+			if (m_SelectionContainer != null) return;
 			if (textComponent == null) return;
 
-			var go = new GameObject("Selection", typeof(RectTransform), typeof(CanvasRenderer), typeof(Image));
-			go.transform.SetParent(textComponent.transform, false);
-			go.transform.SetAsFirstSibling();
-			m_SelectionHighlight = go.GetComponent<Image>();
-			m_SelectionHighlight.color = selectionColor;
-			m_SelectionHighlight.raycastTarget = false;
-			m_SelectionHighlight.gameObject.SetActive(false);
+			var containerGO = new GameObject("SelectionContainer", typeof(RectTransform));
+			containerGO.transform.SetParent(textComponent.transform, false);
+			containerGO.transform.SetAsFirstSibling();
+			m_SelectionContainer = containerGO.transform;
+			var containerRT = containerGO.GetComponent<RectTransform>();
+			containerRT.anchorMin = Vector2.zero;
+			containerRT.anchorMax = Vector2.one;
+			containerRT.offsetMin = Vector2.zero;
+			containerRT.offsetMax = Vector2.zero;
+			containerGO.SetActive(false);
+
+			// Keep legacy reference for compatibility
+			m_SelectionHighlight = null;
+		}
+
+		private Image GetOrCreateSelectionRect(int index) {
+			while (m_SelectionRects.Count <= index) {
+				var go = new GameObject($"SelRect_{m_SelectionRects.Count}",
+					typeof(RectTransform), typeof(CanvasRenderer), typeof(Image));
+				go.transform.SetParent(m_SelectionContainer, false);
+				var img = go.GetComponent<Image>();
+				img.color = selectionColor;
+				img.raycastTarget = false;
+				m_SelectionRects.Add(img);
+			}
+			return m_SelectionRects[index];
 		}
 
 		private void UpdateSelectionVisual() {
-			if (m_SelectionHighlight == null) return;
+			if (m_SelectionContainer == null) return;
 
 			if (!HasSelection || !m_HasFocus) {
-				m_SelectionHighlight.gameObject.SetActive(false);
+				m_SelectionContainer.gameObject.SetActive(false);
 				return;
 			}
 
@@ -976,23 +1015,77 @@ namespace SkiaSharp.Unity.HB {
 
 			var textRT = textComponent.GetComponent<RectTransform>();
 			Rect parentRect = textRT.rect;
+			var info = textComponent.Info;
 
-			if (textComponent.GetCaretLocalRect(start, out Rect startRect) &&
-				textComponent.GetCaretLocalRect(end, out Rect endRect)) {
-				m_SelectionHighlight.gameObject.SetActive(true);
-				var rt = m_SelectionHighlight.GetComponent<RectTransform>();
-				rt.anchorMin = new Vector2(0, 0);
-				rt.anchorMax = new Vector2(0, 0);
-				rt.pivot = new Vector2(0, 0);
-				// Convert from pivot-relative local coords to bottom-left anchor coords
-				rt.anchoredPosition = new Vector2(
-					startRect.x - parentRect.xMin,
-					startRect.y - parentRect.yMin
-				);
-				rt.sizeDelta = new Vector2(endRect.x - startRect.x, startRect.height);
-			} else {
-				m_SelectionHighlight.gameObject.SetActive(false);
+			if (info == null || info.LineCount == 0) {
+				m_SelectionContainer.gameObject.SetActive(false);
+				return;
 			}
+
+			// Find which lines the selection spans
+			var startCaret = info.GetCaretInfo(new CaretPosition(start));
+			var endCaret = info.GetCaretInfo(new CaretPosition(end));
+
+			if (startCaret.IsNone || endCaret.IsNone) {
+				m_SelectionContainer.gameObject.SetActive(false);
+				return;
+			}
+
+			m_SelectionContainer.gameObject.SetActive(true);
+
+			int startLine = startCaret.LineIndex;
+			int endLine = endCaret.LineIndex;
+			int rectIndex = 0;
+
+			for (int line = startLine; line <= endLine; line++) {
+				float lineLeft, lineRight;
+
+				if (line == startLine && line == endLine) {
+					// Single line selection
+					if (!textComponent.GetCaretLocalRect(start, out Rect sRect) ||
+						!textComponent.GetCaretLocalRect(end, out Rect eRect))
+						continue;
+					lineLeft = sRect.x;
+					lineRight = eRect.x;
+					PlaceSelectionRect(rectIndex++, lineLeft, sRect.y, lineRight - lineLeft, sRect.height, parentRect);
+				} else if (line == startLine) {
+					// First line: from start caret to end of line
+					if (!textComponent.GetCaretLocalRect(start, out Rect sRect))
+						continue;
+					lineRight = parentRect.xMax;
+					PlaceSelectionRect(rectIndex++, sRect.x, sRect.y, lineRight - sRect.x, sRect.height, parentRect);
+				} else if (line == endLine) {
+					// Last line: from start of line to end caret
+					if (!textComponent.GetCaretLocalRect(end, out Rect eRect))
+						continue;
+					lineLeft = parentRect.xMin;
+					PlaceSelectionRect(rectIndex++, lineLeft, eRect.y, eRect.x - lineLeft, eRect.height, parentRect);
+				} else {
+					// Middle line: full width
+					// Get any caret on this line for y/height
+					var lineInfo = info.Lines[line];
+					int midIndex = lineInfo.Start;
+					if (!textComponent.GetCaretLocalRect(midIndex, out Rect mRect))
+						continue;
+					PlaceSelectionRect(rectIndex++, parentRect.xMin, mRect.y, parentRect.width, mRect.height, parentRect);
+				}
+			}
+
+			// Hide unused rects
+			for (int i = rectIndex; i < m_SelectionRects.Count; i++) {
+				m_SelectionRects[i].gameObject.SetActive(false);
+			}
+		}
+
+		private void PlaceSelectionRect(int index, float localX, float localY, float width, float height, Rect parentRect) {
+			var img = GetOrCreateSelectionRect(index);
+			img.gameObject.SetActive(true);
+			var rt = img.GetComponent<RectTransform>();
+			rt.anchorMin = Vector2.zero;
+			rt.anchorMax = Vector2.zero;
+			rt.pivot = Vector2.zero;
+			rt.anchoredPosition = new Vector2(localX - parentRect.xMin, localY - parentRect.yMin);
+			rt.sizeDelta = new Vector2(Mathf.Max(4f, width), height);
 		}
 
 		private void RefreshCaretView() {

@@ -696,7 +696,6 @@ static class SkiaGraphicMenuItems {
 		}
 
 		var go = new GameObject("Skia Graphic");
-		go.AddComponent<UnityEngine.UI.RawImage>();
 		go.AddComponent<SkiaGraphic>();
 		Undo.RegisterCreatedObjectUndo(go, "Create Skia Graphic");
 
