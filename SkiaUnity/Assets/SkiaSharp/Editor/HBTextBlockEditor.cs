@@ -18,6 +18,7 @@ public class HBTextBlockEditor : Editor {
   static readonly GUIContent k_TextInputHeader = new GUIContent("<b>Text Input</b>");
   static readonly GUIContent k_MainSettingsHeader = new GUIContent("<b>Main Settings</b>");
   static readonly GUIContent k_EffectsHeader = new GUIContent("<b>Effects</b>");
+  static readonly GUIContent k_BackgroundShapeHeader = new GUIContent("<b>Background Shape</b>");
   static readonly GUIContent k_ExtraSettingsHeader = new GUIContent("<b>Extra Settings</b>");
 
   static readonly GUIContent k_FontAssetLabel = new GUIContent("Font", "HBFontData asset for text rendering. Drag a .ttf/.otf file or HBFontData asset.");
@@ -98,6 +99,26 @@ public class HBTextBlockEditor : Editor {
   static readonly GUIContent k_OnTextChangedLabel = new GUIContent("On Text Changed", "Fired when the text content changes at runtime.");
   static readonly GUIContent k_OnLinkClickedLabel = new GUIContent("On Link Clicked", "Fired when a detected URL link is clicked. Passes the URL string.");
 
+  // Background Shape labels
+  static readonly GUIContent k_BgEnableFillLabel = new GUIContent("Enable", "Draw a background shape behind the text.");
+  static readonly GUIContent k_BgFillTypeLabel = new GUIContent("Fill Type", "Background fill mode.");
+  static readonly GUIContent k_BgFillColorLabel = new GUIContent("Color", "Solid fill color.");
+  static readonly GUIContent k_BgGradientLabel = new GUIContent("Gradient", "Background gradient.");
+  static readonly GUIContent k_BgGradientAngleLabel = new GUIContent("Angle", "Gradient angle in degrees.");
+  static readonly GUIContent k_BgCornerRadiiLabel = new GUIContent("Corner Radii", "Per-corner radius (TL, TR, BR, BL).");
+  static readonly GUIContent k_BgPaddingLabel = new GUIContent("Padding", "Space between text and background edges (L, T, R, B).");
+  static readonly GUIContent k_BgStrokeLabel = new GUIContent("Stroke");
+  static readonly GUIContent k_BgStrokeColorLabel = new GUIContent("Color", "Stroke color.");
+  static readonly GUIContent k_BgStrokeWidthLabel = new GUIContent("Width", "Stroke width.");
+  static readonly GUIContent k_BgShadowLabel = new GUIContent("Shadow");
+  static readonly GUIContent k_BgShadowColorLabel = new GUIContent("Color", "Shadow color.");
+  static readonly GUIContent k_BgShadowOffsetLabel = new GUIContent("Offset", "Shadow offset.");
+  static readonly GUIContent k_BgShadowBlurLabel = new GUIContent("Blur", "Shadow blur radius.");
+  static readonly GUIContent k_BgInnerShadowLabel = new GUIContent("Inner Shadow");
+  static readonly GUIContent k_BgInnerShadowColorLabel = new GUIContent("Color", "Inner shadow color.");
+  static readonly GUIContent k_BgInnerShadowOffsetLabel = new GUIContent("Offset", "Inner shadow offset.");
+  static readonly GUIContent k_BgInnerShadowBlurLabel = new GUIContent("Blur", "Inner shadow blur.");
+
   static readonly GUIContent k_BakeHeader = new GUIContent("<b>Bake</b>");
   static readonly GUIContent k_BakedSpriteLabel = new GUIContent("Baked Sprite", "When assigned, uses Image + SpriteAtlas for batching. Zero SkiaSharp cost at runtime.");
 
@@ -118,6 +139,10 @@ public class HBTextBlockEditor : Editor {
     public static bool outline = true;
     public static bool innerGlow = true;
     public static bool dropShadow = true;
+    public static bool backgroundShape = false;
+    public static bool bgStroke = true;
+    public static bool bgShadow = true;
+    public static bool bgInnerShadow = true;
     public static bool extraSettings = false;
     public static bool overflow = true;
     public static bool autoSize = true;
@@ -135,7 +160,12 @@ public class HBTextBlockEditor : Editor {
     gradiantPositionsProperty, enableGradiantProperty, gradiantAngleProperty, ellipsisProperty, maxLines, linkColorProperty,
     textDirectionProperty, fontWeightProperty, fontVariantProperty, paddingProperty, richTextProperty,
     fallbackFontsProperty, paragraphSpacingProperty, onTextChangedProperty, onLinkClickedProperty,
-    bakedSpriteProperty;
+    bakedSpriteProperty,
+    enableBgFillProperty, bgFillTypeProperty, bgFillColorProperty, bgGradientProperty, bgGradientAngleProperty,
+    bgCornerRadiiProperty, enableBgStrokeProperty, bgStrokeColorProperty, bgStrokeWidthProperty,
+    enableBgShadowProperty, bgShadowColorProperty, bgShadowOffsetProperty, bgShadowBlurProperty,
+    enableBgInnerShadowProperty, bgInnerShadowColorProperty, bgInnerShadowOffsetProperty, bgInnerShadowBlurProperty,
+    bgPaddingProperty;
 
   private string currentFontFace = null;
   private bool _needsInitialRender = true;
@@ -227,6 +257,25 @@ public class HBTextBlockEditor : Editor {
     onLinkClickedProperty = serializedObject.FindProperty("onLinkClicked");
     bakedSpriteProperty = serializedObject.FindProperty("bakedSprite");
 
+    enableBgFillProperty = serializedObject.FindProperty("enableBgFill");
+    bgFillTypeProperty = serializedObject.FindProperty("bgFillType");
+    bgFillColorProperty = serializedObject.FindProperty("bgFillColor");
+    bgGradientProperty = serializedObject.FindProperty("bgGradient");
+    bgGradientAngleProperty = serializedObject.FindProperty("bgGradientAngle");
+    bgCornerRadiiProperty = serializedObject.FindProperty("bgCornerRadii");
+    enableBgStrokeProperty = serializedObject.FindProperty("enableBgStroke");
+    bgStrokeColorProperty = serializedObject.FindProperty("bgStrokeColor");
+    bgStrokeWidthProperty = serializedObject.FindProperty("bgStrokeWidth");
+    enableBgShadowProperty = serializedObject.FindProperty("enableBgShadow");
+    bgShadowColorProperty = serializedObject.FindProperty("bgShadowColor");
+    bgShadowOffsetProperty = serializedObject.FindProperty("bgShadowOffset");
+    bgShadowBlurProperty = serializedObject.FindProperty("bgShadowBlur");
+    enableBgInnerShadowProperty = serializedObject.FindProperty("enableBgInnerShadow");
+    bgInnerShadowColorProperty = serializedObject.FindProperty("bgInnerShadowColor");
+    bgInnerShadowOffsetProperty = serializedObject.FindProperty("bgInnerShadowOffset");
+    bgInnerShadowBlurProperty = serializedObject.FindProperty("bgInnerShadowBlur");
+    bgPaddingProperty = serializedObject.FindProperty("bgPadding");
+
     if (fontProperty.propertyType == SerializedPropertyType.ObjectReference && fontProperty.objectReferenceValue != null) {
       currentFontFace = AssetDatabase.GetAssetPath(fontProperty.objectReferenceValue);
     }
@@ -245,6 +294,7 @@ public class HBTextBlockEditor : Editor {
     DrawTextInput();
     DrawMainSettings();
     DrawEffects();
+    DrawBackgroundShape();
     DrawExtraSettings();
     EditorGUI.EndDisabledGroup();
 
@@ -339,6 +389,72 @@ public class HBTextBlockEditor : Editor {
       EditorGUILayout.PropertyField(gradiantAngleProperty, k_GradientAngleLabel);
       DrawGradientStops();
       EditorGUI.indentLevel--;
+    }
+
+    EditorGUI.indentLevel--;
+    EditorGUILayout.Space();
+  }
+
+  private void DrawBackgroundShape() {
+    FoldoutState.backgroundShape = DrawCollapsibleSectionHeader(k_BackgroundShapeHeader, FoldoutState.backgroundShape);
+    if (!FoldoutState.backgroundShape) return;
+
+    EditorGUI.indentLevel++;
+
+    EditorGUILayout.PropertyField(enableBgFillProperty, k_BgEnableFillLabel);
+
+    if (enableBgFillProperty.boolValue) {
+      EditorGUILayout.PropertyField(bgFillTypeProperty, k_BgFillTypeLabel);
+
+      int fillType = bgFillTypeProperty.enumValueIndex;
+      if (fillType == 1) { // Solid
+        EditorGUILayout.PropertyField(bgFillColorProperty, k_BgFillColorLabel);
+      } else if (fillType >= 2 && fillType <= 4) { // LinearGradient, RadialGradient, SweepGradient
+        EditorGUILayout.PropertyField(bgFillColorProperty, k_BgFillColorLabel);
+        EditorGUILayout.PropertyField(bgGradientProperty, k_BgGradientLabel);
+        EditorGUILayout.PropertyField(bgGradientAngleProperty, k_BgGradientAngleLabel);
+      }
+
+      EditorGUILayout.PropertyField(bgCornerRadiiProperty, k_BgCornerRadiiLabel);
+      EditorGUILayout.PropertyField(bgPaddingProperty, k_BgPaddingLabel);
+
+      // Stroke
+      FoldoutState.bgStroke = EditorGUILayout.Foldout(FoldoutState.bgStroke, k_BgStrokeLabel, true, s_BoldFoldout);
+      if (FoldoutState.bgStroke) {
+        EditorGUI.indentLevel++;
+        EditorGUILayout.PropertyField(enableBgStrokeProperty, new GUIContent("Enable"));
+        if (enableBgStrokeProperty.boolValue) {
+          EditorGUILayout.PropertyField(bgStrokeColorProperty, k_BgStrokeColorLabel);
+          EditorGUILayout.PropertyField(bgStrokeWidthProperty, k_BgStrokeWidthLabel);
+        }
+        EditorGUI.indentLevel--;
+      }
+
+      // Shadow
+      FoldoutState.bgShadow = EditorGUILayout.Foldout(FoldoutState.bgShadow, k_BgShadowLabel, true, s_BoldFoldout);
+      if (FoldoutState.bgShadow) {
+        EditorGUI.indentLevel++;
+        EditorGUILayout.PropertyField(enableBgShadowProperty, new GUIContent("Enable"));
+        if (enableBgShadowProperty.boolValue) {
+          EditorGUILayout.PropertyField(bgShadowColorProperty, k_BgShadowColorLabel);
+          EditorGUILayout.PropertyField(bgShadowOffsetProperty, k_BgShadowOffsetLabel);
+          EditorGUILayout.PropertyField(bgShadowBlurProperty, k_BgShadowBlurLabel);
+        }
+        EditorGUI.indentLevel--;
+      }
+
+      // Inner Shadow
+      FoldoutState.bgInnerShadow = EditorGUILayout.Foldout(FoldoutState.bgInnerShadow, k_BgInnerShadowLabel, true, s_BoldFoldout);
+      if (FoldoutState.bgInnerShadow) {
+        EditorGUI.indentLevel++;
+        EditorGUILayout.PropertyField(enableBgInnerShadowProperty, new GUIContent("Enable"));
+        if (enableBgInnerShadowProperty.boolValue) {
+          EditorGUILayout.PropertyField(bgInnerShadowColorProperty, k_BgInnerShadowColorLabel);
+          EditorGUILayout.PropertyField(bgInnerShadowOffsetProperty, k_BgInnerShadowOffsetLabel);
+          EditorGUILayout.PropertyField(bgInnerShadowBlurProperty, k_BgInnerShadowBlurLabel);
+        }
+        EditorGUI.indentLevel--;
+      }
     }
 
     EditorGUI.indentLevel--;

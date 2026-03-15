@@ -40,13 +40,13 @@ namespace SkiaSharp.Unity.HB {
 		[SerializeField]
 		protected Gradient shadowGradientColor = new(), outlineColor = new ();
 		[SerializeField]
-		protected bool italic, bold, autoFitVertical = true, autoFitHorizontal, renderLinks, enableGradiant, enableEllipsis = true, richText;
+		protected bool italic, bold, autoFitVertical = true, autoFitHorizontal = true, renderLinks, enableGradiant, enableEllipsis = true, richText;
 		[SerializeField]
 		protected UnderlineStyle underlineStyle;
 		[SerializeField]
 		protected StrikeThroughStyle strikeThroughStyle;
 		[SerializeField]
-		protected float lineHeight = 1.0f, maxWidth = 264, maxHeight = -1 , gradiantAngle = 90;
+		protected float lineHeight = 1.0f, maxWidth = -1, maxHeight = -1 , gradiantAngle = 90;
 		[SerializeField]
 		protected HBColorFormat colorType = HBColorFormat.rgb32;
 		[SerializeField]
@@ -79,6 +79,29 @@ namespace SkiaSharp.Unity.HB {
 		[SerializeField]
 		[Range(0, 50)]
 		protected float paragraphSpacing;
+
+		[Header("Background Shape")]
+		[SerializeField] protected bool enableBgFill;
+		[SerializeField] protected SkiaFillType bgFillType = SkiaFillType.Solid;
+		[SerializeField] protected Color bgFillColor = Color.white;
+		[SerializeField] protected Gradient bgGradient = new Gradient();
+		[SerializeField, Range(0f, 360f)] protected float bgGradientAngle = 0f;
+		[SerializeField] protected Vector4 bgCornerRadii = new Vector4(16, 16, 16, 16);
+		[SerializeField] protected Vector4 bgPadding = new Vector4(8, 8, 8, 8); // left, top, right, bottom
+
+		[SerializeField] protected bool enableBgStroke;
+		[SerializeField] protected Color bgStrokeColor = Color.black;
+		[SerializeField, Range(0.5f, 20f)] protected float bgStrokeWidth = 2f;
+
+		[SerializeField] protected bool enableBgShadow;
+		[SerializeField] protected Color bgShadowColor = new Color(0, 0, 0, 0.3f);
+		[SerializeField] protected Vector2 bgShadowOffset = new Vector2(0, 4);
+		[SerializeField, Range(0f, 64f)] protected float bgShadowBlur = 8f;
+
+		[SerializeField] protected bool enableBgInnerShadow;
+		[SerializeField] protected Color bgInnerShadowColor = new Color(0, 0, 0, 0.4f);
+		[SerializeField] protected Vector2 bgInnerShadowOffset = new Vector2(0, 2);
+		[SerializeField, Range(0f, 32f)] protected float bgInnerShadowBlur = 4f;
 
 		[Header("Bake")]
 		[SerializeField] protected Sprite bakedSprite;
@@ -119,6 +142,12 @@ namespace SkiaSharp.Unity.HB {
 		private SKColor[] _cachedGradColors;
 		private int _cachedGradColorHash;
 		private TextPaintOptions _cachedPaintOptions;
+
+		// Background shape rendering
+		private SKPaint _bgPaint;
+		private readonly SKPoint[] _bgCachedRadii = new SKPoint[4];
+		private SKColor[] _bgCachedGradColors;
+		private float[] _bgCachedGradPositions;
 
 		// Layout rebuild tracking
 		private float _lastLayoutWidth, _lastLayoutHeight;
@@ -634,11 +663,16 @@ namespace SkiaSharp.Unity.HB {
 				effectPadX = Mathf.Max(effectPadX, shadowWidth + Mathf.Abs(shadowOffsetX));
 				effectPadY = Mathf.Max(effectPadY, shadowWidth + Mathf.Abs(shadowOffsetY));
 			}
-			// Add user-defined padding (left, top, right, bottom)
-			float userPadL = padding.x;
-			float userPadT = padding.y;
-			float userPadR = padding.z;
-			float userPadB = padding.w;
+			// Add background shape shadow padding
+			if (enableBgFill && enableBgShadow) {
+				effectPadX = Mathf.Max(effectPadX, bgShadowBlur + Mathf.Abs(bgShadowOffset.x));
+				effectPadY = Mathf.Max(effectPadY, bgShadowBlur + Mathf.Abs(bgShadowOffset.y));
+			}
+			// Add user-defined padding + background padding (left, top, right, bottom)
+			float userPadL = padding.x + (enableBgFill ? bgPadding.x : 0);
+			float userPadT = padding.y + (enableBgFill ? bgPadding.y : 0);
+			float userPadR = padding.z + (enableBgFill ? bgPadding.z : 0);
+			float userPadB = padding.w + (enableBgFill ? bgPadding.w : 0);
 			effectPadX += (userPadL + userPadR) / 2f;
 			effectPadY += (userPadT + userPadB) / 2f;
 			float padW = effectPadX * 2f;
@@ -737,7 +771,7 @@ namespace SkiaSharp.Unity.HB {
 			int roundedWidth = Mathf.CeilToInt(rectTransform.rect.width / 4) * 4;
 			int roundedHeight = Mathf.CeilToInt(rectTransform.rect.height / 4) * 4;
 
-			SKColorType targetColorType = colorType == HBColorFormat.alpha8 ? SKColorType.Alpha8 : SKColorType.Rgba8888;
+			SKColorType targetColorType = (colorType == HBColorFormat.alpha8 && !enableBgFill) ? SKColorType.Alpha8 : SKColorType.Rgba8888;
 
 			// Reuse surface if size and format match, otherwise recreate
 			if (surface != null && (info.Width != roundedWidth || info.Height != roundedHeight || info.ColorType != targetColorType)) {
@@ -761,6 +795,13 @@ namespace SkiaSharp.Unity.HB {
 			canvas.Clear();
 			canvas.ResetMatrix();
 			canvas.Scale(1, -1);
+
+			// Draw background shape before text
+			if (enableBgFill) {
+				float bgPadX = enableBgShadow ? (bgShadowBlur + Mathf.Abs(bgShadowOffset.x)) : 0;
+				float bgPadY = enableBgShadow ? (bgShadowBlur + Mathf.Abs(bgShadowOffset.y)) : 0;
+				DrawBgBackground(canvas, roundedWidth, roundedHeight, bgPadX, bgPadY);
+			}
 
 			// Calculate vertical offset based on alignment
 			float baseEffectPadY = effectPadY - (userPadT + userPadB) / 2f;
@@ -828,6 +869,217 @@ namespace SkiaSharp.Unity.HB {
 
 			textRendered = true;
 		}
+
+		// ── Background Shape Drawing ──────────────────────────────────────
+
+		void DrawBgBackground(SKCanvas c, int surfaceW, int surfaceH, float bgPadX, float bgPadY) {
+			if (_bgPaint == null) _bgPaint = new SKPaint { IsAntialias = true };
+
+			c.Save();
+			c.Translate(0, -surfaceH);
+			// Now in normal top-left origin coords
+
+			SKRect bgRect = new SKRect(bgPadX, bgPadY, surfaceW - bgPadX, surfaceH - bgPadY);
+
+			_bgCachedRadii[0] = new SKPoint(bgCornerRadii.x, bgCornerRadii.x);
+			_bgCachedRadii[1] = new SKPoint(bgCornerRadii.y, bgCornerRadii.y);
+			_bgCachedRadii[2] = new SKPoint(bgCornerRadii.z, bgCornerRadii.z);
+			_bgCachedRadii[3] = new SKPoint(bgCornerRadii.w, bgCornerRadii.w);
+
+			if (enableBgShadow) DrawBgShadow(c, bgRect);
+			DrawBgFill(c, bgRect);
+			if (enableBgInnerShadow) DrawBgInnerShadow(c, bgRect);
+			if (enableBgStroke) DrawBgStroke(c, bgRect);
+
+			c.Restore();
+		}
+
+		void DrawBgShadow(SKCanvas c, SKRect bgRect) {
+			SKRect shadowRect = bgRect;
+			shadowRect.Offset(bgShadowOffset.x, bgShadowOffset.y);
+
+			ResetBgPaint();
+			_bgPaint.Style = SKPaintStyle.Fill;
+			_bgPaint.Color = new SKColor(ColorToUint(bgShadowColor));
+			if (bgShadowBlur > 0)
+				_bgPaint.MaskFilter = SKMaskFilter.CreateBlur(SKBlurStyle.Normal, bgShadowBlur * 0.5f);
+
+			DrawBgShape(c, shadowRect);
+			ClearBgPaintEffects();
+		}
+
+		void DrawBgFill(SKCanvas c, SKRect rect) {
+			ResetBgPaint();
+			_bgPaint.Style = SKPaintStyle.Fill;
+
+			switch (bgFillType) {
+				case SkiaFillType.Solid:
+					_bgPaint.Color = new SKColor(ColorToUint(bgFillColor));
+					break;
+				case SkiaFillType.LinearGradient:
+					_bgPaint.IsDither = true;
+					_bgPaint.Shader = CreateBgLinearGradient(rect);
+					break;
+				case SkiaFillType.RadialGradient:
+					_bgPaint.IsDither = true;
+					_bgPaint.Shader = CreateBgRadialGradient(rect);
+					break;
+				case SkiaFillType.SweepGradient:
+					_bgPaint.IsDither = true;
+					_bgPaint.Shader = CreateBgSweepGradient(rect);
+					break;
+				default:
+					_bgPaint.Color = new SKColor(ColorToUint(bgFillColor));
+					break;
+			}
+
+			DrawBgShape(c, rect);
+			ClearBgPaintEffects();
+		}
+
+		void DrawBgInnerShadow(SKCanvas c, SKRect bgRect) {
+			c.Save();
+
+			using (var clipPath = CreateBgShapePath(bgRect)) {
+				c.ClipPath(clipPath);
+			}
+
+			ResetBgPaint();
+			_bgPaint.Style = SKPaintStyle.Fill;
+			_bgPaint.Color = new SKColor(ColorToUint(bgInnerShadowColor));
+			if (bgInnerShadowBlur > 0)
+				_bgPaint.MaskFilter = SKMaskFilter.CreateBlur(SKBlurStyle.Normal, bgInnerShadowBlur * 0.5f);
+
+			float expand = bgInnerShadowBlur * 2 + 50;
+			SKRect outerRect = new SKRect(
+				bgRect.Left - expand, bgRect.Top - expand,
+				bgRect.Right + expand, bgRect.Bottom + expand
+			);
+
+			using (var shadowPath = new SKPath())
+			using (var shapePath = CreateBgShapePath(bgRect)) {
+				shadowPath.AddRect(outerRect);
+				shadowPath.AddPath(shapePath);
+				shadowPath.FillType = SKPathFillType.EvenOdd;
+
+				c.Translate(bgInnerShadowOffset.x, bgInnerShadowOffset.y);
+				c.DrawPath(shadowPath, _bgPaint);
+			}
+
+			ClearBgPaintEffects();
+			c.Restore();
+		}
+
+		void DrawBgStroke(SKCanvas c, SKRect rect) {
+			ResetBgPaint();
+			_bgPaint.Style = SKPaintStyle.Stroke;
+			_bgPaint.StrokeWidth = bgStrokeWidth;
+			_bgPaint.Color = new SKColor(ColorToUint(bgStrokeColor));
+
+			DrawBgShape(c, rect);
+			ClearBgPaintEffects();
+		}
+
+		void DrawBgShape(SKCanvas c, SKRect rect) {
+			bool hasRadius = bgCornerRadii.x > 0 || bgCornerRadii.y > 0 || bgCornerRadii.z > 0 || bgCornerRadii.w > 0;
+			if (hasRadius) {
+				using (var rrect = new SKRoundRect()) {
+					rrect.SetRectRadii(rect, _bgCachedRadii);
+					c.DrawRoundRect(rrect, _bgPaint);
+				}
+			} else {
+				c.DrawRect(rect, _bgPaint);
+			}
+		}
+
+		SKPath CreateBgShapePath(SKRect rect) {
+			var path = new SKPath();
+			bool hasRadius = bgCornerRadii.x > 0 || bgCornerRadii.y > 0 || bgCornerRadii.z > 0 || bgCornerRadii.w > 0;
+			if (hasRadius) {
+				using (var rrect = new SKRoundRect()) {
+					rrect.SetRectRadii(rect, _bgCachedRadii);
+					path.AddRoundRect(rrect);
+				}
+			} else {
+				path.AddRect(rect);
+			}
+			return path;
+		}
+
+		void ResetBgPaint() {
+			_bgPaint.Reset();
+			_bgPaint.IsAntialias = true;
+		}
+
+		void ClearBgPaintEffects() {
+			_bgPaint.Shader?.Dispose();
+			_bgPaint.Shader = null;
+			_bgPaint.PathEffect?.Dispose();
+			_bgPaint.PathEffect = null;
+			_bgPaint.MaskFilter?.Dispose();
+			_bgPaint.MaskFilter = null;
+		}
+
+		SKShader CreateBgLinearGradient(SKRect rect) {
+			float rad = bgGradientAngle * Mathf.Deg2Rad;
+			float cx = rect.MidX, cy = rect.MidY;
+			float halfDiag = Mathf.Sqrt(rect.Width * rect.Width + rect.Height * rect.Height) * 0.5f;
+			float dx = Mathf.Cos(rad) * halfDiag;
+			float dy = Mathf.Sin(rad) * halfDiag;
+
+			var start = new SKPoint(cx - dx, cy - dy);
+			var end = new SKPoint(cx + dx, cy + dy);
+
+			GetBgGradientData(out SKColor[] colors, out float[] positions);
+			return SKShader.CreateLinearGradient(start, end, colors, positions, SKShaderTileMode.Clamp);
+		}
+
+		SKShader CreateBgRadialGradient(SKRect rect) {
+			float radius = Mathf.Max(rect.Width, rect.Height) * 0.5f;
+			var center = new SKPoint(rect.MidX, rect.MidY);
+
+			GetBgGradientData(out SKColor[] colors, out float[] positions);
+			return SKShader.CreateRadialGradient(center, radius, colors, positions, SKShaderTileMode.Clamp);
+		}
+
+		SKShader CreateBgSweepGradient(SKRect rect) {
+			var center = new SKPoint(rect.MidX, rect.MidY);
+
+			GetBgGradientData(out SKColor[] colors, out float[] positions);
+			return SKShader.CreateSweepGradient(center, colors, positions);
+		}
+
+		void GetBgGradientData(out SKColor[] colors, out float[] positions) {
+			if (bgGradient == null || bgGradient.colorKeys.Length < 2) {
+				colors = new[] { SKColors.White, SKColors.Black };
+				positions = new[] { 0f, 1f };
+				return;
+			}
+
+			int count = bgGradient.colorKeys.Length;
+
+			if (_bgCachedGradColors == null || _bgCachedGradColors.Length != count)
+				_bgCachedGradColors = new SKColor[count];
+			if (_bgCachedGradPositions == null || _bgCachedGradPositions.Length != count)
+				_bgCachedGradPositions = new float[count];
+
+			for (int i = 0; i < count; i++) {
+				var key = bgGradient.colorKeys[i];
+				float alpha = bgGradient.Evaluate(key.time).a;
+				_bgCachedGradColors[i] = new SKColor(
+					(byte)(key.color.r * 255),
+					(byte)(key.color.g * 255),
+					(byte)(key.color.b * 255),
+					(byte)(alpha * 255)
+				);
+				_bgCachedGradPositions[i] = key.time;
+			}
+
+			colors = _bgCachedGradColors;
+			positions = _bgCachedGradPositions;
+		}
+
+		// ── End Background Shape ──────────────────────────────────────────
 
 		protected virtual void RenderLinksCall() {
 			if (_linkStyle == null) {
@@ -1237,6 +1489,12 @@ namespace SkiaSharp.Unity.HB {
 			}
 			// canvas is owned by surface — already disposed above
 			canvas = null;
+
+			if (_bgPaint != null) {
+				ClearBgPaintEffects();
+				_bgPaint.Dispose();
+				_bgPaint = null;
+			}
 		}
 
 		public virtual void CalculateLayoutInputHorizontal() {}
