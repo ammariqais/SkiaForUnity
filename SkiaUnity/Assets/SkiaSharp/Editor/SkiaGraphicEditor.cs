@@ -696,7 +696,7 @@ static class SkiaGraphicMenuItems {
 		}
 
 		var go = new GameObject("Skia Graphic");
-		go.AddComponent<SkiaGraphic>();
+		var rt = go.AddComponent<RectTransform>();
 		Undo.RegisterCreatedObjectUndo(go, "Create Skia Graphic");
 
 		Transform parentTransform = parent != null && parent.GetComponentInParent<Canvas>() != null
@@ -704,7 +704,8 @@ static class SkiaGraphicMenuItems {
 			: canvas.transform;
 		GameObjectUtility.SetParentAndAlign(go, parentTransform.gameObject);
 
-		var rt = go.GetComponent<RectTransform>();
+		go.AddComponent<SkiaGraphic>();
+
 		rt.sizeDelta = new Vector2(200, 200);
 
 		Selection.activeGameObject = go;
