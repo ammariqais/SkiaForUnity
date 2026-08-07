@@ -7,6 +7,7 @@ using UnityEngine.Events;
 using UnityEngine.UI;
 using Topten.RichTextKit;
 using TextAlignment = Topten.RichTextKit.TextAlignment;
+#pragma warning disable CS0618
 
 namespace SkiaSharp.Unity.HB {
 	public enum HBColorFormat {
@@ -628,7 +629,7 @@ namespace SkiaSharp.Unity.HB {
 				var fontBytes = GetFontBytes();
 				if (fontBytes == null) return;
 				if (skTypeface == null) {
-					int key = font.GetEntityId();
+					int key = font.GetInstanceID();
 					if (!_typefaceCache.ContainsKey(key)) {
 						SKData copy = SKData.CreateCopy(fontBytes);
 						_typefaceCache[key] = SKTypeface.FromData(copy);
@@ -641,7 +642,7 @@ namespace SkiaSharp.Unity.HB {
 					_typefaceCacheRegistered = true;
 				}
 				// Reuse FontMapper if typeface hasn't changed
-				int typefaceKey = font.GetEntityId();
+				int typefaceKey = font.GetInstanceID();
 				if (_cachedFontMapper == null || _cachedFontMapperKey != typefaceKey) {
 					_cachedFontMapper = new FontMapper(skTypeface);
 					_cachedFontMapperKey = typefaceKey;
@@ -1549,7 +1550,7 @@ namespace SkiaSharp.Unity.HB {
 
 		public virtual void RefreshFontFamily() {
 			if (font != null) {
-				int key = font.GetEntityId();
+				int key = font.GetInstanceID();
 				if (!_typefaceCache.ContainsKey(key)) {
 					var fontBytes = GetFontBytes();
 					if (fontBytes == null) return;
