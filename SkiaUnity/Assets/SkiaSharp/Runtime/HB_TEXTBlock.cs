@@ -628,7 +628,7 @@ namespace SkiaSharp.Unity.HB {
 				var fontBytes = GetFontBytes();
 				if (fontBytes == null) return;
 				if (skTypeface == null) {
-					int key = font.GetInstanceID();
+					int key = font.GetEntityId();
 					if (!_typefaceCache.ContainsKey(key)) {
 						SKData copy = SKData.CreateCopy(fontBytes);
 						_typefaceCache[key] = SKTypeface.FromData(copy);
@@ -641,7 +641,7 @@ namespace SkiaSharp.Unity.HB {
 					_typefaceCacheRegistered = true;
 				}
 				// Reuse FontMapper if typeface hasn't changed
-				int typefaceKey = font.GetInstanceID();
+				int typefaceKey = font.GetEntityId();
 				if (_cachedFontMapper == null || _cachedFontMapperKey != typefaceKey) {
 					_cachedFontMapper = new FontMapper(skTypeface);
 					_cachedFontMapperKey = typefaceKey;
@@ -1549,7 +1549,7 @@ namespace SkiaSharp.Unity.HB {
 
 		public virtual void RefreshFontFamily() {
 			if (font != null) {
-				int key = font.GetInstanceID();
+				int key = font.GetEntityId();
 				if (!_typefaceCache.ContainsKey(key)) {
 					var fontBytes = GetFontBytes();
 					if (fontBytes == null) return;
