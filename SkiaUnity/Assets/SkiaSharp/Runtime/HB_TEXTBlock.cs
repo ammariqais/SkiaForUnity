@@ -121,9 +121,9 @@ namespace SkiaSharp.Unity.HB {
 		protected string pattern = @"(https?://\S+|www\.\S+)";
 		protected Regex regex;
 		protected SKTypeface skTypeface;
-		private static readonly Dictionary<int, SKTypeface> _typefaceCache = new();
-		private static readonly Dictionary<int, int> _typefaceRefCounts = new();
-		private int _typefaceCacheKey;
+		private static readonly Dictionary<EntityId, SKTypeface> _typefaceCache = new();
+		private static readonly Dictionary<EntityId, int> _typefaceRefCounts = new();
+		private EntityId _typefaceCacheKey;
 		private bool _typefaceCacheRegistered;
 		protected RectTransform rectTransform;
 		protected float currentWidth, currentHeight, currentPreferdWidth = 0, currentPreferdHeight;
@@ -132,7 +132,7 @@ namespace SkiaSharp.Unity.HB {
 
 		// Cached objects to avoid per-render allocations
 		private FontMapper _cachedFontMapper;
-		private int _cachedFontMapperKey;
+		private EntityId _cachedFontMapperKey;
 		private Style _linkStyle;
 		private Style _cachedSpacerStyle;
 		private float _cachedSpacerFontSize;
@@ -628,7 +628,7 @@ namespace SkiaSharp.Unity.HB {
 				var fontBytes = GetFontBytes();
 				if (fontBytes == null) return;
 				if (skTypeface == null) {
-					int key = font.GetInstanceID();
+					EntityId key = font.GetEntityId();
 					if (!_typefaceCache.ContainsKey(key)) {
 						SKData copy = SKData.CreateCopy(fontBytes);
 						_typefaceCache[key] = SKTypeface.FromData(copy);
@@ -641,7 +641,7 @@ namespace SkiaSharp.Unity.HB {
 					_typefaceCacheRegistered = true;
 				}
 				// Reuse FontMapper if typeface hasn't changed
-				int typefaceKey = font.GetInstanceID();
+				EntityId typefaceKey = font.GetEntityId();
 				if (_cachedFontMapper == null || _cachedFontMapperKey != typefaceKey) {
 					_cachedFontMapper = new FontMapper(skTypeface);
 					_cachedFontMapperKey = typefaceKey;
@@ -1549,7 +1549,7 @@ namespace SkiaSharp.Unity.HB {
 
 		public virtual void RefreshFontFamily() {
 			if (font != null) {
-				int key = font.GetInstanceID();
+				EntityId key = font.GetEntityId();
 				if (!_typefaceCache.ContainsKey(key)) {
 					var fontBytes = GetFontBytes();
 					if (fontBytes == null) return;
