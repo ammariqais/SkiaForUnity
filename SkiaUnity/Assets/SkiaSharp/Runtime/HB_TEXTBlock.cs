@@ -1547,6 +1547,13 @@ namespace SkiaSharp.Unity.HB {
 		public virtual float flexibleHeight { get; }
 		public virtual int layoutPriority { get; }
 
+#if UNITY_6000_6_OR_NEWER
+		// Unity 6.6 added maxWidth/maxHeight to ILayoutElement (-1 = unconstrained),
+		// which matches the convention of the existing maxWidth/maxHeight fields.
+		float ILayoutElement.maxWidth => maxWidth;
+		float ILayoutElement.maxHeight => maxHeight;
+#endif
+
 		public virtual void RefreshFontFamily() {
 			if (font != null) {
 				EntityId key = font.GetEntityId();
