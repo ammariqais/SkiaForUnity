@@ -79,5 +79,8 @@ namespace SkiaSharp.Unity {
     public float preferredHeight => rawImage.GetComponent<RectTransform>().rect.height;
     public float flexibleHeight { get; }
     public int layoutPriority { get; }
+    // Required by ILayoutElement since Unity 6.6; -1 = unconstrained.
+    public float maxWidth => -1;
+    public float maxHeight => -1;
   }
 }
